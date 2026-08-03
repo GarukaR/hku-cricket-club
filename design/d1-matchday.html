@@ -1,0 +1,250 @@
+<title>HKU Cricket — Direction 1: Matchday</title>
+<style>
+  :root{
+    /* ── CREST PALETTE — hues taken from the club crest, lightness solved for AA ──
+       Anchors: red #E63329 · gold #EFC31F · green #0F8A6A · blue #2E86C1
+                willow #EDD9A0 · leather #7A4B34
+       Every pair below is verified ≥4.5:1. Hexes remain provisional until the
+       original logo file replaces the screenshot they were read from. */
+    --pitch:#0B2820;      /* crest green, ground-dark */
+    --pitch-2:#14392F;    /* raised surface */
+    --pitch-3:#1D4B3E;    /* border / hairline */
+    --bone:#F8F5ED;       /* willow, near-white — primary text (14.40:1) */
+    --sand:#E6D8B3;       /* willow — secondary text (11.08:1) */
+    --sage:#8BB1A7;       /* crest green desaturated — muted text (5.40:1 on pitch-2) */
+    --ball:#E5281E;       /* crest red — FILL only (white on it = 4.51:1) */
+    --ball-text:#EB5850;  /* crest red lifted for TEXT on pitch (4.52:1) */
+    --gold:#EFC31F;       /* crest gold — on this dark ground it clears 9.34:1 */
+    --seam:#F8F5ED;
+
+    --display:"Arial Narrow","Helvetica Neue Condensed",'Roboto Condensed',system-ui,sans-serif;
+    --body:"Helvetica Neue",Helvetica,Arial,system-ui,sans-serif;
+    --data:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+
+    --measure:64ch;
+    --pad:clamp(1.25rem,5vw,4.5rem);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--pitch);color:var(--bone);
+    font-family:var(--body);line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  /* committed dark world — deliberate single theme, see note at foot */
+
+  .wrap{max-width:1240px;margin-inline:auto;padding-inline:var(--pad)}
+  a{color:inherit}
+  :focus-visible{outline:2px solid var(--ball-text);outline-offset:3px}
+
+  .flag{
+    background:var(--ball);color:#fff;font-family:var(--data);
+    font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;
+    text-align:center;padding:.55rem 1rem;
+  }
+
+  /* ── masthead ── */
+  /* gold earns exactly one job here: the masthead rule, echoing the crest chief */
+  header.top{border-bottom:2px solid var(--gold)}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:1.5rem;padding-block:1.1rem;flex-wrap:wrap}
+  .mark{display:flex;align-items:center;gap:.8rem;text-decoration:none}
+  .shield{
+    width:38px;height:44px;flex:none;
+    background:var(--bone);color:var(--pitch);
+    clip-path:polygon(0 0,100% 0,100% 68%,50% 100%,0 68%);
+    display:grid;place-items:center;font-family:var(--display);
+    font-weight:700;font-size:.95rem;letter-spacing:.02em;
+  }
+  .mark b{font-family:var(--display);font-size:1.5rem;letter-spacing:.06em;text-transform:uppercase;line-height:1}
+  .mark span{display:block;font-family:var(--data);font-size:.62rem;letter-spacing:.22em;color:var(--sage);text-transform:uppercase;margin-top:.15rem}
+  nav ul{display:flex;gap:1.6rem;list-style:none;margin:0;padding:0;flex-wrap:wrap}
+  nav a{
+    font-family:var(--data);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;
+    text-decoration:none;color:var(--sand);padding-block:.35rem;
+    border-bottom:2px solid transparent;transition:color .15s,border-color .15s;
+  }
+  nav a:hover{color:var(--bone);border-bottom-color:var(--ball-text)}
+
+  /* ── hero: the thesis is the scoreline ── */
+  .hero{padding-block:clamp(2.5rem,7vw,5rem) clamp(2rem,5vw,3.5rem);border-bottom:1px solid var(--pitch-3)}
+  .eyebrow{font-family:var(--data);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ball-text);margin:0 0 1.2rem}
+  .hero h1{
+    font-family:var(--display);font-weight:700;
+    font-size:clamp(2.9rem,11vw,7.5rem);line-height:.88;letter-spacing:-.01em;
+    text-transform:uppercase;margin:0;text-wrap:balance;
+  }
+  .hero h1 em{font-style:normal;color:var(--ball-text)}
+  .hero p{max-width:52ch;color:var(--sand);font-size:1.05rem;margin:1.6rem 0 0}
+
+  /* ── matchday strip ── */
+  .strip{display:grid;grid-template-columns:1fr;gap:1px;background:var(--pitch-3);border-block:1px solid var(--pitch-3)}
+  @media(min-width:800px){.strip{grid-template-columns:1.35fr 1fr}}
+  .cell{background:var(--pitch);padding:clamp(1.5rem,4vw,2.6rem) var(--pad)}
+  .cell h2{font-family:var(--data);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--sage);margin:0 0 1.5rem;font-weight:400}
+
+  .score{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;padding-block:.85rem;border-bottom:1px solid var(--pitch-3)}
+  .score:last-of-type{border-bottom:0}
+  .side{font-family:var(--display);font-size:clamp(1.4rem,3.4vw,2rem);text-transform:uppercase;letter-spacing:.03em}
+  .side.us{color:var(--bone)}
+  .side.them{color:var(--sage)}
+  .runs{font-family:var(--data);font-variant-numeric:tabular-nums;font-size:clamp(1.4rem,3.4vw,2rem);letter-spacing:-.02em}
+  .verdict{
+    display:inline-block;margin-top:1.3rem;font-family:var(--data);
+    font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;
+    background:var(--ball);color:#fff;padding:.4rem .7rem;
+  }
+  .meta{font-family:var(--data);font-size:.72rem;color:var(--sage);letter-spacing:.06em;margin:.9rem 0 0}
+
+  .next{display:grid;gap:.5rem}
+  .next .opp{font-family:var(--display);font-size:clamp(1.7rem,4.5vw,2.6rem);text-transform:uppercase;line-height:1.02}
+  .countdown{display:flex;gap:1.4rem;margin-top:1rem}
+  .countdown div{text-align:left}
+  .countdown b{display:block;font-family:var(--data);font-variant-numeric:tabular-nums;font-size:1.9rem;line-height:1}
+  .countdown span{font-family:var(--data);font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--sage)}
+
+  /* ── fixture rail ── */
+  .rail-wrap{padding-block:clamp(2.5rem,6vw,4rem)}
+  .rail-head{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap}
+  .rail-head h2{font-family:var(--display);font-size:clamp(1.6rem,4vw,2.4rem);text-transform:uppercase;margin:0;letter-spacing:.02em}
+  .rail-head a{font-family:var(--data);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--sand);text-decoration:none;border-bottom:1px solid var(--pitch-3);padding-bottom:.2rem}
+  .rail-head a:hover{color:var(--bone);border-bottom-color:var(--ball-text)}
+  .rail{display:flex;gap:1px;overflow-x:auto;background:var(--pitch-3);border:1px solid var(--pitch-3);scroll-snap-type:x mandatory}
+  .fix{background:var(--pitch);min-width:230px;flex:1 0 230px;padding:1.4rem 1.3rem;scroll-snap-align:start}
+  .fix .d{font-family:var(--data);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ball-text)}
+  .fix .o{font-family:var(--display);font-size:1.45rem;text-transform:uppercase;margin:.5rem 0 .35rem;line-height:1.05}
+  .fix .v{font-family:var(--data);font-size:.7rem;color:var(--sage);letter-spacing:.05em}
+
+  /* ── gallery: drawn placeholders, no external images ── */
+  .gal{padding-block:clamp(2rem,5vw,3.5rem);border-top:1px solid var(--pitch-3)}
+  .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1px;background:var(--pitch-3);border:1px solid var(--pitch-3)}
+  .tile{aspect-ratio:4/3;position:relative;display:grid;place-items:center;overflow:hidden;background:var(--pitch-2)}
+  .tile canvas{position:absolute;inset:0;width:100%;height:100%}
+  .tile span{position:relative;font-family:var(--data);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--sage);background:rgba(11,40,32,.86);padding:.3rem .5rem}
+
+  /* ── join ── */
+  .join{background:var(--ball);color:#fff;padding-block:clamp(2.5rem,6vw,4rem);margin-top:0}
+  .join h2{font-family:var(--display);font-size:clamp(2rem,6.5vw,4rem);text-transform:uppercase;margin:0 0 .8rem;line-height:.95;text-wrap:balance}
+  .join p{max-width:46ch;margin:0 0 1.8rem;opacity:.92}
+  .btn{display:inline-block;background:var(--bone);color:var(--pitch);font-family:var(--data);font-size:.75rem;letter-spacing:.16em;text-transform:uppercase;padding:.95rem 1.7rem;text-decoration:none;font-weight:700}
+  .btn:hover{background:#fff}
+
+  footer{padding-block:2.5rem;font-family:var(--data);font-size:.72rem;color:var(--sage);letter-spacing:.05em}
+  footer .fl{display:flex;justify-content:space-between;gap:1.5rem;flex-wrap:wrap}
+  .note{border-top:1px solid var(--pitch-3);margin-top:2rem;padding-top:1.2rem;color:var(--sage);font-family:var(--data);font-size:.68rem;line-height:1.7;letter-spacing:.03em}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<p class="flag">Design mockup · Direction 1 of 3 · Sample content, club crest palette</p>
+
+<header class="top">
+  <div class="wrap topbar">
+    <a class="mark" href="#">
+      <span class="shield">HKU</span>
+      <span><b>Cricket Club</b><span>Est. 1913 · Hong Kong</span></span>
+    </a>
+    <nav>
+      <ul>
+        <li><a href="#">Fixtures</a></li>
+        <li><a href="#">Squad</a></li>
+        <li><a href="#">Gallery</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Join</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<section class="hero wrap">
+  <p class="eyebrow">University Cricket League · Round 4</p>
+  <h1>Cricket at<br>Sandy Bay<br><em>since 1913</em></h1>
+  <p>One of Hong Kong's oldest cricket clubs, and still one of its youngest sides. Students, staff and alumni of the University of Hong Kong — Saturdays at Sandy Bay.</p>
+</section>
+
+<section class="strip">
+  <div class="cell">
+    <h2>Last result</h2>
+    <div class="score"><span class="side us">HKU</span><span class="runs">184/6</span></div>
+    <div class="score"><span class="side them">PolyU</span><span class="runs">151 a.o.</span></div>
+    <span class="verdict">Won by 33 runs</span>
+    <p class="meta">Sat 25 Jul · Yeung King Playground · 40 overs</p>
+  </div>
+  <div class="cell">
+    <h2>Next fixture</h2>
+    <div class="next">
+      <span class="opp">vs HKUST</span>
+      <p class="meta">Sat 8 Aug · 13:30 · Sandy Bay · Home</p>
+    </div>
+    <div class="countdown">
+      <div><b>05</b><span>days</span></div>
+      <div><b>11</b><span>hrs</span></div>
+      <div><b>42</b><span>min</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="wrap rail-wrap">
+  <div class="rail-head">
+    <h2>Season fixtures</h2>
+    <a href="#">Full table →</a>
+  </div>
+  <div class="rail">
+    <div class="fix"><span class="d">Sat 8 Aug · Home</span><p class="o">HKUST</p><span class="v">Sandy Bay · 40 ov</span></div>
+    <div class="fix"><span class="d">Sat 15 Aug · Away</span><p class="o">CityU</p><span class="v">Yeung King · 40 ov</span></div>
+    <div class="fix"><span class="d">Sat 22 Aug · Home</span><p class="o">Kowloon CC</p><span class="v">Sandy Bay · T20</span></div>
+    <div class="fix"><span class="d">Sat 29 Aug · Away</span><p class="o">PolyU</p><span class="v">DB North · 40 ov</span></div>
+    <div class="fix"><span class="d">Sat 5 Sep · Home</span><p class="o">HK Cricket Club</p><span class="v">Sandy Bay · Friendly</span></div>
+  </div>
+</section>
+
+<section class="wrap gal">
+  <div class="rail-head">
+    <h2>From the ground</h2>
+    <a href="#">All albums →</a>
+  </div>
+  <div class="tiles">
+    <div class="tile"><canvas data-seed="1"></canvas><span>Photo</span></div>
+    <div class="tile"><canvas data-seed="2"></canvas><span>Photo</span></div>
+    <div class="tile"><canvas data-seed="3"></canvas><span>Photo</span></div>
+    <div class="tile"><canvas data-seed="4"></canvas><span>Video</span></div>
+  </div>
+</section>
+
+<section class="join">
+  <div class="wrap">
+    <h2>Never held a bat?<br>Start on Saturday.</h2>
+    <p>We take players at every level — from first-teamers to people who have only watched it on a screen. No trial, no fee to turn up.</p>
+    <a class="btn" href="#">Join the club</a>
+  </div>
+</section>
+
+<footer class="wrap">
+  <div class="fl">
+    <span>Hong Kong University Cricket Club · Sandy Bay, Pok Fu Lam</span>
+    <span>Instagram · Facebook · YouTube</span>
+  </div>
+  <p class="note">
+    DIRECTION 1 — “MATCHDAY”. Structure borrowed from a scoreboard: the scoreline is the largest object on the page, fixtures scroll as a rail, and one loud colour (ball red) carries every call to action while everything else stays quiet.<br>
+    Commits deliberately to a single dark world — a floodlit-evening feel — so it does not offer a light theme.<br>
+    COLOURS ARE NOW THE CLUB'S OWN — every hue on this page is taken from the crest (red, gold, green, willow), with lightness adjusted until each text/background pair clears WCAG AA. The crest hexes were read off a phone screenshot of the logo, so they are close but not exact; the original vector file would let them be sampled properly. Fonts are system stacks because this sandbox blocks external fonts; the production site self-hosts real faces via next/font. Scores and dates are invented sample content.
+  </p>
+</footer>
+
+<script>
+  // Drawn stand-ins for photography — no external images can load in this sandbox.
+  for (const c of document.querySelectorAll('.tile canvas')) {
+    const seed = +c.dataset.seed, w = c.width = 480, h = c.height = 360, x = c.getContext('2d');
+    const g = x.createLinearGradient(0, 0, w, h);
+    g.addColorStop(0, ['#1D4B3E','#14392F','#215A49','#0F3128'][seed-1]);
+    g.addColorStop(1, '#0B2820');
+    x.fillStyle = g; x.fillRect(0, 0, w, h);
+    x.globalAlpha = .5; x.strokeStyle = '#8BB1A7'; x.lineWidth = 1;
+    for (let i = 0; i < 26; i++) {          // crease + field-line texture
+      x.beginPath();
+      x.arc(w * (.2 + seed * .17), h * 1.15, 40 + i * 17, Math.PI * 1.05, Math.PI * 1.95);
+      x.stroke();
+    }
+    x.globalAlpha = 1; x.fillStyle = '#E5281E';
+    x.beginPath(); x.arc(w * .74, h * .3, 13, 0, 7); x.fill();   // the ball
+    x.strokeStyle = '#F8F5ED'; x.lineWidth = 1.4;
+    x.beginPath(); x.arc(w * .74, h * .3, 13, Math.PI * .35, Math.PI * 1.35); x.stroke();
+  }
+</script>

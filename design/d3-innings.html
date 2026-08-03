@@ -1,0 +1,272 @@
+<title>HKU Cricket — Direction 3: The Innings</title>
+<style>
+  :root{
+    /* ── CREST PALETTE — hues taken from the club crest, lightness solved for AA ──
+       Anchors: red #E63329 · gold #EFC31F · green #0F8A6A · blue #2E86C1
+                willow #EDD9A0 · leather #7A4B34
+       Green leads, red signals. Note --accent-on-soft: an accent solved against
+       the page cannot be reused on a tinted chip, so the chip gets its own
+       token. Provisional until the original logo file lands. */
+    --bg:#FBFBF8;
+    --surface:#F4F2EB;
+    --ink:#171C1B;
+    --ink-2:#5E6E6A;
+    --rule:#DFDBCD;
+    --accent:#0E8365;          /* crest green — leads (4.55:1) */
+    --accent-soft:#E3F2EE;
+    --accent-on-soft:#0D7B5F;  /* accent AS text on the soft chip (4.53:1) */
+    --on-accent:#FBFAF7;
+    --red:#E0251A;             /* crest red — signals results, live (4.55:1) */
+    --red-soft:#F8E4E2;
+    --red-on-soft:#CC2118;     /* red AS text on the soft chip (4.52:1) */
+    --gold:#EFC31F;            /* crest gold — rules and detail only, never text */
+
+    --serif:"Iowan Old Style",Charter,"Bitstream Charter",Georgia,serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    --pad:clamp(1.25rem,5vw,4rem);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0E1514;--surface:#18211E;--ink:#F4F2EB;--ink-2:#94A8A3;
+      --rule:#2C3A36;--accent:#0F8F6E;--accent-soft:#1D352F;--accent-on-soft:#13AD84;
+      --on-accent:#0E1514;--red:#E73D33;--red-soft:#3B1E1C;--red-on-soft:#EB5F57;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0E1514;--surface:#18211E;--ink:#F4F2EB;--ink-2:#94A8A3;
+    --rule:#2C3A36;--accent:#0F8F6E;--accent-soft:#1D352F;--accent-on-soft:#13AD84;
+    --on-accent:#0E1514;--red:#E73D33;--red-soft:#3B1E1C;--red-on-soft:#EB5F57;
+  }
+  :root[data-theme="light"]{
+    --bg:#FBFBF8;--surface:#F4F2EB;--ink:#171C1B;--ink-2:#5E6E6A;
+    --rule:#DFDBCD;--accent:#0E8365;--accent-soft:#E3F2EE;--accent-on-soft:#0D7B5F;
+    --on-accent:#FBFAF7;--red:#E0251A;--red-soft:#F8E4E2;--red-on-soft:#CC2118;
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1180px;margin-inline:auto;padding-inline:var(--pad)}
+  a{color:inherit}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+  .flag{background:var(--accent);color:var(--on-accent);font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;text-align:center;padding:.55rem 1rem}
+
+  /* ── header ── */
+  .top{border-bottom:1px solid var(--rule);position:sticky;top:0;background:var(--bg);z-index:5}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:1.5rem;padding-block:1rem;flex-wrap:wrap}
+  .mark{display:flex;align-items:center;gap:.7rem;text-decoration:none}
+  .mark .sq{width:34px;height:34px;background:var(--accent);color:var(--on-accent);display:grid;place-items:center;font-family:var(--mono);font-size:.72rem;font-weight:700;letter-spacing:.02em}
+  .mark b{font-family:var(--serif);font-size:1.18rem;letter-spacing:.01em}
+  nav ul{display:flex;gap:1.5rem;list-style:none;margin:0;padding:0;flex-wrap:wrap}
+  nav a{font-family:var(--mono);font-size:.71rem;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;color:var(--ink-2);padding-bottom:.2rem;border-bottom:1px solid transparent}
+  nav a:hover{color:var(--ink);border-bottom-color:var(--accent)}
+
+  /* ── asymmetric hero: lead story + rail ── */
+  .lead{display:grid;grid-template-columns:1fr;gap:2.5rem;padding-block:clamp(2.2rem,5.5vw,3.6rem);border-bottom:1px solid var(--rule)}
+  @media(min-width:900px){.lead{grid-template-columns:1.75fr 1fr;gap:3.5rem}}
+  .kicker{font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin:0 0 1rem}
+  .lead h1{font-family:var(--serif);font-weight:400;font-size:clamp(2.2rem,6vw,4rem);line-height:1.04;letter-spacing:-.015em;margin:0;text-wrap:balance}
+  .standfirst{font-size:clamp(1.02rem,2vw,1.18rem);color:var(--ink-2);max-width:56ch;margin:1.3rem 0 0}
+  .byline{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--rule)}
+
+  .art{aspect-ratio:16/10;background:var(--surface);border:1px solid var(--rule);position:relative;overflow:hidden;margin-top:1.8rem}
+  .art canvas{position:absolute;inset:0;width:100%;height:100%}
+
+  /* rail */
+  .rail{align-self:start}
+  .rail h2{font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);font-weight:400;margin:0 0 1rem;padding-bottom:.7rem;border-bottom:2px solid var(--ink)}
+  .item{padding-block:1rem;border-bottom:1px solid var(--rule);display:grid;grid-template-columns:2.4rem 1fr;gap:1rem;align-items:baseline}
+  .item .n{font-family:var(--mono);font-size:1.5rem;font-variant-numeric:tabular-nums;color:var(--accent);line-height:1}
+  .item h3{font-family:var(--serif);font-weight:400;font-size:1.12rem;line-height:1.3;margin:0}
+  .item p{font-family:var(--mono);font-size:.67rem;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-2);margin:.35rem 0 0}
+
+  /* ── scoreline band ── */
+  .band{background:var(--surface);border-bottom:1px solid var(--rule)}
+  /* the divider is a border on the second box, not a grid gap over a coloured
+     background — that painted --rule into the wrapper's padding and left visible
+     strips down each outer edge of the band */
+  .band-in{display:grid;grid-template-columns:1fr;gap:0;background:transparent}
+  @media(min-width:760px){
+    .band-in{grid-template-columns:1fr 1fr}
+    .box:last-child{border-left:1px solid var(--rule)}
+  }
+  @media(max-width:759px){.box+.box{border-top:1px solid var(--rule)}}
+  .box{background:var(--surface);padding:clamp(1.4rem,3.5vw,2.2rem) 0}
+  .box:first-child{padding-right:clamp(1rem,3vw,2rem)}
+  .box:last-child{padding-left:clamp(1rem,3vw,2rem)}
+  @media(max-width:759px){.box{padding-inline:0!important}}
+  .box .lbl{font-family:var(--mono);font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);margin:0 0 1rem}
+  .line{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;padding-block:.5rem}
+  .line .t{font-family:var(--serif);font-size:1.32rem}
+  .line .s{font-family:var(--mono);font-size:1.32rem;font-variant-numeric:tabular-nums}
+  .line.dim{color:var(--ink-2)}
+  .tag{display:inline-block;margin-top:.9rem;font-family:var(--mono);font-size:.66rem;letter-spacing:.13em;text-transform:uppercase;background:var(--accent-soft);color:var(--accent-on-soft);padding:.32rem .6rem}
+  /* red is the signal colour: it marks a result, never decoration */
+  .tag.result{background:var(--red-soft);color:var(--red-on-soft)}
+  .when{font-family:var(--mono);font-size:.68rem;letter-spacing:.07em;color:var(--ink-2);margin:.8rem 0 0}
+
+  /* ── photo essay ── */
+  .essay{padding-block:clamp(2.4rem,6vw,4rem)}
+  .head{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;flex-wrap:wrap;margin-bottom:1.6rem;padding-bottom:.8rem;border-bottom:2px solid var(--ink)}
+  .head h2{font-family:var(--serif);font-weight:400;font-size:clamp(1.5rem,3.6vw,2.1rem);margin:0}
+  .head a{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;color:var(--accent)}
+  .mosaic{display:grid;grid-template-columns:repeat(6,1fr);gap:1.1rem}
+  .mosaic figure{margin:0;grid-column:span 6}
+  @media(min-width:700px){
+    .mosaic figure:nth-child(1){grid-column:span 4}
+    .mosaic figure:nth-child(2){grid-column:span 2}
+    .mosaic figure:nth-child(3){grid-column:span 2}
+    .mosaic figure:nth-child(4){grid-column:span 4}
+  }
+  .shot{aspect-ratio:3/2;background:var(--surface);border:1px solid var(--rule);position:relative;overflow:hidden}
+  .shot canvas{position:absolute;inset:0;width:100%;height:100%}
+  .mosaic figcaption{font-family:var(--mono);font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);margin-top:.5rem}
+
+  /* ── pull quote ── */
+  .pull{padding-block:clamp(2rem,5vw,3.2rem);border-block:1px solid var(--rule)}
+  .pull blockquote{margin:0;font-family:var(--serif);font-size:clamp(1.4rem,3.6vw,2.15rem);line-height:1.34;max-width:24ch;text-wrap:balance}
+  .pull cite{display:block;font-family:var(--mono);font-style:normal;font-size:.68rem;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-2);margin-top:1.2rem}
+
+  /* ── join ── */
+  .join{padding-block:clamp(2.4rem,6vw,3.8rem);display:grid;gap:2rem;grid-template-columns:1fr}
+  @media(min-width:820px){.join{grid-template-columns:1.3fr 1fr;align-items:center;gap:4rem}}
+  .join h2{font-family:var(--serif);font-weight:400;font-size:clamp(1.8rem,4.6vw,2.8rem);line-height:1.1;margin:0 0 .8rem;text-wrap:balance}
+  .join p{color:var(--ink-2);max-width:48ch;margin:0}
+  .btn{display:inline-block;background:var(--accent);color:var(--on-accent);font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;padding:.9rem 1.6rem;text-decoration:none}
+  .btn:hover{filter:brightness(1.12)}
+  .facts{border-left:2px solid var(--accent);padding-left:1.2rem}
+  .facts dt{font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);margin-top:.9rem}
+  .facts dt:first-child{margin-top:0}
+  .facts dd{margin:.15rem 0 0;font-family:var(--serif);font-size:1.05rem}
+
+  footer{border-top:1px solid var(--rule);padding-block:2rem;font-family:var(--mono);font-size:.7rem;color:var(--ink-2);letter-spacing:.05em}
+  footer .fl{display:flex;justify-content:space-between;gap:1.5rem;flex-wrap:wrap}
+  .note{margin-top:1.8rem;padding-top:1.2rem;border-top:1px solid var(--rule);font-size:.67rem;line-height:1.75}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<p class="flag">Design mockup · Direction 3 of 3 · Sample content, club crest palette</p>
+
+<header class="top">
+  <div class="wrap topbar">
+    <a class="mark" href="#"><span class="sq">HKU</span><b>Cricket Club</b></a>
+    <nav>
+      <ul>
+        <li><a href="#">Fixtures</a></li>
+        <li><a href="#">Squad</a></li>
+        <li><a href="#">Gallery</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Join</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="lead">
+    <article>
+      <p class="kicker">Match report · University Cricket League</p>
+      <h1>Thirty-three runs, and a first win at Yeung King in four seasons</h1>
+      <p class="standfirst">HKU posted 184 for 6 and then took the last four PolyU wickets inside eleven balls, closing out a Saturday that had looked, for an hour after lunch, like it was getting away from them.</p>
+      <div class="art"><canvas data-seed="1"></canvas></div>
+      <p class="byline">Sat 25 July · Yeung King Playground · 40 overs</p>
+    </article>
+
+    <div class="rail">
+      <h2>This week</h2>
+      <div class="item"><span class="n">01</span><div><h3>HKUST at Sandy Bay</h3><p>Sat 8 Aug · 13:30 · Home</p></div></div>
+      <div class="item"><span class="n">02</span><div><h3>Wednesday nets resume</h3><p>Wed 6 Aug · 18:30</p></div></div>
+      <div class="item"><span class="n">03</span><div><h3>Squad list for August</h3><p>Announced Monday</p></div></div>
+      <div class="item"><span class="n">04</span><div><h3>New members welcome</h3><p>No trial required</p></div></div>
+    </div>
+  </section>
+</div>
+
+<section class="band">
+  <div class="wrap band-in">
+    <div class="box">
+      <p class="lbl">Last result</p>
+      <div class="line"><span class="t">HKU</span><span class="s">184/6</span></div>
+      <div class="line dim"><span class="t">PolyU</span><span class="s">151</span></div>
+      <span class="tag result">Won by 33 runs</span>
+      <p class="when">Full scorecard on CricClubs →</p>
+    </div>
+    <div class="box">
+      <p class="lbl">Next fixture</p>
+      <div class="line"><span class="t">HKU</span><span class="s">—</span></div>
+      <div class="line dim"><span class="t">HKUST</span><span class="s">—</span></div>
+      <span class="tag">Sat 8 Aug · 13:30</span>
+      <p class="when">Sandy Bay · Home · 40 overs</p>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <section class="essay">
+    <div class="head">
+      <h2>From the ground</h2>
+      <a href="#">All albums →</a>
+    </div>
+    <div class="mosaic">
+      <figure><div class="shot"><canvas data-seed="2"></canvas></div><figcaption>Second innings, v PolyU</figcaption></figure>
+      <figure><div class="shot"><canvas data-seed="3"></canvas></div><figcaption>Nets, Wednesday</figcaption></figure>
+      <figure><div class="shot"><canvas data-seed="4"></canvas></div><figcaption>Sandy Bay, first light</figcaption></figure>
+      <figure><div class="shot"><canvas data-seed="5"></canvas></div><figcaption>Post-match</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="pull">
+    <blockquote>I turned up having never faced a ball. Six weeks later I was opening.</blockquote>
+    <cite>Club member, second season</cite>
+  </section>
+
+  <section class="join">
+    <div>
+      <h2>Join for the season</h2>
+      <p>Open to students, staff and alumni of the University of Hong Kong. Every level, including none at all — a good part of the side had never played before joining.</p>
+      <p style="margin-top:1.5rem"><a class="btn" href="#">Enquire about joining</a></p>
+    </div>
+    <dl class="facts">
+      <dt>Ground</dt><dd>Sandy Bay, Pok Fu Lam</dd>
+      <dt>Training</dt><dd>Wednesdays, 18:30</dd>
+      <dt>Matches</dt><dd>Saturdays, September – May</dd>
+      <dt>Founded</dt><dd>1913</dd>
+    </dl>
+  </section>
+</div>
+
+<footer class="wrap">
+  <div class="fl">
+    <span>Hong Kong University Cricket Club</span>
+    <span>Instagram · Facebook · YouTube</span>
+  </div>
+  <p class="note">
+    DIRECTION 3 — “THE INNINGS”. Treats the club as a publication: the lead match report is the hero rather than a slogan, a numbered rail carries the week, and the photo mosaic runs on an asymmetric grid. Green is the only colour on the page, so it does all the signalling work.<br>
+    The one direction of the three that fully supports both light and dark themes — try your system toggle. It also depends most on the club actually posting: strong when there is a report to lead with, thin when there is not.<br>
+    COLOURS ARE NOW THE CLUB'S OWN — crest green leads and crest red signals results, in both the light and dark themes. The crest hexes were read off a phone screenshot of the logo, so they are close but not exact; the original vector file would let them be sampled properly. Fonts are system stacks because this sandbox blocks external fonts. The report, quotation and scores are invented sample content.
+  </p>
+</footer>
+
+<script>
+  for (const c of document.querySelectorAll('canvas')) {
+    const seed = +c.dataset.seed, w = c.width = 600, h = c.height = 400, x = c.getContext('2d');
+    const dark = matchMedia('(prefers-color-scheme: dark)').matches
+      || document.documentElement.dataset.theme === 'dark';
+    x.fillStyle = dark ? '#18211E' : '#F4F2EB'; x.fillRect(0, 0, w, h);
+    // long horizontal strata — the pitch read as landscape
+    for (let i = 0; i < 46; i++) {
+      const y = (i / 46) * h, t = i / 46;
+      x.globalAlpha = .09 + t * .2;
+      x.fillStyle = i % 7 === seed % 7 ? (dark ? '#13AD84' : '#0E8365') : (dark ? '#94A8A3' : '#5E6E6A');
+      x.fillRect(0, y, w, Math.max(1, (1 - t) * 5));
+    }
+    x.globalAlpha = 1;
+    // the crease
+    x.strokeStyle = dark ? '#13AD84' : '#0E8365'; x.lineWidth = 2;
+    x.beginPath();
+    x.moveTo(w * .12, h * .78); x.lineTo(w * .88, h * .78);
+    x.moveTo(w * .5, h * .78); x.lineTo(w * .5, h * .58);
+    x.stroke();
+  }
+</script>

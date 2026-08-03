@@ -1,0 +1,249 @@
+<title>HKU Cricket — Direction 2: Since 1913</title>
+<style>
+  :root{
+    /* ── CREST PALETTE — hues taken from the club crest, at printed-ink depth ──
+       Anchors: red #E63329 · gold #EFC31F · green #0F8A6A · blue #2E86C1
+                willow #EDD9A0 · leather #7A4B34
+       Solving for the AA floor alone returns vivid modern colours, which fight
+       this direction — so the crest hues are taken down to the depth of printed
+       ink. Crest-faithful by hue, and well past 4.5:1. Provisional until the
+       original logo file replaces the screenshot these were read from. */
+    --paper:#F1ECDF;      /* willow, laid-paper tint */
+    --paper-2:#E9E3D3;    /* laid-in panel */
+    --rule:#C2B4AE;       /* leather-biased hairline */
+    --ink:#1B1715;        /* near-black, leather-biased (15.09:1) */
+    --ink-2:#70635C;      /* secondary (4.91:1) */
+    --green:#0B654E;      /* crest green at gown depth (5.96:1) */
+    --oxblood:#761913;    /* crest red, deepened (9.28:1) */
+    --brass:#76600F;      /* crest gold, deepened — gold needs the most (5.16:1) */
+    --blue:#1C5378;       /* crest blue, deepened (6.96:1) */
+    --on-green:#F0EADB;   /* willow on green (5.86:1) */
+
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+    --sans:"Optima","Gill Sans","Gill Sans MT",Candara,system-ui,sans-serif;
+    --measure:62ch;
+    --pad:clamp(1.25rem,5vw,4rem);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);
+    font-family:var(--serif);font-size:1.03rem;line-height:1.68;
+    -webkit-font-smoothing:antialiased;
+  }
+  /* committed light world — an archival printed record; see note at foot */
+  .wrap{max-width:980px;margin-inline:auto;padding-inline:var(--pad)}
+  a{color:inherit}
+  :focus-visible{outline:2px solid var(--oxblood);outline-offset:3px}
+
+  .flag{
+    background:var(--green);color:var(--paper);font-family:var(--sans);
+    font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;
+    text-align:center;padding:.6rem 1rem;
+  }
+
+  /* ── masthead: centred, double-ruled, like a university notice ── */
+  .masthead{text-align:center;padding-block:clamp(2rem,5vw,3.2rem) 0}
+  .arms{
+    width:64px;height:76px;margin:0 auto 1.1rem;
+    background:var(--green);color:var(--paper);
+    clip-path:polygon(0 0,100% 0,100% 66%,50% 100%,0 66%);
+    display:grid;place-items:center;
+  }
+  .arms b{font-family:var(--serif);font-size:1.5rem;letter-spacing:.03em;line-height:1}
+  .masthead h1{
+    font-family:var(--serif);font-weight:400;
+    font-size:clamp(1.9rem,5.4vw,3.1rem);line-height:1.12;
+    letter-spacing:.01em;margin:0;text-wrap:balance;
+  }
+  .masthead .lat{
+    font-family:var(--sans);font-size:.7rem;letter-spacing:.34em;
+    text-transform:uppercase;color:var(--ink-2);margin:.9rem 0 0;
+  }
+  .dbl{border-top:2px solid var(--ink);border-bottom:1px solid var(--rule);height:5px;margin-top:1.6rem}
+
+  nav{padding-block:.9rem;border-bottom:1px solid var(--rule)}
+  nav ul{display:flex;justify-content:center;gap:clamp(1rem,3.5vw,2.4rem);list-style:none;margin:0;padding:0;flex-wrap:wrap}
+  nav a{
+    font-family:var(--sans);font-size:.74rem;letter-spacing:.2em;text-transform:uppercase;
+    text-decoration:none;color:var(--ink-2);border-bottom:1px solid transparent;padding-bottom:.15rem;
+  }
+  nav a:hover{color:var(--oxblood);border-bottom-color:var(--oxblood)}
+
+  /* ── lede ── */
+  .lede{padding-block:clamp(2.2rem,6vw,3.6rem);text-align:center}
+  .drop{
+    font-size:clamp(1.35rem,3.3vw,1.72rem);line-height:1.5;
+    max-width:52ch;margin-inline:auto;text-wrap:balance;
+  }
+  .drop::first-letter{
+    float:left;font-size:4.1em;line-height:.82;padding:.05em .1em 0 0;
+    color:var(--green);font-weight:400;
+  }
+  .est{font-family:var(--sans);font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;color:var(--brass);margin:0 0 1.4rem}
+
+  /* ── record table: the club as an archive ── */
+  .record{border-top:2px solid var(--ink);padding-top:1.4rem;margin-bottom:clamp(2rem,5vw,3rem)}
+  .record h2,.section h2{
+    font-family:var(--sans);font-size:.7rem;letter-spacing:.26em;text-transform:uppercase;
+    color:var(--ink-2);font-weight:400;margin:0 0 1.2rem;
+  }
+  table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+  .scroll{overflow-x:auto}
+  th,td{text-align:left;padding:.72rem .6rem;border-bottom:1px solid var(--rule);white-space:nowrap}
+  th{font-family:var(--sans);font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-2);font-weight:400}
+  td.opp{font-size:1.06rem}
+  td.res{font-family:var(--sans);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase}
+  .w{color:var(--green)}.l{color:var(--oxblood)}.d{color:var(--ink-2)}
+  tr:last-child td{border-bottom:0}
+
+  /* ── two-column with marginalia ── */
+  .section{padding-block:clamp(2rem,5vw,3rem);border-top:1px solid var(--rule)}
+  .cols{display:grid;grid-template-columns:1fr;gap:2rem}
+  @media(min-width:820px){.cols{grid-template-columns:1fr 15rem;gap:3.5rem}}
+  .cols p{max-width:var(--measure);margin:0 0 1.1rem}
+  aside{
+    font-family:var(--sans);font-size:.82rem;line-height:1.62;color:var(--ink-2);
+    border-left:2px solid var(--brass);padding-left:1.1rem;align-self:start;
+  }
+  aside dt{font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink);margin-top:.9rem}
+  aside dd{margin:.15rem 0 0}
+  aside dt:first-child{margin-top:0}
+
+  blockquote{
+    margin:2rem 0;padding:1.5rem 0;border-block:1px solid var(--rule);
+    font-size:clamp(1.15rem,2.6vw,1.4rem);line-height:1.5;font-style:italic;text-wrap:balance;
+  }
+  blockquote cite{display:block;font-family:var(--sans);font-style:normal;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-2);margin-top:.9rem}
+
+  /* ── plates (photo placeholders, drawn) ── */
+  .plates{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.4rem}
+  figure{margin:0}
+  .plate{aspect-ratio:5/4;background:var(--paper-2);border:1px solid var(--rule);position:relative;overflow:hidden}
+  .plate canvas{position:absolute;inset:0;width:100%;height:100%}
+  figcaption{font-family:var(--sans);font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2);margin-top:.55rem}
+
+  /* ── admission ── */
+  .admit{background:var(--green);color:var(--paper);padding-block:clamp(2.2rem,5.5vw,3.4rem);text-align:center}
+  .admit h2{font-family:var(--serif);font-weight:400;font-size:clamp(1.7rem,4.4vw,2.6rem);margin:0 0 .7rem;text-wrap:balance}
+  .admit p{max-width:48ch;margin:0 auto 1.7rem;color:var(--on-green)}
+  .btn{
+    display:inline-block;border:1px solid var(--paper);color:var(--paper);
+    font-family:var(--sans);font-size:.7rem;letter-spacing:.24em;text-transform:uppercase;
+    padding:.85rem 1.9rem;text-decoration:none;transition:background .15s,color .15s;
+  }
+  .btn:hover{background:var(--paper);color:var(--green)}
+
+  footer{padding-block:2.2rem;font-family:var(--sans);font-size:.72rem;color:var(--ink-2);letter-spacing:.06em;text-align:center}
+  .note{border-top:1px solid var(--rule);margin-top:1.8rem;padding-top:1.2rem;text-align:left;font-size:.68rem;line-height:1.75;letter-spacing:.02em}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<p class="flag">Design mockup · Direction 2 of 3 · Sample content, club crest palette</p>
+
+<div class="wrap">
+  <div class="masthead">
+    <div class="arms"><b>HKU</b></div>
+    <h1>The Hong Kong University<br>Cricket Club</h1>
+    <p class="lat">Founded MCMXIII · Sandy Bay · Pok Fu Lam</p>
+    <div class="dbl"></div>
+  </div>
+
+  <nav>
+    <ul>
+      <li><a href="#">The Club</a></li>
+      <li><a href="#">Fixtures</a></li>
+      <li><a href="#">Records</a></li>
+      <li><a href="#">Members</a></li>
+      <li><a href="#">Archive</a></li>
+      <li><a href="#">Admission</a></li>
+    </ul>
+  </nav>
+
+  <section class="lede">
+    <p class="est">Est. 1913</p>
+    <p class="drop">One hundred and thirteen seasons of cricket on the western shore of Hong Kong Island, played by students, staff and graduates of the University — and by anyone they can persuade to hold a bat.</p>
+  </section>
+
+  <section class="record">
+    <h2>Recent record — 2025/26</h2>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Date</th><th>Opponent</th><th>Ground</th><th>Result</th></tr></thead>
+        <tbody>
+          <tr><td>25 Jul</td><td class="opp">PolyU</td><td>Yeung King</td><td class="res w">Won · 33 runs</td></tr>
+          <tr><td>18 Jul</td><td class="opp">CityU</td><td>Sandy Bay</td><td class="res w">Won · 5 wkts</td></tr>
+          <tr><td>11 Jul</td><td class="opp">HKUST</td><td>DB North</td><td class="res l">Lost · 21 runs</td></tr>
+          <tr><td>04 Jul</td><td class="opp">Kowloon CC</td><td>Sandy Bay</td><td class="res d">Abandoned</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>The Club</h2>
+    <div class="cols">
+      <div>
+        <p>The Club was formed in 1913, a mere two years after the University itself, and has fielded a side in almost every season since. Play is at Sandy Bay, the University's ground on the western shore, with league fixtures on Saturdays.</p>
+        <p>Membership is open to current students, staff and alumni of the University of Hong Kong. Experience is welcome but not required; a good number of the present side had never played before joining.</p>
+        <blockquote>
+          A university club is only ever eleven people wide and a hundred years deep.
+          <cite>Club handbook, 1988</cite>
+        </blockquote>
+      </div>
+      <aside>
+        <dl>
+          <dt>Founded</dt><dd>1913</dd>
+          <dt>Ground</dt><dd>Sandy Bay, Pok Fu Lam</dd>
+          <dt>Competitions</dt><dd>CHK Saturday League · University Cricket League</dd>
+          <dt>Season</dt><dd>September – May</dd>
+          <dt>Training</dt><dd>Wednesdays, 18:30</dd>
+        </dl>
+      </aside>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Plates</h2>
+    <div class="plates">
+      <figure><div class="plate"><canvas data-seed="1"></canvas></div><figcaption>First XI, Sandy Bay</figcaption></figure>
+      <figure><div class="plate"><canvas data-seed="2"></canvas></div><figcaption>v PolyU, July</figcaption></figure>
+      <figure><div class="plate"><canvas data-seed="3"></canvas></div><figcaption>Nets, Wednesday</figcaption></figure>
+    </div>
+  </section>
+</div>
+
+<section class="admit">
+  <div class="wrap">
+    <h2>Admission to the Club</h2>
+    <p>New members are received throughout the season. Come to a Wednesday net, or write to the Secretary.</p>
+    <a class="btn" href="#">Enquire</a>
+  </div>
+</section>
+
+<footer class="wrap">
+  <p>The Hong Kong University Cricket Club · Sandy Bay, Pok Fu Lam, Hong Kong</p>
+  <p class="note">
+    DIRECTION 2 — “SINCE 1913”. Structured as a printed university record rather than a magazine: centred masthead under a double rule, a results table treated as an archive, and marginalia carrying the standing facts. Restraint is the point — one accent (oxblood), one gilt detail (brass), everything else ink on oyster.<br>
+    Deliberately cool oyster rather than warm cream, to keep it institutional instead of rustic. Commits to a single light world, so it does not offer a dark theme.<br>
+    COLOURS ARE NOW THE CLUB'S OWN — taken from the crest, but carried down to the depth of printed ink, because solving only for the accessibility minimum returned bright modern colours that fought this direction. The crest hexes were read off a phone screenshot of the logo, so they are close but not exact; the original vector file would let them be sampled properly. Fonts are system stacks because this sandbox blocks external fonts. Results, the 1988 quotation and training times are invented sample content.
+  </p>
+</footer>
+
+<script>
+  for (const c of document.querySelectorAll('.plate canvas')) {
+    const seed = +c.dataset.seed, w = c.width = 500, h = c.height = 400, x = c.getContext('2d');
+    x.fillStyle = '#E9E3D3'; x.fillRect(0, 0, w, h);
+    // duotone halftone stand-in for an archival plate
+    for (let gy = 0; gy < h; gy += 7) {
+      for (let gx = 0; gx < w; gx += 7) {
+        const d = Math.sin((gx * .012) + seed) * Math.cos((gy * .015) - seed) * .5 + .5;
+        const r = d * 3.1;
+        if (r < .35) continue;
+        x.fillStyle = d > .62 ? '#0B654E' : '#76600F';
+        x.globalAlpha = .55;
+        x.beginPath(); x.arc(gx, gy, r, 0, 7); x.fill();
+      }
+    }
+    x.globalAlpha = 1;
+  }
+</script>

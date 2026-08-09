@@ -1,0 +1,36 @@
+@import "tailwindcss";
+@import "./tokens.css";
+
+/* "static" so Tailwind does not tree-shake faces that are only reached through
+   an arbitrary value rather than a generated utility. */
+@theme static {
+  --font-display: var(--font-newsreader), "Iowan Old Style", Charter, Georgia, serif;
+  --font-body: var(--font-plex-sans), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-data: var(--font-plex-mono), ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+/* The viewer's theme is the source of truth for colour, so components style
+   through the tokens and never hard-code a hex. */
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

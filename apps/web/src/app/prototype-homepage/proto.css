@@ -1,0 +1,768 @@
+/* PROTOTYPE — throwaway. Delete with the rest of prototype-homepage/ once a
+   variant wins. Scoped under .proto so it cannot leak into the real app.
+
+   The d2 palette is not defined here. tokens.css now emits d2 itself — the
+   crest hues carried down to printed-ink depth, because solving only for the AA
+   floor returns bright modern colours that fight this direction — so the block
+   below is aliases onto those tokens and nothing more. One source of truth,
+   design/derive.js. */
+
+.proto {
+  /* D2's material names, aliased onto the generated tokens. The palette has one
+     source of truth — design/derive.js, anchored to the crest — and nothing
+     here is a literal hex. */
+  --paper: var(--color-bg); /* willow, laid-paper tint */
+  --paper-2: var(--color-surface); /* laid-in panel */
+  --rule: var(--color-rule); /* leather-biased hairline */
+  --ink: var(--color-ink); /* near-black, leather-biased — 15.04:1 */
+  --ink-2: var(--color-ink2); /* secondary — 4.97:1 */
+  --green: var(--color-accent); /* crest green at gown depth — 5.81:1 */
+  --oxblood: var(--color-red); /* crest red, deepened — 9.25:1 */
+  --brass: var(--color-brass); /* crest gold, deepened — 4.80:1 */
+  --blue: var(--color-blue); /* crest blue, deepened — 6.66:1 */
+  --on-green: var(--color-on-accent); /* willow on green — 5.71:1 */
+
+  /* d1's dark world, kept intact for variant A's literal transplant */
+  --pitch: #0b2823;
+  --pitch-3: #1d4b3e;
+  --bone: #f8f3ed;
+  --sand: #e6d0b3;
+  --sage: #8bb1ab;
+  --ball: #d82623;
+
+  --pad: clamp(1.25rem, 5vw, 4rem);
+
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 1.03rem;
+  line-height: 1.68;
+  min-height: 100vh;
+  padding-bottom: 6rem; /* clearance for the switcher */
+}
+
+.proto .wrap {
+  max-width: 980px;
+  margin-inline: auto;
+  padding-inline: var(--pad);
+}
+.proto a {
+  color: inherit;
+}
+.proto :focus-visible {
+  outline: 2px solid var(--oxblood);
+  outline-offset: 3px;
+}
+
+.proto .flag {
+  background: var(--green);
+  color: var(--paper);
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 0.6rem 1rem;
+  margin: 0;
+}
+
+/* ── masthead ───────────────────────────────────────────────────────── */
+.proto .masthead {
+  text-align: center;
+  padding-block: clamp(2rem, 5vw, 3.2rem) 0;
+}
+.proto .arms {
+  width: 64px;
+  height: 76px;
+  margin: 0 auto 1.1rem;
+  background: var(--green);
+  color: var(--paper);
+  clip-path: polygon(0 0, 100% 0, 100% 66%, 50% 100%, 0 66%);
+  display: grid;
+  place-items: center;
+}
+.proto .arms b {
+  font-size: 1.5rem;
+  letter-spacing: 0.03em;
+  line-height: 1;
+  font-weight: 500;
+}
+.proto .masthead h1 {
+  font-weight: 400;
+  font-size: clamp(1.9rem, 5.4vw, 3.1rem);
+  line-height: 1.12;
+  letter-spacing: 0.01em;
+  margin: 0;
+  text-wrap: balance;
+}
+.proto .lat {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  margin: 0.9rem 0 0;
+}
+.proto .dbl {
+  border-top: 2px solid var(--ink);
+  border-bottom: 1px solid var(--rule);
+  height: 5px;
+  margin-top: 1.6rem;
+}
+
+.proto nav {
+  padding-block: 0.9rem;
+  border-bottom: 1px solid var(--rule);
+}
+.proto nav ul {
+  display: flex;
+  justify-content: center;
+  gap: clamp(1rem, 3.5vw, 2.4rem);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex-wrap: wrap;
+}
+.proto nav a {
+  font-family: var(--font-body);
+  font-size: 0.74rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--ink-2);
+  border-bottom: 1px solid transparent;
+  padding-bottom: 0.15rem;
+}
+.proto nav a:hover {
+  color: var(--oxblood);
+  border-bottom-color: var(--oxblood);
+}
+
+/* ── lede ───────────────────────────────────────────────────────────── */
+.proto .lede {
+  padding-block: clamp(2.2rem, 6vw, 3.6rem);
+  text-align: center;
+}
+.proto .drop {
+  font-size: clamp(1.35rem, 3.3vw, 1.72rem);
+  line-height: 1.5;
+  max-width: 52ch;
+  margin-inline: auto;
+  text-wrap: balance;
+}
+.proto .drop::first-letter {
+  float: left;
+  font-size: 4.1em;
+  line-height: 0.82;
+  padding: 0.05em 0.1em 0 0;
+  color: var(--green);
+}
+.proto .est {
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--brass);
+  margin: 0 0 1.4rem;
+}
+
+/* ── record table ───────────────────────────────────────────────────── */
+.proto .record {
+  border-top: 2px solid var(--ink);
+  padding-top: 1.4rem;
+  margin-bottom: clamp(2rem, 5vw, 3rem);
+}
+.proto .record h2,
+.proto .section h2 {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  font-weight: 400;
+  margin: 0 0 1.2rem;
+}
+.proto table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+.proto .scroll {
+  overflow-x: auto;
+}
+.proto th,
+.proto td {
+  text-align: left;
+  padding: 0.72rem 0.6rem;
+  border-bottom: 1px solid var(--rule);
+  white-space: nowrap;
+}
+.proto th {
+  font-family: var(--font-body);
+  font-size: 0.66rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  font-weight: 400;
+}
+.proto td.opp {
+  font-size: 1.06rem;
+}
+.proto td.res {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.proto .w {
+  color: var(--green);
+}
+.proto .l {
+  color: var(--oxblood);
+}
+.proto .d {
+  color: var(--ink-2);
+}
+.proto tr:last-child td {
+  border-bottom: 0;
+}
+
+/* ── club + marginalia ──────────────────────────────────────────────── */
+.proto .section {
+  padding-block: clamp(2rem, 5vw, 3rem);
+  border-top: 1px solid var(--rule);
+}
+.proto .cols {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+@media (min-width: 820px) {
+  .proto .cols {
+    grid-template-columns: 1fr 15rem;
+    gap: 3.5rem;
+  }
+}
+.proto .cols p {
+  max-width: 62ch;
+  margin: 0 0 1.1rem;
+}
+.proto aside {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  line-height: 1.62;
+  color: var(--ink-2);
+  border-left: 2px solid var(--brass);
+  padding-left: 1.1rem;
+  align-self: start;
+}
+.proto aside dt {
+  font-size: 0.64rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-top: 0.9rem;
+}
+.proto aside dd {
+  margin: 0.15rem 0 0;
+}
+.proto aside dt:first-child {
+  margin-top: 0;
+}
+.proto blockquote {
+  margin: 2rem 0;
+  padding: 1.5rem 0;
+  border-block: 1px solid var(--rule);
+  font-size: clamp(1.15rem, 2.6vw, 1.4rem);
+  line-height: 1.5;
+  font-style: italic;
+  text-wrap: balance;
+}
+.proto blockquote cite {
+  display: block;
+  font-family: var(--font-body);
+  font-style: normal;
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  margin-top: 0.9rem;
+}
+
+/* ── plates ─────────────────────────────────────────────────────────── */
+.proto .plates {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.4rem;
+}
+.proto figure {
+  margin: 0;
+}
+.proto .plate {
+  aspect-ratio: 5/4;
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  background-image: repeating-linear-gradient(
+      45deg,
+      rgba(11, 101, 78, 0.14) 0 2px,
+      transparent 2px 7px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      rgba(118, 96, 15, 0.12) 0 2px,
+      transparent 2px 9px
+    );
+}
+.proto figcaption {
+  font-family: var(--font-body);
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  margin-top: 0.55rem;
+}
+
+/* ── admission ──────────────────────────────────────────────────────── */
+.proto .admit {
+  background: var(--green);
+  color: var(--paper);
+  padding-block: clamp(2.2rem, 5.5vw, 3.4rem);
+  text-align: center;
+}
+.proto .admit h2 {
+  font-weight: 400;
+  font-size: clamp(1.7rem, 4.4vw, 2.6rem);
+  margin: 0 0 0.7rem;
+  text-wrap: balance;
+}
+.proto .admit p {
+  max-width: 48ch;
+  margin: 0 auto 1.7rem;
+  color: var(--on-green);
+}
+.proto .btn {
+  display: inline-block;
+  border: 1px solid var(--paper);
+  color: var(--paper);
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  padding: 0.85rem 1.9rem;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+.proto .btn:hover {
+  background: var(--paper);
+  color: var(--green);
+}
+
+.proto footer.foot {
+  padding-block: 2.2rem;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  color: var(--ink-2);
+  letter-spacing: 0.06em;
+  text-align: center;
+}
+.proto .note {
+  border-top: 1px solid var(--rule);
+  margin-top: 1.8rem;
+  padding-top: 1.2rem;
+  text-align: left;
+  font-size: 0.68rem;
+  line-height: 1.75;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   VARIANT A — "Inset plate": d1's dark scoreboard transplanted whole,
+   full-bleed, interrupting the paper. Maximum idiom collision.
+   ════════════════════════════════════════════════════════════════════ */
+.proto .a-band {
+  background: var(--pitch);
+  color: var(--bone);
+  border-block: 2px solid var(--ink);
+}
+.proto .a-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  background: var(--pitch-3);
+}
+@media (min-width: 800px) {
+  .proto .a-grid {
+    grid-template-columns: 1.35fr 1fr;
+  }
+}
+.proto .a-cell {
+  background: var(--pitch);
+  padding: clamp(1.5rem, 4vw, 2.6rem) var(--pad);
+}
+.proto .a-cell h2 {
+  font-family: var(--font-data);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--sage);
+  margin: 0 0 1.5rem;
+  font-weight: 400;
+}
+.proto .a-score {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 0.85rem;
+  border-bottom: 1px solid var(--pitch-3);
+}
+.proto .a-score:last-of-type {
+  border-bottom: 0;
+}
+.proto .a-side {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: clamp(1.4rem, 3.4vw, 2rem);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.proto .a-side.us {
+  color: var(--bone);
+}
+.proto .a-side.them {
+  color: var(--sage);
+}
+.proto .a-runs {
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(1.4rem, 3.4vw, 2rem);
+  letter-spacing: -0.02em;
+}
+.proto .a-verdict {
+  display: inline-block;
+  margin-top: 1.3rem;
+  font-family: var(--font-data);
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  background: var(--ball);
+  color: #fff;
+  padding: 0.4rem 0.7rem;
+}
+.proto .a-meta {
+  font-family: var(--font-data);
+  font-size: 0.72rem;
+  color: var(--sage);
+  letter-spacing: 0.06em;
+  margin: 0.9rem 0 0;
+}
+.proto .a-opp {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: clamp(1.7rem, 4.5vw, 2.6rem);
+  text-transform: uppercase;
+  line-height: 1.02;
+  display: block;
+}
+.proto .a-count {
+  display: flex;
+  gap: 1.4rem;
+  margin-top: 1rem;
+}
+.proto .a-count b {
+  display: block;
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+  font-size: 1.9rem;
+  line-height: 1;
+  font-weight: 500;
+}
+.proto .a-count span {
+  font-family: var(--font-data);
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--sage);
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   VARIANT B — "Letterpress scoreline": no panel at all. The result is
+   the lead story of a printed record, set in the page's own ink.
+
+   The masthead, its strapline and the standfirst form one letterhead
+   above the double rule; everything below the rule is content. That
+   leaves the scoreline as the page's only hero. The drop cap moves to
+   "The Club", where there is actually running prose to open.
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ── letterhead ─────────────────────────────────────────────────────── */
+.proto .b-standfirst {
+  max-width: 48ch;
+  margin: 1.5rem auto 0;
+  font-size: clamp(1rem, 2.2vw, 1.14rem);
+  line-height: 1.62;
+  color: var(--ink-2);
+  text-wrap: balance;
+}
+
+/* ── the lead: result at display scale, fixture as marginalia ───────── */
+.proto .b-lead {
+  padding-block: clamp(2.2rem, 5.5vw, 3.4rem) clamp(2.4rem, 6vw, 3.6rem);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(2rem, 4vw, 2.6rem);
+}
+@media (min-width: 780px) {
+  .proto .b-lead {
+    grid-template-columns: minmax(0, 1.62fr) minmax(0, 1fr);
+    gap: clamp(2.4rem, 5vw, 3.6rem);
+    align-items: start;
+  }
+}
+.proto .b-lead h2 {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  font-weight: 400;
+  margin: 0 0 1.4rem;
+}
+.proto .b-line {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 1.2rem;
+  padding-block: 0.5rem;
+}
+.proto .b-line + .b-line {
+  border-top: 1px solid var(--rule);
+}
+.proto .b-side {
+  font-size: clamp(1.5rem, 4.2vw, 2.4rem);
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+}
+.proto .b-line.them .b-side,
+.proto .b-line.them .b-runs {
+  color: var(--ink-2);
+}
+/* The wickets suffix hangs in a reserved gutter rather than sitting in the
+   flow. Every innings reserves the same gutter, so the run totals align on
+   their own right edge — 151 lines up under 184, not under the "/6". An
+   innings shown without a suffix is all out, as a scorecard reads. */
+.proto .b-runs {
+  display: inline-block;
+  position: relative;
+  padding-right: 0.52em;
+  font-size: clamp(2.4rem, 7.2vw, 4.4rem);
+  line-height: 0.92;
+  font-variant-numeric: tabular-nums lining-nums;
+  letter-spacing: -0.02em;
+}
+.proto .b-runs sup {
+  position: absolute;
+  right: 0;
+  top: 0.04em;
+  margin: 0;
+  font-size: 0.42em;
+  letter-spacing: 0;
+  vertical-align: baseline;
+  color: var(--ink-2);
+}
+.proto .b-verdict {
+  border-top: 2px solid var(--ink);
+  margin-top: 1rem;
+  padding-top: 0.95rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.6rem 1.4rem;
+  flex-wrap: wrap;
+}
+.proto .b-verdict strong {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 0.8rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--oxblood);
+}
+.proto .b-verdict span {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+/* Marginalia voice, matching the standing-facts aside further down the
+   page, so the fixture reads as a note beside the record rather than a
+   second headline competing with it. */
+.proto .b-next {
+  border-left: 2px solid var(--brass);
+  padding-left: 1.2rem;
+}
+.proto .b-next .who {
+  display: block;
+  font-size: clamp(1.5rem, 3.6vw, 1.9rem);
+  line-height: 1.15;
+  margin-bottom: 0.8rem;
+}
+.proto .b-next dl {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+.proto .b-next dt {
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-top: 0.75rem;
+}
+.proto .b-next dt:first-child {
+  margin-top: 0;
+}
+.proto .b-next dd {
+  margin: 0.1rem 0 0;
+}
+
+/* ── drop cap, relocated to the running prose it belongs to ─────────── */
+.proto .b-prose > p:first-of-type::first-letter {
+  float: left;
+  font-size: 3.3em;
+  line-height: 0.84;
+  padding: 0.04em 0.09em 0 0;
+  color: var(--green);
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   VARIANT C — "Tipped-in card": the scorecard as a physical object laid
+   onto the page — ruled border, laid panel, a slip alongside it.
+   ════════════════════════════════════════════════════════════════════ */
+.proto .c-zone {
+  padding-block: clamp(1.6rem, 4vw, 2.6rem);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.4rem;
+}
+@media (min-width: 860px) {
+  .proto .c-zone {
+    grid-template-columns: 1.55fr 1fr;
+    align-items: start;
+  }
+}
+.proto .c-card {
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  box-shadow: 3px 3px 0 rgba(27, 23, 21, 0.07);
+  padding: clamp(1.2rem, 3vw, 1.8rem);
+  position: relative;
+}
+.proto .c-card::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1px solid rgba(118, 96, 15, 0.32);
+  pointer-events: none;
+}
+.proto .c-hd {
+  font-family: var(--font-body);
+  font-size: 0.63rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--brass);
+  margin: 0 0 1.1rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.proto .c-hd em {
+  font-style: normal;
+  color: var(--ink-2);
+  letter-spacing: 0.14em;
+}
+.proto .c-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 0.6rem;
+  border-bottom: 1px dotted var(--rule);
+}
+.proto .c-row:last-of-type {
+  border-bottom: 0;
+}
+.proto .c-team {
+  font-size: clamp(1.1rem, 2.7vw, 1.4rem);
+  letter-spacing: 0.02em;
+}
+.proto .c-row.them .c-team,
+.proto .c-row.them .c-fig {
+  color: var(--ink-2);
+}
+.proto .c-fig {
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(1.35rem, 3.4vw, 1.85rem);
+  letter-spacing: -0.02em;
+}
+.proto .c-rule {
+  border-top: 2px solid var(--ink);
+  margin-top: 0.8rem;
+  padding-top: 0.8rem;
+}
+.proto .c-verdict {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--paper);
+  background: var(--oxblood);
+  padding: 0.34rem 0.62rem;
+  display: inline-block;
+}
+.proto .c-meta {
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  margin: 0.8rem 0 0;
+}
+.proto .c-slip {
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-left: 2px solid var(--brass); /* d2's marginalia rule, not a side tab */
+  padding: clamp(1.1rem, 2.6vw, 1.5rem);
+}
+.proto .c-slip .c-hd {
+  color: var(--green);
+}
+.proto .c-slip .who {
+  font-size: clamp(1.3rem, 3.4vw, 1.7rem);
+  line-height: 1.15;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+.proto .c-when {
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.78rem;
+  color: var(--ink-2);
+  letter-spacing: 0.02em;
+  display: block;
+}
+.proto .c-in {
+  margin-top: 1rem;
+  padding-top: 0.8rem;
+  border-top: 1px dotted var(--rule);
+  font-family: var(--font-body);
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--brass);
+}

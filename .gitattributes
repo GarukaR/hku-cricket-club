@@ -1,0 +1,9 @@
+# The scorecard exports are fixtures, not source. They must stay byte-identical
+# to what CricClubs emits — CRLF and all — or they stop testing what the
+# importer will actually be handed. Development is on Windows and the importer
+# runs in a Linux container, so ostensibly harmless line-ending normalisation
+# is exactly the sort of difference that hides until production.
+docs/samples/*.csv -text
+
+# Design sources are binary; never try to diff or normalise them.
+*.ai binary

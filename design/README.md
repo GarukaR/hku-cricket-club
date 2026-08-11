@@ -26,9 +26,14 @@ All three take their colours from the club crest:
 | willow | `#EDD9A0` | bats |
 | leather | `#7A4B34` | handles, gloves |
 
-> **These are provisional.** They were read off a phone screenshot of the logo, which
-> has black letterboxing. Getting the original vector (or a clean transparent PNG)
-> would let them be sampled exactly. Update `CREST` in `derive.js` and re-run.
+> **Sampled, not guessed.** These are read out of `design/logo.svg` by rendering the
+> crest and picking the fill at a known point inside each element. The club's motto,
+> **IN LUDO SAPIENTIA**, is in the ribbon.
+>
+> The supplied SVG is an auto-trace rather than a redraw — hundreds of near-identical
+> reds and an opaque white background — so it is a reliable source for colour but not
+> a shipping asset. The ribbon lettering is unreadable much below 80px, so a
+> simplified navbar mark still has to be drawn from `Cricket logo_final2.ai`.
 
 Used at full strength these four saturated colours read as a fairground, and gold
 fails contrast badly on white. So `derive.js` holds each crest **hue** and solves for
@@ -61,6 +66,6 @@ committed — they are regenerable and run to ~6 MB.
 
 ## Still needed from the club
 
-- The logo as an original file, not a screenshot.
-- A decision on direction.
+- A simplified navbar mark traced from the `.ai`, since the full crest's ribbon
+  lettering dies below ~80px.
 - Real content: history copy, committee list, squad, fixtures, training times, photos.

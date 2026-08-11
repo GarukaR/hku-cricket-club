@@ -1,31 +1,105 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Hong Kong University Cricket Club
 
-## Getting Started
+The official website of the cricket club of the University of Hong Kong, founded 1913.
+Home ground Sandy Bay, Pok Fu Lam.
 
-First, run the development server:
+**Status: foundation.** The stack, the design tokens and the build pipeline are in
+place. The visual direction is not yet chosen and there is no real content, so this
+is not ready to show the public. See [Where this is going](#where-this-is-going).
+
+## Running it
 
 ```bash
-npm run dev
-# or
-yarn dev
+npm install
+npm run dev          # http://localhost:3000
+npm run build        # production build; must pass clean before pushing
+npm run lint
+npm run typecheck
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Node 22 or later. Every command above runs from the repo root and is delegated to
+the right workspace, so there is no need to `cd` into one.
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+## Repo layout
 
-## Learn More
+npm workspaces, no Turborepo — the graph is small enough that the extra tool would
+cost more than it saves.
 
-To learn more about Next.js, take a look at the following resources:
+| | |
+|---|---|
+| `apps/web` | The public site. Statically generated; nothing at request time depends on the CMS. |
+| `packages/domain` | The shared vocabulary of [CONTEXT.md](CONTEXT.md), for whatever both apps must agree on. Empty until Payload generates its types into it. |
+| `design/` | Palette derivation and the Phase 0 direction studies. Root-level: it feeds the web app but is not part of it, so it is neither linted nor typechecked — it is standalone CommonJS, run with plain `node` and no build step. |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+`apps/cms` — Payload, self-hosted — arrives with the CMS work.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## Stack
 
-## Deploy on Vercel
+| | |
+|---|---|
+| Framework | Next.js 16 (App Router) |
+| Language | TypeScript |
+| Styling | Tailwind 4 — CSS-first, so there is **no `tailwind.config.js`** |
+| Fonts | Newsreader / IBM Plex Sans / IBM Plex Mono, self-hosted at build time via `next/font` |
+| Hosting | Vercel (planned) |
+| CMS | Sanity (planned) |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/import?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Colour is generated, not chosen
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
-# Cricket-App
+Every colour comes from the club crest. `design/derive.js` holds each crest **hue** and
+solves for the **lightness** that clears WCAG AA against the specific background the
+colour lands on, then writes `apps/web/src/app/tokens.css`:
+
+```bash
+npm run tokens       # regenerate apps/web/src/app/tokens.css
+node design/derive.js  # human-readable report + contrast table
+```
+
+`apps/web/src/app/tokens.css` is generated — **do not hand-edit it.** Change the `CREST` anchors
+in `design/derive.js` and re-run. The script refuses to emit CSS if any pair fails AA,
+so a failing palette cannot reach the stylesheet.
+
+Style components through the tokens (`var(--color-accent)`), never a literal hex, so
+both themes keep working.
+
+Three things here are easy to get wrong and are worth knowing about:
+
+- **Tokens are declared `@theme static`.** Tailwind 4 tree-shakes `@theme` variables no
+  utility references, which silently drops any token only reached through an inline
+  style or hand-written `var()`. That is how `--color-red` first went missing.
+- **The `next/font` variables belong on `<html>`, not `<body>`.** Tailwind's `@theme`
+  declares `--font-display` on `:root`; a `var()` there can only resolve against
+  properties that also exist on `:root`. On `<body>` every face silently falls back to
+  system-ui and the build still passes.
+- **Chips need their own token.** A colour solved against the page background does not
+  clear AA on a tinted chip, which sits closer to it in lightness. Hence
+  `--color-accent-on-soft` and `--color-red-on-soft`.
+
+### The crest hexes are sampled from the logo
+
+`design/logo.svg` is rendered and each anchor read from a known point inside the
+element it belongs to, so the palette descends from the club's actual crest rather
+than from a photograph of it. The club's motto, **IN LUDO SAPIENTIA**, sits in the
+ribbon.
+
+## Design
+
+`design/` holds the Phase 0 work: three homepage directions as single self-contained
+HTML files, plus the palette and screenshot tooling. See [design/README.md](design/README.md).
+
+## Where this is going
+
+Blocked on the club, not on code:
+
+- [x] **Direction chosen** — d2 "Since 1913", with the scoreline treatment borrowed from d1
+- [x] **The logo as an original file** — `design/logo.svg` and the `.ai`; crest hexes now sampled
+- [ ] **A simplified navbar mark** traced from the `.ai` (the full crest's ribbon lettering
+      is unreadable below ~80px)
+- [ ] **Real content** — history, committee, squad, fixtures, training times, photographs
+
+Then, in order: Sanity CMS and schemas → fixtures and results → the join enquiry form
+→ gallery → squad and news → SEO, sitemap and an editor guide for whoever inherits this.
+
+The editor guide matters more than usual here. A student committee turns over every
+year, so whoever takes this on has to be able to run it without reading code and
+without being able to ask the person who built it.

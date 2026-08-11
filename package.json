@@ -1,25 +1,18 @@
 {
-  "name": "my-app",
+  "name": "hku-cricket-club",
   "version": "0.1.0",
   "private": true,
+  "description": "Official website of the Hong Kong University Cricket Club",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start"
-  },
-  "dependencies": {
-    "autoprefixer": "^10.1.0",
-    "next": "10.0.3",
-    "postcss": "^8.2.1",
-    "react": "17.0.1",
-    "react-dom": "17.0.1",
-    "react-icons": "^4.1.0",
-    "tailwindcss": "^2.0.2"
-  },
-  "devDependencies": {},
-  "description": "This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).",
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "main": "postcss.config.js"
+    "dev": "npm run dev --workspace @hkucc/web",
+    "build": "npm run build --workspace @hkucc/web",
+    "start": "npm run start --workspace @hkucc/web",
+    "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "tokens": "node design/derive.js --css > apps/web/src/app/tokens.css"
+  }
 }

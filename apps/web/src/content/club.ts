@@ -3,20 +3,22 @@
 // These are real. Only the training time is provisional, pending the club
 // (docs/PLAN.md, "Still needed from the club").
 
-export type NavItem = { label: string; href: string };
+import { PENDING, type NavItem } from "@/lib/nav";
 
 /** The masthead nav.
  *
- *  Items whose page has not been built yet point at "#" rather than at a route
- *  that would 404 — the public pages are build order step 4. The three that
- *  resolve today are sections of this page, and they resolve properly. */
+ *  Items whose page has not been built yet are PENDING rather than a route that
+ *  would 404 — the public pages are build order step 4. The three that resolve
+ *  today are sections of the homepage, and they are addressed from the root:
+ *  this nav is also set on the 404, which is reached from any address at all,
+ *  and a bare "#the-club" there would scroll nowhere. */
 export const navItems: NavItem[] = [
-  { label: "The Club", href: "#the-club" },
-  { label: "Fixtures", href: "#" },
-  { label: "Records", href: "#recent-record" },
-  { label: "Members", href: "#" },
-  { label: "Archive", href: "#" },
-  { label: "Admission", href: "#admission" },
+  { label: "The Club", href: "/#the-club" },
+  { label: "Fixtures", href: PENDING },
+  { label: "Records", href: "/#recent-record" },
+  { label: "Members", href: PENDING },
+  { label: "Archive", href: PENDING },
+  { label: "Admission", href: "/#admission" },
 ];
 
 export const standingFacts: { term: string; detail: string }[] = [

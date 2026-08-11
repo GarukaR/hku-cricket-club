@@ -24,6 +24,17 @@ body {
   font-family: var(--font-body);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  /* The address line belongs at the foot of the sheet. A page shorter than the
+     viewport — the 404 is the first — otherwise leaves it stranded mid-screen
+     with the paper continuing beneath it, which reads as a page that failed to
+     finish loading rather than as a short page. */
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1 0 auto;
 }
 
 :focus-visible {

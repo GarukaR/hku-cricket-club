@@ -9,6 +9,7 @@ export type NavItem = { label: string; href: string };
  *  than linked to a route that would 404. */
 export const PENDING = "#";
 
+/** Whether the item leads anywhere yet. The nav sets the rest as plain text. */
 export function isBuilt(item: NavItem): boolean {
   return item.href !== PENDING;
 }

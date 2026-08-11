@@ -16,6 +16,7 @@ import Link from "next/link";
 import { Container } from "@/components/Container";
 import { Marginalia } from "@/components/Marginalia";
 import { Masthead } from "@/components/Masthead";
+import { SectionHeading } from "@/components/SectionHeading";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteNav } from "@/components/SiteNav";
 import { navItems } from "@/content/club";
@@ -33,6 +34,13 @@ export default function NotFound() {
 
   return (
     <>
+      {/* The contents line is six items long and identical on every page, so the
+          page a visitor did not mean to reach should not be the one that makes
+          them tab through it. */}
+      <a className="skip-link" href="#notice">
+        Skip to the notice
+      </a>
+
       <header>
         <Container>
           {/* No standfirst. The club introduces itself on the front page; here
@@ -42,7 +50,7 @@ export default function NotFound() {
         </Container>
       </header>
 
-      <main>
+      <main id="notice">
         <Container>
           <div className={styles.miss}>
             <div>
@@ -59,9 +67,7 @@ export default function NotFound() {
             </div>
 
             <Marginalia labelledBy="in-the-record">
-              <h3 id="in-the-record" className={styles.marginHeading}>
-                In the record
-              </h3>
+              <SectionHeading id="in-the-record">In the record</SectionHeading>
               <ul className={styles.sections}>
                 {sections.map((item) => (
                   <li key={item.label}>

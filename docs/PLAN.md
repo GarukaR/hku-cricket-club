@@ -173,10 +173,17 @@ looks like:
 - **Three placeholders remain on the page, each marked in code:** the crest in the
   masthead (traced mark still outstanding), the plates (no photographs yet), and
   the Admission button's destination (the enquiry route is its own ticket).
-- The **workspaces layout exists**: `apps/web` holds the site, `packages/domain`
-  is present but empty, awaiting Payload's generated types. `apps/cms` does not
-  exist yet. Every root script delegates to a workspace, so `npm run dev`,
-  `build`, `lint`, `typecheck` and `tokens` all still run from the root.
+- The **workspaces layout exists**: `apps/web` holds the site, `apps/cms` holds
+  Payload, and `packages/domain` now holds Payload's generated types rather than
+  nothing. Every root script delegates to a workspace, so `npm run dev`, `build`,
+  `lint`, `typecheck` and `tokens` all still run from the root; `dev:cms` and
+  `build:cms` are the CMS's.
+- **The CMS runs, and holds nothing.** `docker compose up` gives a working admin
+  panel at `localhost:3001` against a scratch Postgres and a MinIO standing in
+  for R2 — no cloud account needed. The container has a read-only root
+  filesystem, so the claim that it keeps no state is enforced rather than
+  asserted. Its collections are still only Users and Media; the record itself
+  arrives with #6. Everything about it is in [cms.md](cms.md).
 - `apps/web/src/app/tokens.css` is **generated**. Never hand-edit it; change the
   `CREST` anchors in `design/derive.js` and run `npm run tokens`.
 
@@ -187,7 +194,10 @@ looks like:
    production rather than only locally.~~ Done — [docs/deploy.md](deploy.md).
    Deploying first was the point: it proves the pipeline before anything depends
    on it, rather than discovering it at the end.
-3. Payload collections from CONTEXT.md; Dockerfile; Render + Neon + R2.
+3. ~~Payload in a container; Dockerfile; Render + Neon + R2.~~ Done —
+   [docs/cms.md](cms.md). The collections from CONTEXT.md are step 3a, and are
+   their own ticket: getting the box right first meant the schema could then
+   change without anything else moving.
 4. The importer — parsing, reconciliation, Alias resolution, the confidence gate.
 5. Public pages.
 6. Derived figures and leaderboards.

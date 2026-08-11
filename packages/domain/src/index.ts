@@ -1,7 +1,12 @@
 // The shared domain vocabulary — see CONTEXT.md for the terms themselves.
 //
-// Deliberately empty. Payload generates its collection types into this package,
-// so the web app can read a Match or an Appearance with the same types the CMS
-// wrote it with. Nothing is hand-written here that Payload will generate.
+// Nothing is hand-written here. `payload-types.ts` is generated from the CMS's
+// collections by `npm run generate:types --workspace @hkucc/cms`, so the public
+// site reads a record with the same types the CMS wrote it with, and a field
+// renamed in Payload becomes a type error in the site rather than an undefined
+// at runtime.
+//
+// The collections it covers are still only Users and Media; the record itself —
+// Team, Season, Competition, Match, Appearance — lands with #6.
 
-export {};
+export * from "./payload-types";

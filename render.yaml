@@ -1,0 +1,57 @@
+# The CMS service on Render, as a Blueprint.
+#
+# Everything expressible in the repo is here; the values that are secrets are
+# declared with `sync: false`, which tells Render the key exists and that its
+# value is set in the dashboard. That split is deliberate — the shape of the
+# configuration is reviewable, and none of it is a credential in git.
+#
+# The public site is not here. It is on Vercel (docs/deploy.md), static, and
+# deliberately independent of this service being awake.
+
+services:
+  - type: web
+    name: hkucc-cms
+    runtime: docker
+    # Built from the repo root: the lockfile and packages/domain live above
+    # apps/cms, and an install that cannot see them resolves a different tree.
+    dockerfilePath: ./apps/cms/Dockerfile
+    dockerContext: .
+    plan: free
+    # The nearest region Render offers to Hong Kong. Put the Neon project in the
+    # matching one — every admin keystroke is a round trip to the database, and
+    # across an ocean the panel feels broken rather than slow.
+    region: singapore
+    # Reaches past "the port is open" and into Neon; see
+    # apps/cms/src/app/health/route.ts. A deploy that cannot see its database
+    # never replaces the one that can.
+    healthCheckPath: /health
+    autoDeployTrigger: commit
+
+    envVars:
+      # Secrets. Set in the dashboard, never here.
+      #
+      #   DATABASE_URL           Neon → connection string, pooled
+      #   PAYLOAD_SECRET         openssl rand -hex 32
+      #   R2_ACCESS_KEY_ID       Cloudflare → R2 → API token, Object Read & Write
+      #   R2_SECRET_ACCESS_KEY   shown once, when the token is created
+      - key: DATABASE_URL
+        sync: false
+      - key: PAYLOAD_SECRET
+        sync: false
+      - key: R2_ACCESS_KEY_ID
+        sync: false
+      - key: R2_SECRET_ACCESS_KEY
+        sync: false
+
+      # Not secret, but deployment-specific: they name this service's own URL and
+      # the Cloudflare account's. Left unsynced so that a preview or a second
+      # environment cannot inherit production's by accident.
+      - key: PAYLOAD_PUBLIC_SERVER_URL
+        sync: false
+      - key: R2_ENDPOINT
+        sync: false
+      - key: R2_PUBLIC_URL
+        sync: false
+
+      - key: R2_BUCKET
+        value: hkucc-media

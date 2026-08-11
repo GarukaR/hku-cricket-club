@@ -1,0 +1,107 @@
+# The CMS, locally, with stand-ins for the two services it cannot run itself.
+#
+#   docker compose up --build      →  admin panel at http://localhost:3001/admin
+#
+# Nothing here needs a cloud account, and nothing here is a secret: every value
+# is a local development value, which is why they are written out rather than
+# read from a .env nobody would have.
+#
+# The stand-ins are deliberate. Postgres is Postgres, and MinIO speaks the same
+# S3 API that R2 does, so the code path exercised here — upload, store, serve
+# from a public URL — is the code path production takes. A compose file that
+# pointed at real Neon and real R2 would test less and cost more.
+
+services:
+  # Stands in for Neon. Scratch: `docker compose down -v` is how you reset it,
+  # and nothing here is worth keeping.
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: hkucc
+      POSTGRES_PASSWORD: hkucc
+      POSTGRES_DB: hkucc
+    ports:
+      - "5433:5432" # 5433 on the host, so a locally installed Postgres still works
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hkucc -d hkucc"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  # Stands in for Cloudflare R2, which is S3-compatible; so is this.
+  media:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: hkucc-local
+      MINIO_ROOT_PASSWORD: hkucc-local-secret
+    ports:
+      - "9000:9000" # the S3 API, and the origin the browser loads images from
+      - "9001:9001" # the MinIO console, for looking at what got uploaded
+    volumes:
+      - media-data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  # Runs once to create the bucket and make it publicly readable, which is how
+  # the real R2 bucket is configured too — the public site links straight at
+  # media, so that reading a page never touches the CMS.
+  media-init:
+    image: minio/mc:latest
+    depends_on:
+      media:
+        condition: service_healthy
+    entrypoint: >
+      sh -c "
+      mc alias set local http://media:9000 hkucc-local hkucc-local-secret &&
+      mc mb --ignore-existing local/hkucc-media &&
+      mc anonymous set download local/hkucc-media
+      "
+
+  cms:
+    build:
+      context: .
+      dockerfile: apps/cms/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+      media-init:
+        condition: service_completed_successfully
+    ports:
+      - "3001:3000" # 3001 on the host, so `npm run dev` can keep 3000 for the site
+    environment:
+      DATABASE_URL: postgres://hkucc:hkucc@db:5432/hkucc
+      # 64 characters, because src/lib/env.ts insists — and it insists because a
+      # short one in production is a weak encryption key that never announces
+      # itself. Obviously local, obviously not a secret.
+      PAYLOAD_SECRET: local-development-only-not-a-secret-0000000000000000000000000000
+      PAYLOAD_PUBLIC_SERVER_URL: http://localhost:3001
+      R2_BUCKET: hkucc-media
+      # Where uploads are *written*: container to container, over the compose
+      # network.
+      R2_ENDPOINT: http://media:9000
+      # Where uploads are *read*: by a browser, on the host, which knows nothing
+      # about a hostname called `media`. The two being different is not an
+      # artefact of compose — it is exactly the R2 arrangement in production.
+      R2_PUBLIC_URL: http://localhost:9000/hkucc-media
+      R2_ACCESS_KEY_ID: hkucc-local
+      R2_SECRET_ACCESS_KEY: hkucc-local-secret
+    # The claim this project makes about the container is that it holds no state.
+    # Here that claim is enforced rather than asserted: the filesystem is
+    # read-only, and the two directories that legitimately need to be writable
+    # are memory that vanishes with the container. If a future change starts
+    # writing something durable to the box, it fails here, locally, rather than
+    # in production on the day Render reaps the instance.
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /app/apps/cms/.next/cache
+
+volumes:
+  db-data:
+  media-data:

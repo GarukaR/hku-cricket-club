@@ -11,7 +11,9 @@
   "scripts": {
     "typecheck": "tsc --noEmit"
   },
+  "//payload": "A type-only dependency — nothing in this package has a runtime. payload-types.ts ends with a `declare module 'payload'` augmentation, which will not typecheck unless the module it augments resolves.",
   "devDependencies": {
+    "payload": "3.88.0",
     "typescript": "^5"
   }
 }

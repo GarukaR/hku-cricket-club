@@ -57,3 +57,9 @@ jobs:
       # and what to do if this fires, is in docs/deploy.md.
       - name: Every route is prerendered
         run: npm run assert:prerendered
+
+      # `npm run build` is the site alone, because that is what Vercel builds.
+      # The CMS has no equivalent gate — Render builds the image and only finds
+      # out on deploy — so its build runs here, where a broken Payload config
+      # fails the pull request instead of the deploy.
+      - run: npm run build:cms

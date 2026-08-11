@@ -9,8 +9,15 @@
   --font-data: var(--font-plex-mono), ui-monospace, "SF Mono", Menlo, monospace;
 }
 
-/* The viewer's theme is the source of truth for colour, so components style
-   through the tokens and never hard-code a hex. */
+/* D2 "Since 1913" is a committed light world — an archival printed record —
+   so the site does not offer a dark theme. Declaring it keeps native controls,
+   scrollbars and form widgets from rendering dark against oyster paper. */
+:root {
+  color-scheme: light;
+}
+
+/* Components style through the tokens and never hard-code a hex, so the whole
+   palette stays traceable back to the crest. */
 body {
   background: var(--color-bg);
   color: var(--color-ink);

@@ -60,11 +60,12 @@ Three things here are easy to get wrong and are worth knowing about:
   clear AA on a tinted chip, which sits closer to it in lightness. Hence
   `--color-accent-on-soft` and `--color-red-on-soft`.
 
-### The crest hexes are provisional
+### The crest hexes are sampled from the logo
 
-They were read off a phone screenshot of the logo with black letterboxing, so they are
-close but not exact. Getting the original vector (or a clean transparent PNG) is
-[tracked](#where-this-is-going) — update `CREST`, run `npm run tokens`, done.
+`design/logo.svg` is rendered and each anchor read from a known point inside the
+element it belongs to, so the palette descends from the club's actual crest rather
+than from a photograph of it. The club's motto, **IN LUDO SAPIENTIA**, sits in the
+ribbon.
 
 ## Design
 
@@ -75,9 +76,10 @@ HTML files, plus the palette and screenshot tooling. See [design/README.md](desi
 
 Blocked on the club, not on code:
 
-- [ ] **Committee picks a direction** — nothing above the foundation can be built until then
-- [ ] **The logo as an original file**, so the crest hexes can be sampled exactly and the
-      navbar mark traced (the full crest's ribbon lettering is unreadable below ~80px)
+- [x] **Direction chosen** — d2 "Since 1913", with the scoreline treatment borrowed from d1
+- [x] **The logo as an original file** — `design/logo.svg` and the `.ai`; crest hexes now sampled
+- [ ] **A simplified navbar mark** traced from the `.ai` (the full crest's ribbon lettering
+      is unreadable below ~80px)
 - [ ] **Real content** — history, committee, squad, fixtures, training times, photographs
 
 Then, in order: Sanity CMS and schemas → fixtures and results → the join enquiry form

@@ -22,7 +22,7 @@ export const latestResult: ScoredMatch = {
   ground: "Yeung King Playground",
   venue: "Away",
   format: "40 overs",
-  competition: `${CHAMPIONSHIP} · Round 4`,
+  competition: CHAMPIONSHIP,
   result: {
     outcome: "won",
     margin: "33 runs",

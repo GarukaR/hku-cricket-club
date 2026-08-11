@@ -79,16 +79,21 @@ const OUTCOME: Record<Outcome, string> = {
   conceded: "Conceded",
 };
 
+/** The outcome and its margin, joined — one fact, and the only place that knows
+ *  an outcome without a margin drops the joiner rather than trailing it. */
+function stated(result: Result, joiner: string): string {
+  const label = OUTCOME[result.outcome];
+  return result.margin ? `${label}${joiner}${result.margin}` : label;
+}
+
 /** The verdict as the club would announce it: "Won by 33 runs", "Abandoned". */
 export function verdict(result: Result): string {
-  const label = OUTCOME[result.outcome];
-  return result.margin ? `${label} by ${result.margin}` : label;
+  return stated(result, " by ");
 }
 
 /** The same fact at table width, where the column header already says Result. */
 export function resultSummary(result: Result): string {
-  const label = OUTCOME[result.outcome];
-  return result.margin ? `${label} · ${result.margin}` : label;
+  return stated(result, " · ");
 }
 
 /** Whether the record reads this Outcome as a win, a loss, or neither. Drawn,

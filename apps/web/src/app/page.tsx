@@ -12,7 +12,7 @@ import { Masthead } from "@/components/Masthead";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteNav } from "@/components/SiteNav";
 import { Admission } from "@/components/home/Admission";
-import { Lead } from "@/components/home/Lead";
+import { LeadStory } from "@/components/home/LeadStory";
 import { Plates } from "@/components/home/Plates";
 import { RecentRecord } from "@/components/home/RecentRecord";
 import { TheClub } from "@/components/home/TheClub";
@@ -42,7 +42,7 @@ export default function Home() {
 
       <main id="record">
         <Container>
-          <Lead latest={latestResult} next={nextMatch} />
+          <LeadStory latest={latestResult} next={nextMatch} />
           <RecentRecord matches={recentRecord} season={season} />
           <TheClub />
           <Plates />

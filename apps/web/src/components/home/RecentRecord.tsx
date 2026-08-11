@@ -38,7 +38,7 @@ export function RecentRecord({
           </thead>
           <tbody>
             {played.map((match) => (
-              <tr key={match.date}>
+              <tr key={`${match.date}-${match.opponent}`}>
                 <td>{shortDate(match.date)}</td>
                 <td className={styles.opponent}>{match.opponent}</td>
                 <td>{match.ground}</td>

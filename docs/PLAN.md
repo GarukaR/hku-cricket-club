@@ -165,8 +165,11 @@ looks like:
   homepage to be its own status.
 - **The homepage reads Matches, not loose strings.** `apps/web/src/lib/match.ts`
   holds CONTEXT.md's vocabulary as view types — Match, Result, Innings, Outcome —
-  and every component takes a whole Match. `apps/web/src/content/matches.ts` is the
-  only invented content left and is deleted, not edited, when the importer lands.
+  and every component takes a whole Match. `apps/web/src/content/matches.ts` holds
+  the invented record and is deleted, not edited, when the importer lands. Two
+  smaller inventions sit elsewhere and outlive it: the 1988 handbook quotation in
+  `TheClub.tsx`, and the plate captions and provisional training time in
+  `apps/web/src/content/club.ts`. The footer says so on the page.
 - **Three placeholders remain on the page, each marked in code:** the crest in the
   masthead (traced mark still outstanding), the plates (no photographs yet), and
   the Admission button's destination (the enquiry route is its own ticket).

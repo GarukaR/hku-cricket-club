@@ -46,7 +46,7 @@ Every colour descends from the club crest. `design/derive.js` holds each crest
 hue — sampled from `design/logo.svg`, not guessed — and solves for the lightness
 that clears WCAG AA against the background it actually lands on.
 
-- `src/app/tokens.css` is **generated**. Never hand-edit it. Change the `CREST`
+- `apps/web/src/app/tokens.css` is **generated**. Never hand-edit it. Change the `CREST`
   anchors and run `npm run tokens`.
 - Style through the tokens (`var(--color-accent)`), never a literal hex.
 - The script refuses to emit CSS if any pair fails AA, so a failing palette

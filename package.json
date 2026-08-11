@@ -2,27 +2,17 @@
   "name": "hku-cricket-club",
   "version": "0.1.0",
   "private": true,
+  "description": "Official website of the Hong Kong University Cricket Club",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint",
-    "tokens": "node design/derive.js --css > src/app/tokens.css"
-  },
-  "dependencies": {
-    "next": "16.3.0",
-    "react": "19.2.8",
-    "react-dom": "19.2.8"
-  },
-  "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.3.0",
-    "tailwindcss": "^4",
-    "typescript": "^5"
-  },
-  "description": "Official website of the Hong Kong University Cricket Club"
+    "dev": "npm run dev --workspace @hkucc/web",
+    "build": "npm run build --workspace @hkucc/web",
+    "start": "npm run start --workspace @hkucc/web",
+    "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "tokens": "node design/derive.js --css > apps/web/src/app/tokens.css"
+  }
 }

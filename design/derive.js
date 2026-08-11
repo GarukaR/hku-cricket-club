@@ -213,7 +213,7 @@ if (fails) {
   process.exitCode = 1;
 }
 
-/* ── emit Tailwind 4 @theme tokens for src/app/globals.css ──
+/* ── emit Tailwind 4 @theme tokens for apps/web/src/app/globals.css ──
    The site ships D2 "Since 1913". Its material names (paper, oxblood, brass)
    describe the direction; the tokens are published under semantic names so a
    later change of direction does not rename every call site.

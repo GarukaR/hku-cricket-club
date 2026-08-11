@@ -1,7 +1,8 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# dependencies
-/node_modules
+# dependencies. Not root-anchored: npm hoists to the root store but still writes
+# a node_modules inside a workspace whenever a version cannot be hoisted.
+node_modules
 /.pnp
 .pnp.*
 .yarn/*
@@ -12,13 +13,16 @@
 
 # testing
 /coverage
+/apps/*/coverage
 
-# next.js
-/.next/
+# next.js. Every workspace builds into its own directory.
+.next/
 /out/
+/apps/*/out/
 
 # production
 /build
+/apps/*/build
 
 # misc
 .DS_Store

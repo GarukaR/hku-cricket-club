@@ -14,9 +14,24 @@ npm install
 npm run dev          # http://localhost:3000
 npm run build        # production build; must pass clean before pushing
 npm run lint
+npm run typecheck
 ```
 
-Node 22 or later.
+Node 22 or later. Every command above runs from the repo root and is delegated to
+the right workspace, so there is no need to `cd` into one.
+
+## Repo layout
+
+npm workspaces, no Turborepo — the graph is small enough that the extra tool would
+cost more than it saves.
+
+| | |
+|---|---|
+| `apps/web` | The public site. Statically generated; nothing at request time depends on the CMS. |
+| `packages/domain` | The shared vocabulary of [CONTEXT.md](CONTEXT.md), for whatever both apps must agree on. Empty until Payload generates its types into it. |
+| `design/` | Palette derivation and the Phase 0 direction studies. Root-level: it feeds the web app but is not part of it, so it is neither linted nor typechecked — it is standalone CommonJS, run with plain `node` and no build step. |
+
+`apps/cms` — Payload, self-hosted — arrives with the CMS work.
 
 ## Stack
 
@@ -33,14 +48,14 @@ Node 22 or later.
 
 Every colour comes from the club crest. `design/derive.js` holds each crest **hue** and
 solves for the **lightness** that clears WCAG AA against the specific background the
-colour lands on, then writes `src/app/tokens.css`:
+colour lands on, then writes `apps/web/src/app/tokens.css`:
 
 ```bash
-npm run tokens       # regenerate src/app/tokens.css
+npm run tokens       # regenerate apps/web/src/app/tokens.css
 node design/derive.js  # human-readable report + contrast table
 ```
 
-`src/app/tokens.css` is generated — **do not hand-edit it.** Change the `CREST` anchors
+`apps/web/src/app/tokens.css` is generated — **do not hand-edit it.** Change the `CREST` anchors
 in `design/derive.js` and re-run. The script refuses to emit CSS if any pair fails AA,
 so a failing palette cannot reach the stylesheet.
 

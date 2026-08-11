@@ -1,0 +1,17 @@
+{
+  "name": "@hkucc/domain",
+  "version": "0.1.0",
+  "private": true,
+  "description": "The shared domain vocabulary of CONTEXT.md — Payload's generated types, and whatever both apps must agree on",
+  "type": "module",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5"
+  }
+}

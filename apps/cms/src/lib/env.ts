@@ -28,17 +28,15 @@ export type CmsEnv = {
     accessKeyId: string;
     secretAccessKey: string;
     /**
-     * The origin media is *served* from — an R2 public bucket URL, or a custom
-     * domain in front of one — without a trailing slash. Deliberately separate
-     * from `endpoint`, which is only where uploads are written. The public site
-     * links straight at this, so reading the site never touches the container
-     * and the container stays free to be asleep.
+     * The origin media is *read* from, without a trailing slash. A different
+     * host from `endpoint`, which is only where it is written — see
+     * "Reading the site never wakes the CMS" in docs/cms.md for why.
      */
     publicUrl: string;
   };
 };
 
-export class MissingConfiguration extends Error {
+export class InvalidEnvironment extends Error {
   constructor(readonly problems: string[]) {
     super(
       [
@@ -48,7 +46,7 @@ export class MissingConfiguration extends Error {
         "See .env.example for what each one is, and docs/cms.md for where to get it.",
       ].join("\n"),
     );
-    this.name = "MissingConfiguration";
+    this.name = "InvalidEnvironment";
   }
 }
 
@@ -113,11 +111,11 @@ function parse(source: Record<string, string | undefined>): {
  *
  * Called from `instrumentation.ts`, which Next runs once as the server starts.
  *
- * @throws {MissingConfiguration} if anything is absent, blank or malformed.
+ * @throws {InvalidEnvironment} if anything is absent, blank or malformed.
  */
 export function readEnv(source: Record<string, string | undefined>): CmsEnv {
   const { env, problems } = parse(source);
-  if (problems.length > 0) throw new MissingConfiguration(problems);
+  if (problems.length > 0) throw new InvalidEnvironment(problems);
   return env;
 }
 

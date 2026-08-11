@@ -1,6 +1,10 @@
 import config from "@payload-config";
 import { getPayload } from "payload";
 
+// Asking the database a question is the whole point of this route, so it must
+// never be answered from the build.
+export const dynamic = "force-dynamic";
+
 /**
  * What Render gates a deploy on, and what Docker's HEALTHCHECK polls.
  *
@@ -13,8 +17,6 @@ import { getPayload } from "payload";
  * The environment itself is not checked here — instrumentation.ts does that at
  * start-up, and a container that failed it never reaches this route.
  */
-export const dynamic = "force-dynamic";
-
 export async function GET() {
   try {
     const payload = await getPayload({ config });

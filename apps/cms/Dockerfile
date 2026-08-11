@@ -6,24 +6,34 @@
 #
 #   docker build -f apps/cms/Dockerfile -t hkucc-cms .
 #
-# Three stages, because the thing that ships should contain neither the compiler
-# nor the dependencies it needed. The runtime stage carries Next's standalone
-# bundle and nothing else: no lockfile, no source, no npm.
+# Two working stages, because the thing that ships should contain neither the
+# compiler nor the dependencies it needed. The runtime stage carries Next's
+# standalone bundle and nothing else: no lockfile, no source, no npm.
 
 # Matched to the Node the repo is checked and deployed on. Bump this, the CI
 # workflow and docs/deploy.md together or none of them.
 FROM node:24-alpine AS base
-# Payload's Postgres adapter and Next's standalone server both read process
-# timezones; without tzdata every timestamp in a log is UTC-with-no-name, and
-# the club plays in Hong Kong.
-RUN apk add --no-cache tzdata
 
-# ---- deps -------------------------------------------------------------------
+# The container stays on UTC, deliberately. Every date this project handles is
+# date-only — a match is played on a day, not at an instant — and the web app
+# already formats them in UTC for exactly that reason (apps/web/src/lib/dates.ts,
+# and the suite that pins TZ to catch it). A container running on Hong Kong time
+# would shift a midnight-UTC match date to the previous day in anything that
+# formatted it locally, which is the trap #9's importer walks straight into.
+
+# ---- build ------------------------------------------------------------------
 # Manifests first, source later, so a change to a component does not re-run the
 # install. `npm ci` rather than `npm install`: it fails loudly when the lockfile
 # and the manifests disagree, which is the only way an image can quietly ship a
 # dependency nobody reviewed.
-FROM base AS deps
+#
+# The install happens here rather than in a stage of its own. A separate stage
+# would have to hand its result over as `COPY --from=deps /repo/node_modules`,
+# which copies the root tree and silently drops anything npm nested inside a
+# workspace — and npm nests exactly the packages that cannot be hoisted, which
+# is to say sharp's platform binaries. Losing those is a crash at the first
+# photograph, months later. The layer caching is identical either way.
+FROM base AS build
 WORKDIR /repo
 COPY package.json package-lock.json ./
 COPY apps/cms/package.json apps/cms/
@@ -31,10 +41,6 @@ COPY apps/web/package.json apps/web/
 COPY packages/domain/package.json packages/domain/
 RUN npm ci
 
-# ---- build ------------------------------------------------------------------
-FROM base AS build
-WORKDIR /repo
-COPY --from=deps /repo/node_modules ./node_modules
 COPY . .
 # No secret is present here, and none should be. The config is deliberately
 # readable without one (src/lib/env.ts); the environment is checked at start-up,

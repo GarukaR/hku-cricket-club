@@ -1,5 +1,7 @@
 import type { CollectionConfig } from "payload";
 
+import { signedIn } from "./access";
+
 /**
  * Who may edit the club's record.
  *
@@ -18,10 +20,10 @@ export const Users = {
   },
   // Nothing here is public. Media is the only collection the outside world reads.
   access: {
-    read: ({ req: { user } }) => Boolean(user),
-    create: ({ req: { user } }) => Boolean(user),
-    update: ({ req: { user } }) => Boolean(user),
-    delete: ({ req: { user } }) => Boolean(user),
+    read: signedIn,
+    create: signedIn,
+    update: signedIn,
+    delete: signedIn,
   },
   fields: [
     {

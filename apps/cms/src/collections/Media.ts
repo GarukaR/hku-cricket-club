@@ -1,5 +1,7 @@
 import type { CollectionConfig } from "payload";
 
+import { signedIn } from "./access";
+
 /**
  * Photographs and documents.
  *
@@ -19,9 +21,9 @@ export const Media = {
     // The public site is static and links straight at R2, so this only governs
     // the API. It is `true` because nothing private belongs in this collection.
     read: () => true,
-    create: ({ req: { user } }) => Boolean(user),
-    update: ({ req: { user } }) => Boolean(user),
-    delete: ({ req: { user } }) => Boolean(user),
+    create: signedIn,
+    update: signedIn,
+    delete: signedIn,
   },
   upload: true,
   fields: [

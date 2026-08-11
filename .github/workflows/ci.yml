@@ -44,4 +44,9 @@ jobs:
 
       - run: npm run typecheck
 
+      # The suite pins TZ to a zone behind UTC (apps/web/vitest.config.ts). This
+      # runner is UTC, where a date-only value formatted in local time looks
+      # correct right up until a reader west of Greenwich loads the page.
+      - run: npm test
+
       - run: npm run build

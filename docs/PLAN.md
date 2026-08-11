@@ -183,11 +183,15 @@ looks like:
 ### Build order
 
 1. ~~Restructure to workspaces; fold prototype variant B into real components.~~ Done.
-2. Payload collections from CONTEXT.md; Dockerfile; Render + Neon + R2.
-3. The importer — parsing, reconciliation, Alias resolution, the confidence gate.
-4. Public pages.
-5. Derived figures and leaderboards.
-6. Deploy; wire webhook invalidation.
+2. ~~Deploy the public site to Vercel, so every later ticket is verifiable in
+   production rather than only locally.~~ Done — [docs/deploy.md](deploy.md).
+   Deploying first was the point: it proves the pipeline before anything depends
+   on it, rather than discovering it at the end.
+3. Payload collections from CONTEXT.md; Dockerfile; Render + Neon + R2.
+4. The importer — parsing, reconciliation, Alias resolution, the confidence gate.
+5. Public pages.
+6. Derived figures and leaderboards.
+7. Wire webhook cache invalidation.
 
 ## Leaderboards
 

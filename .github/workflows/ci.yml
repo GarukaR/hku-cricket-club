@@ -53,8 +53,7 @@ jobs:
 
       - run: npm run build
 
-      # The site is deployed as static output; a route that quietly turned
-      # dynamic would still deploy and still look right, so the build manifests
-      # are what catch it. See the script for how.
+      # Reads the manifests the build just wrote. Why the site has to be static,
+      # and what to do if this fires, is in docs/deploy.md.
       - name: Every route is prerendered
-        run: node scripts/assert-prerendered.mjs
+        run: npm run assert:prerendered

@@ -13,9 +13,9 @@ The CMS is **not** deployed here — it is a container on Render, and it is off
 the request path by design (see [PLAN.md](PLAN.md)). Nothing in this pipeline
 depends on it being awake.
 
-## Settings that are not defaults
+## Settings that live in the dashboard
 
-Only one, and it is the one that matters:
+Three, none of them expressible in the repo:
 
 **Root Directory is `apps/web`.** This is a monorepo and Vercel's Next.js
 builder looks for `.next` inside the root directory. Pointed at the repo root it
@@ -23,6 +23,19 @@ runs `npm run build`, watches the workspace build succeed, then fails with *"The
 Next.js output directory `.next` was not found at `/vercel/path0/.next`"* —
 which reads like a build failure and is really a path failure. `apps/web` is
 where the build output actually lands.
+
+**Vercel Authentication protects previews only.** Production is a public club
+website and has to be reachable by the public, so the login wall is scoped to
+preview deployments — where the record on the page is still invented placeholder
+data and nobody outside the project should be reading it. Left at the team
+default (*all deployments*) the production URL answers every request with a
+Vercel login page, which is the failure this ticket exists to avoid.
+
+**Node 24.** The runtime the project builds on, matched by the CI workflow so the
+check that gates a merge runs what production runs. Nothing in the repo pins it —
+there is no `engines` field, deliberately, because that would also constrain
+local development — so the two move together only by being written down here.
+Bump both or neither.
 
 Everything else is left on auto-detection: framework Next.js, `next build`, `npm
 install`. **"Include files outside the root directory" must stay on** — the
@@ -41,16 +54,18 @@ in one place. This document is that place.
 ## What has to stay true
 
 **Every route is prerendered.** The architecture rests on it: the site is static,
-so the CMS can be a container that sleeps. CI enforces this with
-`scripts/assert-prerendered.mjs`, which reads the build manifests and fails on
-any route Next rendered per request instead of ahead of time. A dynamic route
-would still deploy and still look correct — it would only cost a function
-invocation per view and quietly couple uptime to the CMS — so the build is the
-only place this gets caught.
+so the CMS can be a container that sleeps. A route that turns dynamic — one
+`cookies()`, one uncached `fetch()` — still deploys and still looks correct. It
+just starts costing a function invocation per view and quietly couples the site's
+uptime to the CMS, which is the whole thing the design avoids. Nothing about the
+deployed page shows it, so the build output is the only place it can be caught:
 
-**CI and Vercel build on the same Node.** The workflow pins Node 24 to match the
-project's runtime. Bumping one without the other means the check that gates a
-merge stops testing what production runs.
+```bash
+npm run assert:prerendered   # after a build; CI runs it on every PR
+```
+
+If it ever fires, the answer is not to delete the check. A route that genuinely
+has to be dynamic is a decision to argue in [PLAN.md](PLAN.md) first.
 
 ## Credentials
 

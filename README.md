@@ -16,10 +16,12 @@ npm run dev          # http://localhost:3000
 npm run build        # production build; must pass clean before pushing
 npm run lint
 npm run typecheck
+npm run assert:prerendered   # after a build: fails if any route turned dynamic
 ```
 
-Node 22 or later. Every command above runs from the repo root and is delegated to
-the right workspace, so there is no need to `cd` into one.
+**Node 24** — the version Vercel builds on and CI checks against; see
+[docs/deploy.md](docs/deploy.md). Every command above runs from the repo root and
+is delegated to the right workspace, so there is no need to `cd` into one.
 
 ## Repo layout
 
@@ -98,8 +100,8 @@ Blocked on the club, not on code:
       is unreadable below ~80px)
 - [ ] **Real content** — history, committee, squad, fixtures, training times, photographs
 
-Then, in order: the Payload CMS and its collections → the importer → fixtures, results
-and match pages → derived figures → the join enquiry form → an editor guide for whoever
+Then, in order: the Payload CMS and its collections → the importer → the record and
+match pages → derived figures → the join enquiry form → an editor guide for whoever
 inherits this. The full order, with the reasoning, is in [docs/PLAN.md](docs/PLAN.md).
 
 The editor guide matters more than usual here. A student committee turns over every

@@ -22,9 +22,11 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      # Matched to the runtime Vercel builds on, so the check that gates a merge
+      # runs what production will run. Bump both together, never one.
       - uses: actions/setup-node@v5
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
 
       # The root install covers every workspace; npm ci fails loudly if the

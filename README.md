@@ -3,9 +3,10 @@
 The official website of the cricket club of the University of Hong Kong, founded 1913.
 Home ground Sandy Bay, Pok Fu Lam.
 
-**Status: foundation.** The stack, the design tokens and the build pipeline are in
-place. The visual direction is not yet chosen and there is no real content, so this
-is not ready to show the public. See [Where this is going](#where-this-is-going).
+**Status: deployed, not finished.** The homepage, the design tokens and the deploy
+pipeline are in place and live. The record it shows is invented placeholder data and
+the CMS does not exist yet, so this is not ready to show the club. See
+[Where this is going](#where-this-is-going).
 
 ## Running it
 
@@ -41,8 +42,8 @@ cost more than it saves.
 | Language | TypeScript |
 | Styling | Tailwind 4 — CSS-first, so there is **no `tailwind.config.js`** |
 | Fonts | Newsreader / IBM Plex Sans / IBM Plex Mono, self-hosted at build time via `next/font` |
-| Hosting | Vercel (planned) |
-| CMS | Sanity (planned) |
+| Hosting | Vercel — pushes to `main` go to production, PRs get previews. See [docs/deploy.md](docs/deploy.md) |
+| CMS | Payload 3, self-hosted (planned) |
 
 ## Colour is generated, not chosen
 
@@ -97,8 +98,9 @@ Blocked on the club, not on code:
       is unreadable below ~80px)
 - [ ] **Real content** — history, committee, squad, fixtures, training times, photographs
 
-Then, in order: Sanity CMS and schemas → fixtures and results → the join enquiry form
-→ gallery → squad and news → SEO, sitemap and an editor guide for whoever inherits this.
+Then, in order: the Payload CMS and its collections → the importer → fixtures, results
+and match pages → derived figures → the join enquiry form → an editor guide for whoever
+inherits this. The full order, with the reasoning, is in [docs/PLAN.md](docs/PLAN.md).
 
 The editor guide matters more than usual here. A student committee turns over every
 year, so whoever takes this on has to be able to run it without reading code and

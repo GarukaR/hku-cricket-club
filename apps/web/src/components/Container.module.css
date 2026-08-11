@@ -1,0 +1,9 @@
+/* One measure for the whole document. 980px is the width at which the record
+   table's four columns sit without stretching and the prose still lands inside
+   its own 62ch — the page is a printed record, so the text block, not the
+   viewport, decides how wide it gets. */
+.container {
+  max-width: 980px;
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 5vw, 4rem);
+}

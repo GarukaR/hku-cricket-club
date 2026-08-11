@@ -1,0 +1,40 @@
+.nav {
+  padding-block: 0.9rem;
+  border-bottom: 1px solid var(--color-rule);
+}
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem clamp(1rem, 3.5vw, 2.4rem);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.link {
+  font-family: var(--font-body);
+  font-size: 0.74rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--color-ink2);
+  /* Reserved from the start so the hover rule does not shift the row. */
+  border-bottom: 1px solid transparent;
+  padding-bottom: 0.15rem;
+  transition: color 0.15s ease-out, border-color 0.15s ease-out;
+}
+
+.link:hover {
+  color: var(--color-red);
+  border-bottom-color: var(--color-red);
+}
+
+/* An item whose page has not been built yet. It stays in the contents line at
+   full strength — the club has an archive whether or not its page exists, and a
+   dimmed entry would both read as broken and drop under 4.5:1 — but it offers no
+   hover response, so nothing invites a click that cannot be honoured. */
+.pending {
+  cursor: default;
+}

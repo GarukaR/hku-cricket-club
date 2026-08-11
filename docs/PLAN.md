@@ -157,13 +157,19 @@ costs nothing to have running in the background.
 Read this before touching anything, because the working tree is not what it
 looks like:
 
-- **`/` renders the prototype, not the site.** `apps/web/src/app/page.tsx` mounts
-  the three homepage variants behind `?variant=`, defaulting to A. The foundation
-  status page that used to live there is in commit `e4bf730`.
-- **Variant B has already won** and has already been refined. Folding it into
-  real components means promoting B, deleting
-  `apps/web/src/app/prototype-homepage/` entirely, and restoring or replacing the
-  foundation page.
+- **`/` is the real homepage.** Variant B is folded in: `apps/web/src/app/page.tsx`
+  composes components from `apps/web/src/components/`, and
+  `apps/web/src/app/prototype-homepage/` is gone along with the `?variant=`
+  switcher. The page is statically prerendered. The earlier foundation status page
+  is in commit `e4bf730` and was deliberately not restored — the site now has a
+  homepage to be its own status.
+- **The homepage reads Matches, not loose strings.** `apps/web/src/lib/match.ts`
+  holds CONTEXT.md's vocabulary as view types — Match, Result, Innings, Outcome —
+  and every component takes a whole Match. `apps/web/src/content/matches.ts` is the
+  only invented content left and is deleted, not edited, when the importer lands.
+- **Three placeholders remain on the page, each marked in code:** the crest in the
+  masthead (traced mark still outstanding), the plates (no photographs yet), and
+  the Admission button's destination (the enquiry route is its own ticket).
 - The **workspaces layout exists**: `apps/web` holds the site, `packages/domain`
   is present but empty, awaiting Payload's generated types. `apps/cms` does not
   exist yet. Every root script delegates to a workspace, so `npm run dev`,
@@ -173,7 +179,7 @@ looks like:
 
 ### Build order
 
-1. Restructure to workspaces; fold prototype variant B into real components.
+1. ~~Restructure to workspaces; fold prototype variant B into real components.~~ Done.
 2. Payload collections from CONTEXT.md; Dockerfile; Render + Neon + R2.
 3. The importer — parsing, reconciliation, Alias resolution, the confidence gate.
 4. Public pages.

@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { navItems } from "@/content/club";
+import { isBuilt } from "@/lib/nav";
 import styles from "./SiteNav.module.css";
 
 /** The contents line, directly under the letterhead.
@@ -12,16 +13,16 @@ export function SiteNav() {
   return (
     <nav className={styles.nav} aria-label="Sections">
       <ul className={styles.list}>
-        {navItems.map(({ label, href }) => (
-          <li key={label}>
-            {href === "#" ? (
-              <span className={`${styles.link} ${styles.pending}`} aria-disabled="true">
-                {label}
-              </span>
-            ) : (
-              <Link className={styles.link} href={href}>
-                {label}
+        {navItems.map((item) => (
+          <li key={item.label}>
+            {isBuilt(item) ? (
+              <Link className={styles.link} href={item.href}>
+                {item.label}
               </Link>
+            ) : (
+              <span className={`${styles.link} ${styles.pending}`} aria-disabled="true">
+                {item.label}
+              </span>
             )}
           </li>
         ))}

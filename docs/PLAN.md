@@ -152,6 +152,22 @@ photographs, the simplified navbar mark.
 **Start the Meta App Review on day one anyway** — it is the longest lead time and
 costs nothing to have running in the background.
 
+### Where the repo currently stands
+
+Read this before touching anything, because the working tree is not what it
+looks like:
+
+- **`/` renders the prototype, not the site.** `src/app/page.tsx` mounts the
+  three homepage variants behind `?variant=`, defaulting to A. The foundation
+  status page that used to live there is in commit `e4bf730`.
+- **Variant B has already won** and has already been refined. Folding it into
+  real components means promoting B, deleting `src/app/prototype-homepage/`
+  entirely, and restoring or replacing the foundation page.
+- The repo is still a **single Next app at the root**. The workspaces layout
+  described above does not exist yet.
+- `src/app/tokens.css` is **generated**. Never hand-edit it; change the `CREST`
+  anchors in `design/derive.js` and run `npm run tokens`.
+
 ### Build order
 
 1. Restructure to workspaces; fold prototype variant B into real components.

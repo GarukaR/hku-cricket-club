@@ -1,0 +1,44 @@
+.section {
+  padding-block: clamp(2rem, 5vw, 3rem);
+  border-top: 1px solid var(--color-rule);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.4rem;
+}
+
+.figure {
+  margin: 0;
+}
+
+/* PLACEHOLDER frame — no photograph exists yet, so the plate is an engraver's
+   cross-hatch in the crest's own green and gold rather than stock photography.
+   It reads as a reserved plate in a printed record, which is what it is.
+   color-mix keeps the hatch descended from the tokens; there is no literal hex
+   anywhere on this page. */
+.plate {
+  aspect-ratio: 5 / 4;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-rule);
+  background-image: repeating-linear-gradient(
+      45deg,
+      color-mix(in srgb, var(--color-accent) 14%, transparent) 0 2px,
+      transparent 2px 7px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      color-mix(in srgb, var(--color-brass) 12%, transparent) 0 2px,
+      transparent 2px 9px
+    );
+}
+
+.caption {
+  font-family: var(--font-body);
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-ink2);
+  margin-top: 0.55rem;
+}

@@ -1,0 +1,37 @@
+/* Marginalia — a note set beside the record rather than in it.
+
+   D2's device for standing facts: the sans at reading size, secondary ink, held
+   off a brass rule. The next Match uses the identical treatment, which is the
+   whole argument of the chosen direction — a fixture is a note in the margin, not
+   a second headline competing with the result. The rule is 2px because a hairline
+   disappears against the brass at this lightness; it is the page's marginalia
+   mark, not a coloured card edge. */
+.marginalia {
+  border-left: 2px solid var(--color-brass);
+  padding-left: 1.15rem;
+  align-self: start;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  line-height: 1.62;
+  color: var(--color-ink2);
+}
+
+.marginalia dl {
+  margin: 0;
+}
+
+.marginalia dt {
+  font-size: 0.64rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-ink);
+  margin-top: 0.9rem;
+}
+
+.marginalia dt:first-of-type {
+  margin-top: 0;
+}
+
+.marginalia dd {
+  margin: 0.15rem 0 0;
+}

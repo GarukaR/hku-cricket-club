@@ -1,0 +1,52 @@
+# The checks every ticket has been run by hand until now, run for real on the PR.
+#
+# Deliberately one job: the steps are seconds each, they share an install, and
+# three parallel jobs would spend more time restoring node_modules than checking
+# anything. Split it when the suite gets slow enough to be worth the ceremony.
+
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# A second push to the same branch makes the first run's answer irrelevant.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      # The root install covers every workspace; npm ci fails loudly if the
+      # lockfile and the manifests disagree, which is the point of using it here.
+      - run: npm ci
+
+      # tokens.css is generated and must never be hand-edited (CLAUDE.md). This
+      # regenerates it and fails if the committed file differs, so a hand-edited
+      # palette cannot reach main. derive.js additionally refuses to emit CSS at
+      # all if any colour pair falls under WCAG AA, so this checks contrast too.
+      # --strip-trailing-cr: the file is committed with LF, and a Windows
+      # contributor's checkout may hand it back with CRLF.
+      - name: tokens.css matches design/derive.js
+        run: node design/derive.js --css | diff --strip-trailing-cr - apps/web/src/app/tokens.css
+
+      - run: npm run lint
+
+      - run: npm run typecheck
+
+      # The suite pins TZ to a zone behind UTC (apps/web/vitest.config.ts). This
+      # runner is UTC, where a date-only value formatted in local time looks
+      # correct right up until a reader west of Greenwich loads the page.
+      - run: npm test
+
+      - run: npm run build

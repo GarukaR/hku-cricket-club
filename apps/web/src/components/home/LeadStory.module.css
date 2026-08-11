@@ -1,0 +1,19 @@
+/* The lead: the result at display scale, the next Match as a note beside it.
+   Single column until there is room for the margin to be a margin. */
+.lead {
+  padding-block: clamp(2.2rem, 5.5vw, 3.4rem) clamp(2.4rem, 6vw, 3.6rem);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(2rem, 4vw, 2.6rem);
+}
+
+@media (min-width: 780px) {
+  .lead {
+    /* minmax(0, …) rather than a bare fraction: the scoreline sets tabular
+       figures at 4.4rem, and without it the column refuses to shrink below its
+       content and pushes the page sideways. */
+    grid-template-columns: minmax(0, 1.62fr) minmax(0, 1fr);
+    gap: clamp(2.4rem, 5vw, 3.6rem);
+    align-items: start;
+  }
+}

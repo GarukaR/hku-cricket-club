@@ -1,0 +1,10 @@
+/* The opponent is the one display-face line in the margin — enough to be found
+   at a glance, small enough that it never argues with the scoreline beside it. */
+.opponent {
+  display: block;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3.6vw, 1.9rem);
+  line-height: 1.15;
+  color: var(--color-ink);
+  margin-bottom: 0.8rem;
+}

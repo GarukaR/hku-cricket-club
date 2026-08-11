@@ -1,0 +1,60 @@
+.section {
+  padding-block: clamp(2rem, 5vw, 3rem);
+  border-top: 1px solid var(--color-rule);
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 820px) {
+  .columns {
+    grid-template-columns: 1fr 15rem;
+    gap: 3.5rem;
+  }
+}
+
+.prose {
+  font-family: var(--font-display);
+  font-size: 1.03rem;
+  line-height: 1.68;
+}
+
+.prose p {
+  max-width: 62ch;
+  margin: 0 0 1.1rem;
+}
+
+/* The page's one drop cap, and it lives here: this is the only running prose on
+   the homepage, and an initial set over anything shorter is an ornament rather
+   than a piece of typesetting. */
+.prose > p:first-of-type::first-letter {
+  float: left;
+  font-size: 3.3em;
+  line-height: 0.84;
+  padding: 0.04em 0.09em 0 0;
+  color: var(--color-accent);
+}
+
+.quote {
+  margin: 2rem 0;
+  padding: 1.5rem 0;
+  border-block: 1px solid var(--color-rule);
+  font-size: clamp(1.15rem, 2.6vw, 1.4rem);
+  line-height: 1.5;
+  font-style: italic;
+  text-wrap: balance;
+}
+
+.quote cite {
+  display: block;
+  font-family: var(--font-body);
+  font-style: normal;
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-ink2);
+  margin-top: 0.9rem;
+}

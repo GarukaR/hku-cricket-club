@@ -1,0 +1,67 @@
+/* The letterhead: crest, name, place, opening statement — then a double rule.
+
+   The rule divides identity from content, so everything above it is who the club
+   is and everything below it is what happened. That is what leaves the scoreline
+   as the page's only hero. */
+.masthead {
+  text-align: center;
+  padding-block: clamp(2rem, 5vw, 3.2rem) 0;
+}
+
+/* PLACEHOLDER crest — a pennant carrying the club's initials, standing in until
+   the navbar mark is traced from design/Cricket logo_final2.ai. The full crest's
+   ribbon lettering is unreadable below ~80px, so the real mark has to be drawn,
+   not scaled. Never generate a substitute: it must be the club's own crest. */
+.arms {
+  width: 64px;
+  height: 76px;
+  margin: 0 auto 1.1rem;
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  clip-path: polygon(0 0, 100% 0, 100% 66%, 50% 100%, 0 66%);
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  line-height: 1;
+}
+
+.name {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.9rem, 5.4vw, 3.1rem);
+  line-height: 1.12;
+  letter-spacing: 0.01em;
+  margin: 0;
+  text-wrap: balance;
+}
+
+.place {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--color-ink2);
+  margin: 0.9rem 0 0;
+}
+
+/* Set in the display face at reading size: it is the club's own opening sentence,
+   not a subtitle to the name. */
+.standfirst {
+  font-family: var(--font-display);
+  max-width: 48ch;
+  margin: 1.5rem auto 0;
+  font-size: clamp(1rem, 2.2vw, 1.14rem);
+  line-height: 1.62;
+  color: var(--color-ink2);
+  text-wrap: balance;
+}
+
+.rule {
+  border-top: 2px solid var(--color-ink);
+  border-bottom: 1px solid var(--color-rule);
+  height: 5px;
+  margin-top: 1.6rem;
+}

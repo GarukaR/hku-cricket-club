@@ -1,0 +1,13 @@
+/* Every section of the record is headed the same way: letterspaced small caps in
+   the sans, secondary ink, set small. It is a heading, not a kicker over one —
+   the section's content is its own display voice, so nothing competes with the
+   scoreline. */
+.heading {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 400;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--color-ink2);
+  margin: 0 0 1.2rem;
+}

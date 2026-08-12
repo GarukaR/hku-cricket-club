@@ -10,8 +10,13 @@ The public site is hosted on **Vercel**, git-connected to
 | Project | `true-theorem/hku-cricket-club` |
 
 The CMS is **not** deployed here — it is a container on Render, and it is off
-the request path by design (see [PLAN.md](PLAN.md)). Nothing in this pipeline
-depends on it being awake.
+the request path by design (see [PLAN.md](PLAN.md), and [cms.md](cms.md) for the
+service itself). Nothing in this pipeline depends on it being awake.
+
+One consequence worth knowing: the root `npm install` Vercel runs now installs
+the CMS's dependencies too, because npm installs a workspace tree rather than
+one workspace. It costs build time and nothing else — the deployed bundle traces
+what the site imports, and the site imports none of it.
 
 ## Settings that live in the dashboard
 

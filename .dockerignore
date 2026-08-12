@@ -1,0 +1,39 @@
+# The build stage copies the whole repo and then builds one workspace. Anything
+# here is either rebuilt inside the image, irrelevant to it, or must never enter
+# it in the first place.
+#
+# Note the `**/` — a bare `node_modules` matches only the one at the root, and
+# this is a monorepo where every workspace can have its own.
+
+# Installed in the deps stage, for the image's own platform. A node_modules
+# built on a developer's machine carries the wrong native binaries — sharp above
+# all — and the failure surfaces as a crash at the first upload.
+**/node_modules
+
+# Build output. The image builds its own.
+**/.next
+**/out
+**/build
+**/coverage
+**/*.tsbuildinfo
+**/next-env.d.ts
+
+# Secrets. Belt and braces: these are gitignored too, but a build context is
+# read from the working tree rather than from git, so an untracked .env would
+# otherwise be copied straight into a layer.
+**/.env
+**/.env.*
+
+# Not the CMS's business.
+.git
+.github
+.claude
+.agents
+.vercel
+docs
+design
+*.md
+
+# Local noise.
+**/.DS_Store
+**/npm-debug.log*

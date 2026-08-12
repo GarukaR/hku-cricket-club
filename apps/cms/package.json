@@ -1,0 +1,43 @@
+{
+  "name": "@hkucc/cms",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Payload — the club's editing surface. Stateless by construction: Neon holds the data, R2 holds the media, the container holds nothing.",
+  "//type": "Payload's CLI loads payload.config.ts through tsx, which follows this field. Without it the config is loaded as CommonJS and the first Payload package with a top-level await fails the whole load.",
+  "type": "module",
+  "scripts": {
+    "dev": "next dev --port 3001",
+    "build": "next build",
+    "lint": "eslint",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "payload": "payload",
+    "generate:types": "payload generate:types",
+    "generate:importmap": "payload generate:importmap",
+    "migrate:create": "payload migrate:create",
+    "migrate:status": "payload migrate:status"
+  },
+  "dependencies": {
+    "@hkucc/domain": "*",
+    "@payloadcms/db-postgres": "3.88.0",
+    "@payloadcms/next": "3.88.0",
+    "@payloadcms/richtext-lexical": "3.88.0",
+    "@payloadcms/storage-s3": "3.88.0",
+    "@payloadcms/ui": "3.88.0",
+    "graphql": "^16.8.1",
+    "next": "16.3.0",
+    "payload": "3.88.0",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "sharp": "^0.34.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.0",
+    "typescript": "^5",
+    "vitest": "^4.1.10"
+  }
+}

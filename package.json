@@ -11,6 +11,8 @@
     "dev": "npm run dev --workspace @hkucc/web",
     "build": "npm run build --workspace @hkucc/web",
     "start": "npm run start --workspace @hkucc/web",
+    "dev:cms": "npm run dev --workspace @hkucc/cms",
+    "build:cms": "npm run build --workspace @hkucc/cms",
     "lint": "npm run lint --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",

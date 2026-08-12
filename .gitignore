@@ -36,6 +36,9 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# The template is the exception: it names every variable the CMS requires and
+# carries no value for any of them.
+!.env.example
 
 # vercel
 .vercel

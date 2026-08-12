@@ -1,0 +1,112 @@
+/* The notice, set as a single column of prose.
+
+   The 404 borrows the lead story's two-column grid, so a visitor who mistyped an
+   address still lands on something shaped like the page they wanted. This page
+   deliberately does not: when the site itself has failed, a layout pretending to
+   be the record would be the wrong kind of reassurance. One column, one measure,
+   more paper around it. */
+.notice {
+  padding-block: clamp(3rem, 8vw, 5.5rem) clamp(3.5rem, 10vw, 6rem);
+  max-width: 52ch;
+}
+
+/* Below the club's own name: the page's statement, not the site's. "Suspended"
+   is cricket's own word for an unplanned stop — accurate here, and carrying no
+   punchline, which the 404 can afford and this page cannot. */
+.heading {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.7rem, 4.2vw, 2.4rem);
+  line-height: 1.16;
+  letter-spacing: 0.01em;
+  margin: 0;
+  text-wrap: balance;
+}
+
+.prose {
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 2.2vw, 1.08rem);
+  line-height: 1.68;
+  color: var(--color-ink2);
+  margin: 1.1rem 0 0;
+}
+
+/* Wrapping rather than shrinking: at the narrowest width the two controls stack
+   and each keeps its full stamp, which a row of two squeezed boxes would not. */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.6rem;
+  margin-top: 2.1rem;
+}
+
+/* The club's stamp, in the same hand as the 404's way back — on paper, not on
+   the crest green. It is a button and not a link because it re-renders the page
+   in place; the anchor beside it is the one that navigates. */
+.retry {
+  border: 1px solid var(--color-ink);
+  background: transparent;
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  padding: 0.85rem 1.9rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease-out, color 0.15s ease-out;
+}
+
+.retry:hover {
+  background-color: var(--color-ink);
+  color: var(--color-bg);
+}
+
+/* Subordinate to the stamp: the second way out, set as running text so the two
+   read as a primary and a fallback rather than as a pair of equal buttons. */
+.home {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-ink2);
+  text-decoration: underline;
+  text-decoration-color: var(--color-rule);
+  text-underline-offset: 0.24em;
+  transition: color 0.15s ease-out, text-decoration-color 0.15s ease-out;
+}
+
+.home:hover {
+  color: var(--color-accent);
+  text-decoration-color: var(--color-accent);
+}
+
+/* A standing fact, kept where the club keeps them: hairline above, smallest
+   voice, well below the controls so it never competes with the way out. */
+.digest {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 0.9rem;
+  align-items: baseline;
+  border-top: 1px solid var(--color-rule);
+  margin: 3rem 0 0;
+  padding-top: 0.9rem;
+}
+
+.digestLabel {
+  font-family: var(--font-body);
+  font-size: 0.66rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-ink2);
+}
+
+/* The data face, as the record sets its figures and the 404 sets its status
+   code — an identifier to be read back exactly, not prose. */
+.digestValue {
+  font-family: var(--font-data);
+  font-size: 0.76rem;
+  letter-spacing: 0.02em;
+  color: var(--color-ink2);
+  overflow-wrap: anywhere;
+}

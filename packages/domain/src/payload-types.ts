@@ -67,6 +67,10 @@ export interface Config {
   };
   blocks: {};
   collections: {
+    teams: Team;
+    seasons: Season;
+    competitions: Competition;
+    matches: Match;
     users: User;
     media: Media;
     'payload-kv': PayloadKv;
@@ -76,6 +80,10 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
+    teams: TeamsSelect<false> | TeamsSelect<true>;
+    seasons: SeasonsSelect<false> | SeasonsSelect<true>;
+    competitions: CompetitionsSelect<false> | CompetitionsSelect<true>;
+    matches: MatchesSelect<false> | MatchesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -116,6 +124,154 @@ export interface UserAuthOperations {
     email: string;
     password: string;
   };
+}
+/**
+ * The sides the club fields. Each one's matches, squad and averages hang off its entry here.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "teams".
+ */
+export interface Team {
+  id: number;
+  /**
+   * The club's own word for the side — league, challenge league, sunday social, student. Not Squad, side or XI.
+   */
+  name: string;
+  /**
+   * The side's address on the site, as in /teams/challenge-league. Changing it breaks every link anybody has saved, so set it once.
+   */
+  slug: string;
+  /**
+   * Exactly how this side is named on CricClubs — HKU CC, HKU Belchers CC, HKU Students (UCL). Nothing in a scorecard export says which of our sides it belongs to, so the importer knows only what is recorded here. Leave it empty for a side scored nowhere: the sunday social side's matches are not scored at all, and saying so is the record being honest rather than a field somebody forgot.
+   */
+  cricclubsNames?: string[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * The club's playing years. Create the new one in September, before the first fixture is entered.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "seasons".
+ */
+export interface Season {
+  id: number;
+  /**
+   * Written as the club writes it — 2025/26. Not 2025-26, which is CricClubs' form, and not 2025/2026.
+   */
+  name: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * The leagues and cups the club's sides are entered into. A friendly is not one of these — leave a friendly's Competition empty.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "competitions".
+ */
+export interface Competition {
+  id: number;
+  /**
+   * The competition as Cricket Hong Kong names it, without the division — Saturday Championship, Challenge League, University Cricket League.
+   */
+  name: string;
+  /**
+   * The division, if the competition has one — Div 2. The University Cricket League is entered undivided, so leave it empty there.
+   */
+  division?: string | null;
+  /**
+   * How the competition is printed. Made from the two fields above.
+   */
+  label?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Every fixture the club plays, before and after it is played. Enter it when the fixture is known; add the result afterwards, on the same record.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "matches".
+ */
+export interface Match {
+  id: number;
+  /**
+   * Which of the club's sides played it. Not the competition — the challenge league side and the Challenge League Div 3 are different things.
+   */
+  team: number | Team;
+  season: number | Season;
+  /**
+   * Leave empty for a friendly. A friendly genuinely has no competition, and the emptiness is the record saying so.
+   */
+  competition?: (number | null) | Competition;
+  date: string;
+  /**
+   * 24-hour, as in 14:00. Only needed until the match is played, after which the result is what the page prints.
+   */
+  startTime?: string | null;
+  /**
+   * The other club, as the club itself spells it.
+   */
+  opponent: string;
+  /**
+   * Home is Sandy Bay. The record prints H or A beside every result.
+   */
+  venue: 'home' | 'away';
+  /**
+   * Where it was played — Sandy Bay, Mission Road, Yeung King Playground.
+   */
+  ground?: string | null;
+  /**
+   * How long a game it was — 40 overs, T20. Two sides can meet twice in a season over different distances, and the record should say which was which.
+   */
+  format?: string | null;
+  /**
+   * The CricClubs page for this match. The site links to it rather than reproducing the ball-by-ball detail.
+   */
+  scorecard?: string | null;
+  /**
+   * Fill this in once the match has been played. Until then, leaving the outcome empty is what marks it as a fixture.
+   */
+  result?: {
+    /**
+     * Recorded, never worked out from the scores: a rain-adjusted target, a concession and a tie all look like something else from the totals alone.
+     */
+    outcome?: ('won' | 'lost' | 'drawn' | 'tied' | 'abandoned' | 'conceded') | null;
+    /**
+     * As a scorer states it — 33 runs, or 5 wickets. Leave it empty if nobody recorded it; a win with no margin is still a win.
+     */
+    margin?: {
+      value?: number | null;
+      unit?: ('runs' | 'wickets') | null;
+    };
+    /**
+     * One row per team innings, in the order they were batted. Stored rather than added up from the batters: extras belong to no batter, and one real export's batting figures are a run short of a total that is correct.
+     */
+    innings?:
+      | {
+          side: 'hku' | 'opponent';
+          runs: number;
+          /**
+           * Leave empty if the side was bowled out — 151 all out is written 151, never 151/10.
+           */
+          wickets?: number | null;
+          /**
+           * Balls, not decimals: 28.3 is 28 overs and 3 balls.
+           */
+          overs?: string | null;
+          /**
+           * Byes, leg byes, wides, no balls and penalties — the runs that belong to no batter.
+           */
+          extras?: number | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  /**
+   * How this match is listed. Made from the date and opponent.
+   */
+  summary?: string | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * Committee members with access to this admin panel. The committee turns over every year — remove the outgoing members when you add the incoming ones.
@@ -197,6 +353,22 @@ export interface PayloadLockedDocument {
   id: number;
   document?:
     | ({
+        relationTo: 'teams';
+        value: number | Team;
+      } | null)
+    | ({
+        relationTo: 'seasons';
+        value: number | Season;
+      } | null)
+    | ({
+        relationTo: 'competitions';
+        value: number | Competition;
+      } | null)
+    | ({
+        relationTo: 'matches';
+        value: number | Match;
+      } | null)
+    | ({
         relationTo: 'users';
         value: number | User;
       } | null)
@@ -245,6 +417,77 @@ export interface PayloadMigration {
   batch?: number | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "teams_select".
+ */
+export interface TeamsSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  cricclubsNames?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "seasons_select".
+ */
+export interface SeasonsSelect<T extends boolean = true> {
+  name?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "competitions_select".
+ */
+export interface CompetitionsSelect<T extends boolean = true> {
+  name?: T;
+  division?: T;
+  label?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "matches_select".
+ */
+export interface MatchesSelect<T extends boolean = true> {
+  team?: T;
+  season?: T;
+  competition?: T;
+  date?: T;
+  startTime?: T;
+  opponent?: T;
+  venue?: T;
+  ground?: T;
+  format?: T;
+  scorecard?: T;
+  result?:
+    | T
+    | {
+        outcome?: T;
+        margin?:
+          | T
+          | {
+              value?: T;
+              unit?: T;
+            };
+        innings?:
+          | T
+          | {
+              side?: T;
+              runs?: T;
+              wickets?: T;
+              overs?: T;
+              extras?: T;
+              id?: T;
+            };
+      };
+  summary?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

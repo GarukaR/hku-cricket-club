@@ -182,8 +182,13 @@ looks like:
   panel at `localhost:3001` against a scratch Postgres and a MinIO standing in
   for R2 — no cloud account needed. The container has a read-only root
   filesystem, so the claim that it keeps no state is enforced rather than
-  asserted. Its collections are still only Users and Media; the record itself
-  arrives with #6. Everything about it is in [cms.md](cms.md).
+  asserted. Everything about it is in [cms.md](cms.md).
+- **The skeleton of the record is in the CMS.** Team, Season, Competition and
+  Match are editable, and `packages/domain` now exports their generated types.
+  Nothing reads them yet: the homepage still renders
+  `apps/web/src/content/matches.ts`, and wiring it to the CMS is a later ticket.
+  Appearance — the atomic fact everything is derived from — arrives with the
+  importer.
 - `apps/web/src/app/tokens.css` is **generated**. Never hand-edit it; change the
   `CREST` anchors in `design/derive.js` and run `npm run tokens`.
 

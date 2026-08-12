@@ -1,6 +1,7 @@
 import type { CollectionConfig, FieldHook } from "payload";
 
 import { competitionLabel } from "@/lib/notation";
+import { announceOnChange, announceOnDelete } from "@/lib/publish";
 
 import { publiclyReadable } from "./access";
 
@@ -46,6 +47,8 @@ export const Competitions = {
     group: "The record",
   },
   access: publiclyReadable,
+  // The competition is printed above the scoreline, so renaming one changes it.
+  hooks: { afterChange: [announceOnChange], afterDelete: [announceOnDelete] },
   fields: [
     {
       name: "name",

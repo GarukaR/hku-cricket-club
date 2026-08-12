@@ -55,3 +55,17 @@ services:
 
       - key: R2_BUCKET
         value: hkucc-media
+
+      # Announcing a publish to the site. Both or neither — the CMS refuses to
+      # start with one of them, because a URL with no secret is rejected on
+      # every publish and a secret with no URL is a webhook that never fires.
+      #
+      # REVALIDATE_SECRET must be the same string as the one set on Vercel.
+      # SITE_REVALIDATE_URL is the site's own address plus /api/revalidate.
+      #
+      # Leave both unset and the CMS still runs: the site then shows the record
+      # as of its last build rather than within seconds of a save.
+      - key: SITE_REVALIDATE_URL
+        sync: false
+      - key: REVALIDATE_SECRET
+        sync: false

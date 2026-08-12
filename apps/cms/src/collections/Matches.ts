@@ -7,6 +7,7 @@ import type {
 } from "payload";
 
 import { matchSummary, oversProblem, startTimeProblem } from "@/lib/notation";
+import { announceOnChange, announceOnDelete } from "@/lib/publish";
 import { OUTCOMES, resultProblem } from "@/lib/result";
 
 import { publiclyReadable } from "./access";
@@ -79,6 +80,8 @@ export const Matches = {
     group: "The record",
   },
   access: publiclyReadable,
+  // Saving a Match is what makes it appear on the live site — see lib/publish.
+  hooks: { afterChange: [announceOnChange], afterDelete: [announceOnDelete] },
   fields: [
     {
       name: "team",

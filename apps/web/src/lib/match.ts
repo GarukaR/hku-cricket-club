@@ -43,14 +43,23 @@ export type Result = {
  *  A Match that has not been played simply has no Result yet — a scheduled
  *  fixture and a completed game are the same Match at two points in its life,
  *  never two records. `competition` is absent for a friendly, and that absence
- *  is meaningful rather than a special value. */
+ *  is meaningful rather than a special value.
+ *
+ *  `ground` and `format` are optional because the CMS lets an editor leave them
+ *  empty, and most of this club's history is half known. Every component that
+ *  prints them therefore has to survive their absence rather than printing the
+ *  word "undefined" into the record. */
 export type Match = {
   /** ISO date, `YYYY-MM-DD`. Formatted for display in ./dates. */
   date: string;
+  /** Which of the club's sides played it — league, student, and so on. The
+   *  homepage's record is club-wide, so a row that did not name the side would
+   *  read as one team's season while being four. */
+  team: string;
   opponent: string;
-  ground: string;
+  ground?: string;
   venue: "Home" | "Away";
-  format: string;
+  format?: string;
   competition?: string;
   /** 24-hour local start time, for a Match not yet played. */
   time?: string;
@@ -94,6 +103,16 @@ export function verdict(result: Result): string {
 /** The same fact at table width, where the column header already says Result. */
 export function resultSummary(result: Result): string {
   return stated(result, " · ");
+}
+
+/** Joins the standing facts printed beside a Match — its date, its ground, the
+ *  distance it was played over — leaving out the ones nobody recorded.
+ *
+ *  A line reading "Sat 25 April ·  · 40 overs" looks broken; one that prints
+ *  only what the record holds looks edited. Half-known history is the normal
+ *  case here, not the exception. */
+export function facts(...parts: (string | undefined)[]): string {
+  return parts.filter((part) => part !== undefined && part !== "").join(" · ");
 }
 
 /** Whether the record reads this Outcome as a win, a loss, or neither. Drawn,

@@ -34,6 +34,21 @@ export type CmsEnv = {
      */
     publicUrl: string;
   };
+  /**
+   * Where to announce a publish, if anywhere.
+   *
+   * Optional, and the only optional thing here. A container brought up locally
+   * has no deployed site to tell, and the CMS being fully usable without one is
+   * the point rather than a gap — the public site is a reader of this record,
+   * not a participant in it. Absence means publishing simply does not invalidate
+   * anything, which start-up says out loud.
+   */
+  publish?: {
+    /** The site's revalidate endpoint, e.g. `https://…/api/revalidate`. */
+    url: string;
+    /** Shared with the site as `REVALIDATE_SECRET`. */
+    secret: string;
+  };
 };
 
 export class InvalidEnvironment extends Error {
@@ -98,8 +113,28 @@ function parse(source: Record<string, string | undefined>): {
     publicUrl: requiredUrl("R2_PUBLIC_URL"),
   };
 
+  // Both or neither. A URL with no secret would be rejected by the site on
+  // every publish, and a secret with no URL is a webhook that silently never
+  // fires — each of which looks like working software until somebody publishes
+  // and the site does not change.
+  const publishUrl = source.SITE_REVALIDATE_URL?.trim();
+  const publishSecret = source.REVALIDATE_SECRET?.trim();
+  let publish: CmsEnv["publish"];
+
+  if (publishUrl && publishSecret) {
+    if (URL.canParse(publishUrl)) {
+      publish = { url: publishUrl, secret: publishSecret };
+    } else {
+      problems.push(`SITE_REVALIDATE_URL is not a URL (got "${publishUrl}")`);
+    }
+  } else if (publishUrl || publishSecret) {
+    problems.push(
+      "SITE_REVALIDATE_URL and REVALIDATE_SECRET go together — set both to announce a publish to the site, or neither to leave it reading the record only when it builds",
+    );
+  }
+
   return {
-    env: { databaseUrl, payloadSecret, serverUrl, media },
+    env: { databaseUrl, payloadSecret, serverUrl, media, publish },
     problems,
   };
 }

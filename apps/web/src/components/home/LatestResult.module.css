@@ -56,6 +56,24 @@
   color: var(--color-ink2);
 }
 
+/* A result whose totals nobody recorded. It occupies the scoreline's place and
+   keeps its materials — display serif, the same vertical rhythm — so the page
+   still leads with what the club did rather than demoting it to a caption. */
+.bare {
+  display: grid;
+  gap: 0.3rem;
+  padding-block: 0.5rem;
+}
+
+.stated {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5.6vw, 3.4rem);
+  line-height: 1;
+  letter-spacing: -0.015em;
+  font-weight: 400;
+  color: var(--color-red);
+}
+
 .verdict {
   border-top: 2px solid var(--color-ink);
   margin-top: 1rem;

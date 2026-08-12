@@ -11,7 +11,11 @@ The public site is hosted on **Vercel**, git-connected to
 
 The CMS is **not** deployed here — it is a container on Render, and it is off
 the request path by design (see [PLAN.md](PLAN.md), and [cms.md](cms.md) for the
-service itself). Nothing in this pipeline depends on it being awake.
+service itself). **No visitor's request ever reaches it.**
+
+A *build*, however, does: the site reads the record from Payload while it
+prerenders. See [Reading the record](#reading-the-record) below for what that
+costs and what it does not.
 
 One consequence worth knowing: the root `npm install` Vercel runs now installs
 the CMS's dependencies too, because npm installs a workspace tree rather than
@@ -56,10 +60,57 @@ would put the easy half of the configuration in the repo and leave the only
 non-obvious half in the dashboard, which is worse than keeping the whole story
 in one place. This document is that place.
 
+## Reading the record
+
+The site reads Matches from Payload's REST API, and only ever while it builds.
+Two environment variables, both set in the Vercel dashboard:
+
+| | |
+|---|---|
+| `CMS_URL` | The Render service's origin, e.g. `https://hkucc-cms.onrender.com` |
+| `REVALIDATE_SECRET` | Shared with the CMS, which sends it on every publish |
+
+Read access on the record is public, so the build carries no credential. That is
+deliberate rather than an oversight — the record *is* the public site, and a
+login in front of it would protect nothing while having to be handed to the
+build. It is stated once in `apps/cms/src/collections/access.ts`.
+
+### Publishing
+
+Saving a Match in the panel calls `POST /api/revalidate` on the site with that
+shared secret. The site drops the pages derived from the record and re-renders
+them on the next request — **no redeploy, no git push**. The notice carries no
+data: Payload says only that the record changed, and the site re-reads it for
+itself, so there is exactly one way into the record.
+
+The pair is optional at both ends. With it unset the CMS still works completely;
+the site just shows the record as of its last build, and the day-long cache
+lifetime is the safety net if a notice is ever missed.
+
+### When Render is asleep, and when it is down
+
+Render's free tier spins down after about fifteen minutes idle and takes roughly
+fifty seconds to wake. That is the *normal* state, not a fault, so the fetch
+waits sixty seconds and retries once — a build sits through a cold start rather
+than failing on one.
+
+If Render is genuinely down, **the build fails, loudly, and that is correct.**
+The alternative — treating an unreachable CMS as an empty record — would ship a
+site whose season table is silently blank, and a successful deploy of a broken
+page is far worse than a failed deploy of a working one.
+
+What that costs is worth being clear about: **while Render is unreachable,
+nothing can be deployed** — not even a change that has nothing to do with match
+data. What it does *not* cost is the live site. Vercel keeps the previous
+deployment serving, so visitors see the record exactly as before.
+
+This is the accepted trade-off of reading over HTTP rather than going straight to
+Neon. Revisit it if it ever actually bites.
+
 ## What has to stay true
 
-**Every route is prerendered.** The architecture rests on it: the site is static,
-so the CMS can be a container that sleeps. A route that turns dynamic — one
+**Every page is prerendered.** The architecture rests on it: the site is static,
+so the CMS can be a container that sleeps. A page that turns dynamic — one
 `cookies()`, one uncached `fetch()` — still deploys and still looks correct. It
 just starts costing a function invocation per view and quietly couples the site's
 uptime to the CMS, which is the whole thing the design avoids. Nothing about the
@@ -69,8 +120,13 @@ deployed page shows it, so the build output is the only place it can be caught:
 npm run assert:prerendered   # after a build; CI runs it on every PR
 ```
 
-If it ever fires, the answer is not to delete the check. A route that genuinely
+If it ever fires, the answer is not to delete the check. A page that genuinely
 has to be dynamic is a decision to argue in [PLAN.md](PLAN.md) first.
+
+Route handlers are exempt, and only route handlers: `/api/revalidate` exists to
+be called per request. The check tells the two apart by the file each was built
+from — `page.tsx` against `route.ts` — rather than by a list of excused paths,
+which is a check that stops meaning anything.
 
 ## Credentials
 

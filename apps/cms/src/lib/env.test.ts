@@ -110,6 +110,45 @@ describe("readEnv", () => {
   });
 });
 
+describe("announcing a publish", () => {
+  const withPublish = (
+    url?: string,
+    secret?: string,
+  ): Record<string, string | undefined> => ({
+    ...validEnv(),
+    SITE_REVALIDATE_URL: url,
+    REVALIDATE_SECRET: secret,
+  });
+
+  it("is optional — a container with no site to tell is a working CMS", () => {
+    // The normal local case: `docker compose up` has no deployment to notify,
+    // and the CMS must be fully usable without one.
+    expect(readEnv(validEnv()).publish).toBeUndefined();
+  });
+
+  it("is read when both halves are given", () => {
+    expect(
+      readEnv(withPublish("https://hkucc.example/api/revalidate", "shared")).publish,
+    ).toEqual({ url: "https://hkucc.example/api/revalidate", secret: "shared" });
+  });
+
+  it("refuses half of it, because half looks like working software", () => {
+    // A URL with no secret is rejected by the site on every publish; a secret
+    // with no URL is a webhook that silently never fires. Both look fine until
+    // somebody publishes and the site does not change.
+    expect(() => readEnv(withPublish("https://hkucc.example/api/revalidate"))).toThrow(
+      /go together/,
+    );
+    expect(() => readEnv(withPublish(undefined, "shared"))).toThrow(/go together/);
+  });
+
+  it("complains about a URL that is not one", () => {
+    expect(() => readEnv(withPublish("hkucc.example/revalidate", "shared"))).toThrow(
+      /SITE_REVALIDATE_URL is not a URL/,
+    );
+  });
+});
+
 describe("readEnvUnchecked", () => {
   // What the Docker build sees: the config is imported to compile the admin
   // panel, long before any secret exists. It must import rather than explode.

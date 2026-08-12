@@ -1,10 +1,17 @@
-// Fails the build if any route is rendered per request rather than prerendered.
+// Fails the build if any page is rendered per request rather than prerendered.
 // Why that matters, and what to do if this ever fires: docs/deploy.md.
 //
-// Two manifests, read together, are the signal. `routes-manifest.json` lists
+// Three manifests, read together, are the signal. `routes-manifest.json` lists
 // every route the build produced; `prerender-manifest.json` lists only the ones
-// it actually rendered ahead of time. A route present in the first and missing
-// from the second is server-rendered per request.
+// it actually rendered ahead of time. A route in the first and missing from the
+// second is server-rendered per request.
+//
+// `app-path-routes-manifest.json` is what separates a page from a route handler,
+// by the file each was built from: `/page` against `/route`. The distinction
+// matters because a route handler is *supposed* to run per request — the publish
+// webhook at /api/revalidate exists precisely to be called — and a check that
+// could not tell the two apart would either fail on it or have to be given a
+// list of excused paths, which is a check that stops meaning anything.
 
 import { readFileSync } from "node:fs";
 
@@ -13,6 +20,7 @@ const read = (name) =>
 
 const routes = read("routes-manifest.json");
 const prerendered = read("prerender-manifest.json");
+const appPaths = read("app-path-routes-manifest.json");
 
 // A route with a dynamic segment is prerendered under `dynamicRoutes` when
 // generateStaticParams supplied its paths, so both maps count as ahead-of-time.
@@ -21,12 +29,21 @@ const ahead = new Set([
   ...Object.keys(prerendered.dynamicRoutes ?? {}),
 ]);
 
-const declared = [
+/** Built from a `route.ts`, so per-request by definition rather than by mistake. */
+const handlers = new Set(
+  Object.entries(appPaths)
+    .filter(([source]) => source.endsWith("/route"))
+    .map(([, route]) => route),
+);
+
+const pages = [
   ...(routes.staticRoutes ?? []),
   ...(routes.dynamicRoutes ?? []),
-].map((route) => route.page);
+]
+  .map((route) => route.page)
+  .filter((page) => !handlers.has(page));
 
-const perRequest = declared.filter((page) => !ahead.has(page));
+const perRequest = pages.filter((page) => !ahead.has(page));
 
 if (perRequest.length > 0) {
   console.error(
@@ -36,4 +53,7 @@ if (perRequest.length > 0) {
   process.exit(1);
 }
 
-console.log(`Prerendered: ${declared.join(", ")}`);
+console.log(`Prerendered: ${pages.join(", ")}`);
+if (handlers.size > 0) {
+  console.log(`Per request, as intended: ${[...handlers].join(", ")}`);
+}

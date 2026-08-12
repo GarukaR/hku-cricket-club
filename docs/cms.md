@@ -120,6 +120,39 @@ is wired into the field it guards — `notation.ts` for the forms the club write
 things in, `result.ts` for outcome and margin, `mapping.ts` for the CricClubs
 names.
 
+## Saving a Match publishes it
+
+Saving anything the record's pages are built from — a Match, and also the Team,
+Season or Competition named on one — calls the site's `/api/revalidate` with a
+shared secret. The site drops the pages derived from the record and re-renders
+them on the next request. **No redeploy, no git push**; the editor sees their
+change within seconds.
+
+The notice carries no data. Payload says only that the record changed and the
+site re-reads it, so there remains exactly one way into the record rather than a
+second, unvalidated one arriving by webhook.
+
+Two variables, in `apps/cms/src/lib/publish.ts`:
+
+| | |
+|---|---|
+| `SITE_REVALIDATE_URL` | The site's address plus `/api/revalidate` |
+| `REVALIDATE_SECRET` | The same string the site is given |
+
+**Both or neither.** A URL with no secret is refused on every publish; a secret
+with no URL is a webhook that silently never fires. Each looks like working
+software right up until somebody publishes and the site does not change, so
+start-up rejects half a pair.
+
+Setting neither is a perfectly good configuration, and the normal one locally: a
+container with no deployed site to tell is a working CMS, and it says so in the
+log rather than failing. The site then shows the record as of its last build.
+
+**This can never fail a save.** An editor entering Saturday's result must not be
+stopped because Vercel is unreachable, so every failure is logged and swallowed.
+A missed notice costs at most a day, which is how long the site's cached copy
+lives before it re-reads the record anyway.
+
 ## Changing the collections
 
 The database schema is pushed automatically in development and **migrated** in

@@ -91,6 +91,19 @@ services:
       R2_PUBLIC_URL: http://localhost:9000/hkucc-media
       R2_ACCESS_KEY_ID: hkucc-local
       R2_SECRET_ACCESS_KEY: hkucc-local-secret
+      # Where a publish is announced. The pair is optional — drop both and the
+      # CMS is still a working CMS, which is the normal case if you are only
+      # editing the record and not looking at the site.
+      #
+      # The default points at `npm run dev` on the host, so saving a Match in
+      # the panel invalidates the running site the same way it will in
+      # production. The site must be given the same secret as REVALIDATE_SECRET.
+      SITE_REVALIDATE_URL: ${SITE_REVALIDATE_URL:-http://host.docker.internal:3000/api/revalidate}
+      REVALIDATE_SECRET: ${REVALIDATE_SECRET:-local-development-only-not-a-secret}
+    # `host.docker.internal` is given on Docker Desktop and not on plain Linux.
+    # Naming it explicitly means the line above works the same either way.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     # The claim this project makes about the container is that it holds no state.
     # Here that claim is enforced rather than asserted: the filesystem is
     # read-only, and the two directories that legitimately need to be writable

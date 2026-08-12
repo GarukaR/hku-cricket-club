@@ -163,13 +163,17 @@ looks like:
   switcher. The page is statically prerendered. The earlier foundation status page
   is in commit `e4bf730` and was deliberately not restored — the site now has a
   homepage to be its own status.
-- **The homepage reads Matches, not loose strings.** `apps/web/src/lib/match.ts`
-  holds CONTEXT.md's vocabulary as view types — Match, Result, Innings, Outcome —
-  and every component takes a whole Match. `apps/web/src/content/matches.ts` holds
-  the invented record and is deleted, not edited, when the importer lands. Two
-  smaller inventions sit elsewhere and outlive it: the 1988 handbook quotation in
+- **The homepage reads the real record.** `apps/web/src/content/matches.ts` is
+  gone; the page reads Matches out of the CMS. `apps/web/src/lib/match.ts` still
+  holds CONTEXT.md's vocabulary as view types, `lib/record.ts` maps Payload's
+  stored Match onto them, `lib/cms.ts` fetches, and `lib/matches.ts` caches and
+  tags. Two inventions outlive the sample data: the 1988 handbook quotation in
   `TheClub.tsx`, and the plate captions and provisional training time in
   `apps/web/src/content/club.ts`. The footer says so on the page.
+- **The homepage's record is club-wide, and every row names its side.** Four
+  sides play under one crest, and a table that ran them together silently would
+  read as one team's season while being four — the same failure as a career total
+  that omits a season. Per-team pages get their own tags when they exist.
 - **Three placeholders remain on the page, each marked in code:** the crest in the
   masthead (traced mark still outstanding), the plates (no photographs yet), and
   the Admission button's destination (the enquiry route is its own ticket).
@@ -183,12 +187,17 @@ looks like:
   for R2 — no cloud account needed. The container has a read-only root
   filesystem, so the claim that it keeps no state is enforced rather than
   asserted. Everything about it is in [cms.md](cms.md).
-- **The skeleton of the record is in the CMS.** Team, Season, Competition and
-  Match are editable, and `packages/domain` now exports their generated types.
-  Nothing reads them yet: the homepage still renders
-  `apps/web/src/content/matches.ts`, and wiring it to the CMS is a later ticket.
+- **The skeleton of the record is in the CMS, and the site reads it.** Team,
+  Season, Competition and Match are editable, `packages/domain` exports their
+  generated types, and publishing one puts it on the live site within seconds.
   Appearance — the atomic fact everything is derived from — arrives with the
   importer.
+- **Every layer is now proven together.** The site reads Payload over HTTP while
+  it builds, caches what it rendered under one `record` tag, and a Payload hook
+  calls `POST /api/revalidate` on save. Verified rather than assumed: with the
+  CMS container stopped, every page still serves the record in full. The cost of
+  reading over HTTP is that a build needs Render awake — see
+  [deploy.md](deploy.md), *When Render is asleep, and when it is down*.
 - `apps/web/src/app/tokens.css` is **generated**. Never hand-edit it; change the
   `CREST` anchors in `design/derive.js` and run `npm run tokens`.
 
@@ -203,10 +212,13 @@ looks like:
    [docs/cms.md](cms.md). The collections from CONTEXT.md are step 3a, and are
    their own ticket: getting the box right first meant the schema could then
    change without anything else moving.
-4. The importer — parsing, reconciliation, Alias resolution, the confidence gate.
-5. Public pages.
-6. Derived figures and leaderboards.
-7. Wire webhook cache invalidation.
+4. ~~Real Matches on the live site, invalidated on publish.~~ Done — the
+   architecture tracer. Every layer proven together in production before more
+   was built on top of it, which is why it came before the importer rather than
+   after: a schema is cheap to change while nothing reads it.
+5. The importer — parsing, reconciliation, Alias resolution, the confidence gate.
+6. Public pages.
+7. Derived figures and leaderboards.
 
 ## Leaderboards
 

@@ -110,6 +110,7 @@ describe("inningsSpoken", () => {
 describe("isPlayed", () => {
   const scheduled: Match = {
     date: "2026-05-02",
+    team: "league",
     opponent: "HKUST",
     ground: "Sandy Bay",
     venue: "Home",

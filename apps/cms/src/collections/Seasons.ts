@@ -1,6 +1,7 @@
 import type { CollectionConfig } from "payload";
 
 import { seasonProblem } from "@/lib/notation";
+import { announceOnChange, announceOnDelete } from "@/lib/publish";
 
 import { publiclyReadable } from "./access";
 import { validated } from "./validate";
@@ -27,6 +28,8 @@ export const Seasons = {
     group: "The record",
   },
   access: publiclyReadable,
+  // The season names the record's heading, and creating one moves it.
+  hooks: { afterChange: [announceOnChange], afterDelete: [announceOnDelete] },
   fields: [
     {
       name: "name",

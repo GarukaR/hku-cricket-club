@@ -1,16 +1,10 @@
-import type {
-  CollectionConfig,
-  TextFieldManyValidation,
-  TextFieldSingleValidation,
-} from "payload";
+import type { CollectionConfig, TextFieldManyValidation } from "payload";
 
 import { entityNameProblem } from "@/lib/mapping";
 import { slugProblem } from "@/lib/notation";
 
 import { publiclyReadable } from "./access";
-
-const validSlug: TextFieldSingleValidation = (value) =>
-  slugProblem(value ?? undefined) ?? true;
+import { validated } from "./validate";
 
 /**
  * No two sides may claim the same CricClubs entity.
@@ -90,7 +84,7 @@ export const Teams = {
         description:
           "The side's address on the site, as in /teams/challenge-league. Changing it breaks every link anybody has saved, so set it once.",
       },
-      validate: validSlug,
+      validate: validated(slugProblem),
     },
     {
       name: "cricclubsNames",

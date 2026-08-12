@@ -110,6 +110,11 @@ Nearly everything else is optional on purpose. Most of the club's history is
 half known, and a CMS that refuses to save it stops being used. The rules above
 are the few places where a wrong value would be worse than a missing one.
 
+All four are **world-readable and committee-writable**. The record *is* the
+public site: the site is statically generated and reads these collections while
+it builds, and nothing here is unpublished the moment it is saved. A login in
+front of them would protect nothing and would have to be handed to the build.
+
 Each rule lives in a plain function under `apps/cms/src/lib/`, tested there, and
 is wired into the field it guards — `notation.ts` for the forms the club writes
 things in, `result.ts` for outcome and margin, `mapping.ts` for the CricClubs

@@ -6,13 +6,21 @@ import { publiclyReadable } from "./access";
 
 /** The name and its division, joined once, so nothing downstream joins them
  *  differently. Stored rather than assembled on read: it is what the admin
- *  panel titles the record with, and what a relationship menu shows. */
-const labelled: FieldHook = ({ siblingData }) => {
-  const { name, division } = siblingData as {
-    name?: string;
-    division?: string;
-  };
-  return competitionLabel(name, division);
+ *  panel titles the record with, and what a relationship menu shows.
+ *
+ *  Read through the record as it will be *after* the write, not as the write
+ *  states it. An update that changes only the division carries no name, and
+ *  rebuilding from that alone would blank the label — into a unique column, so
+ *  the second such edit would fail on a database constraint rather than say
+ *  anything an editor could act on. */
+const deriveLabel: FieldHook = ({ originalDoc, siblingData }) => {
+  const before = (originalDoc ?? {}) as { name?: string; division?: string };
+  const after = (siblingData ?? {}) as { name?: string; division?: string };
+
+  return competitionLabel(
+    after.name ?? before.name,
+    "division" in after ? after.division : before.division,
+  );
 };
 
 /**
@@ -66,7 +74,7 @@ export const Competitions = {
         description:
           "How the competition is printed. Made from the two fields above.",
       },
-      hooks: { beforeChange: [labelled] },
+      hooks: { beforeChange: [deriveLabel] },
     },
   ],
 } satisfies CollectionConfig;

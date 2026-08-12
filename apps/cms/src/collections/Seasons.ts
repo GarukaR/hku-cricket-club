@@ -1,11 +1,9 @@
-import type { CollectionConfig, TextFieldSingleValidation } from "payload";
+import type { CollectionConfig } from "payload";
 
 import { seasonProblem } from "@/lib/notation";
 
 import { publiclyReadable } from "./access";
-
-const writtenAsTheClubWritesIt: TextFieldSingleValidation = (value) =>
-  seasonProblem(value ?? undefined) ?? true;
+import { validated } from "./validate";
 
 /**
  * A playing year — September to May, spanning two calendar years, written
@@ -41,7 +39,7 @@ export const Seasons = {
         description:
           "Written as the club writes it — 2025/26. Not 2025-26, which is CricClubs' form, and not 2025/2026.",
       },
-      validate: writtenAsTheClubWritesIt,
+      validate: validated(seasonProblem),
     },
   ],
 } satisfies CollectionConfig;

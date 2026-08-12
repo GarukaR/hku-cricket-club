@@ -10,18 +10,18 @@ import { matchSummary, oversProblem, startTimeProblem } from "@/lib/notation";
 import { OUTCOMES, resultProblem } from "@/lib/result";
 
 import { publiclyReadable } from "./access";
+import { validated } from "./validate";
 
-const validOvers: TextFieldSingleValidation = (value) =>
-  oversProblem(value ?? undefined) ?? true;
-
-const validStartTime: TextFieldSingleValidation = (value) =>
-  startTimeProblem(value ?? undefined) ?? true;
-
+/** A web address, and one a browser can follow. `URL.canParse` alone accepts
+ *  `mailto:` and anything else with a colon in it, which is not what the field
+ *  asks for and not something the site could link to. */
 const validScorecard: TextFieldSingleValidation = (value) => {
   const written = value?.trim();
   if (!written) return true;
+
+  const url = URL.parse(written);
   return (
-    URL.canParse(written) ||
+    (url?.protocol === "https:" || url?.protocol === "http:") ||
     "Paste the whole address of the scorecard, starting with https://."
   );
 };
@@ -38,9 +38,20 @@ const validScorecard: TextFieldSingleValidation = (value) => {
 const consistentResult: SelectFieldSingleValidation = (_value, { siblingData }) =>
   resultProblem(siblingData as Match["result"]) ?? true;
 
-/** The date and the opponent, which is how an editor recognises a Match. */
-const summarised: FieldHook = ({ data }) =>
-  matchSummary(data?.date, data?.opponent);
+/** The date and the opponent, which is how an editor recognises a Match.
+ *
+ *  Built from the record as it will be after the write: an update that changes
+ *  only the result carries neither date nor opponent, and rebuilding from that
+ *  alone would leave the match nameless in every list. */
+const deriveSummary: FieldHook = ({ data, originalDoc }) => {
+  const before = (originalDoc ?? {}) as { date?: string; opponent?: string };
+  const after = (data ?? {}) as { date?: string; opponent?: string };
+
+  return matchSummary(
+    after.date ?? before.date,
+    after.opponent ?? before.opponent,
+  );
+};
 
 /**
  * One fixture of one Team, played or still to come (CONTEXT.md).
@@ -114,7 +125,7 @@ export const Matches = {
           "24-hour, as in 14:00. Only needed until the match is played, after which the result is what the page prints.",
         placeholder: "14:00",
       },
-      validate: validStartTime,
+      validate: validated(startTimeProblem),
     },
     {
       name: "opponent",
@@ -187,10 +198,16 @@ export const Matches = {
           type: "group",
           label: "Margin",
           admin: {
-            // Only a win and a loss have one. Hiding it elsewhere stops the
-            // question being asked, rather than answered wrongly.
+            // Only a win and a loss have one, so the question is not asked
+            // elsewhere — but a margin already recorded stays visible whatever
+            // the outcome now says. A win edited to a tie keeps its 33 runs,
+            // and hiding them would leave the editor a validation error about
+            // a field they can no longer see, let alone clear.
             condition: (_data, siblingData) =>
-              siblingData?.outcome === "won" || siblingData?.outcome === "lost",
+              siblingData?.outcome === "won" ||
+              siblingData?.outcome === "lost" ||
+              siblingData?.margin?.value != null ||
+              siblingData?.margin?.unit != null,
             description:
               "As a scorer states it — 33 runs, or 5 wickets. Leave it empty if nobody recorded it; a win with no margin is still a win.",
           },
@@ -240,10 +257,14 @@ export const Matches = {
                   name: "wickets",
                   type: "number",
                   min: 0,
-                  max: 10,
+                  // Nine, not ten, on purpose: a side ten down is all out, and
+                  // a scorecard writes 151 all out as 151, never 151/10. One
+                  // fact, one way of writing it — the site reads an empty
+                  // wickets column as exactly that.
+                  max: 9,
                   admin: {
                     description:
-                      "Empty if the side was bowled out — a scorecard writes 151 all out as 151, never 151/10.",
+                      "Leave empty if the side was bowled out — 151 all out is written 151, never 151/10.",
                   },
                 },
               ],
@@ -259,7 +280,7 @@ export const Matches = {
                       "Balls, not decimals: 28.3 is 28 overs and 3 balls.",
                     placeholder: "28.3",
                   },
-                  validate: validOvers,
+                  validate: validated(oversProblem),
                 },
                 {
                   name: "extras",
@@ -287,7 +308,7 @@ export const Matches = {
         position: "sidebar",
         description: "How this match is listed. Made from the date and opponent.",
       },
-      hooks: { beforeChange: [summarised] },
+      hooks: { beforeChange: [deriveSummary] },
     },
   ],
 } satisfies CollectionConfig;

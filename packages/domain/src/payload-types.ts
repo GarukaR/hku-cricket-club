@@ -251,7 +251,7 @@ export interface Match {
           side: 'hku' | 'opponent';
           runs: number;
           /**
-           * Empty if the side was bowled out — a scorecard writes 151 all out as 151, never 151/10.
+           * Leave empty if the side was bowled out — 151 all out is written 151, never 151/10.
            */
           wickets?: number | null;
           /**

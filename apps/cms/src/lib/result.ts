@@ -7,7 +7,12 @@
 // What recording it costs is the chance of a stated margin contradicting the
 // stated outcome, and that is what this module is.
 
-/** The six ways a Match ends, in the order an editor meets them. */
+/** The six ways a Match ends, in the order an editor meets them.
+ *
+ *  `apps/web/src/lib/match.ts` carries the same six as a view type, and says
+ *  itself that it collapses onto the generated Match once the site reads the
+ *  CMS. Until that ticket, the two are deliberately unjoined: the site does not
+ *  import from the CMS, and would not compile against a package that does. */
 export const OUTCOMES = [
   { value: "won", label: "Won" },
   { value: "lost", label: "Lost" },
@@ -38,10 +43,6 @@ export type ResultDraft = {
   innings?: unknown[] | null;
 };
 
-const LABEL = new Map<Outcome, string>(
-  OUTCOMES.map(({ value, label }) => [value, label]),
-);
-
 /**
  * What is wrong with a Result, if anything, as a sentence for the editor.
  *
@@ -69,7 +70,8 @@ export function resultProblem(
 
   if (!HAS_MARGIN.includes(outcome as Outcome)) {
     if (value !== undefined || unit !== undefined) {
-      return `A ${LABEL.get(outcome as Outcome)?.toLowerCase()} match has no margin — clear it.`;
+      // Every outcome reads as an adjective — a drawn match, an abandoned one.
+      return `A ${outcome} match has no margin — clear it.`;
     }
     return undefined;
   }

@@ -1,0 +1,293 @@
+import type { Match } from "@hkucc/domain";
+import type {
+  CollectionConfig,
+  FieldHook,
+  SelectFieldSingleValidation,
+  TextFieldSingleValidation,
+} from "payload";
+
+import { matchSummary, oversProblem, startTimeProblem } from "@/lib/notation";
+import { OUTCOMES, resultProblem } from "@/lib/result";
+
+import { publiclyReadable } from "./access";
+
+const validOvers: TextFieldSingleValidation = (value) =>
+  oversProblem(value ?? undefined) ?? true;
+
+const validStartTime: TextFieldSingleValidation = (value) =>
+  startTimeProblem(value ?? undefined) ?? true;
+
+const validScorecard: TextFieldSingleValidation = (value) => {
+  const written = value?.trim();
+  if (!written) return true;
+  return (
+    URL.canParse(written) ||
+    "Paste the whole address of the scorecard, starting with https://."
+  );
+};
+
+/**
+ * The outcome and the margin have to agree, and only the two of them together
+ * can be checked. The complaint is raised on the outcome because that is the
+ * field an editor changes first and the one the margin follows from.
+ *
+ * `siblingData` is the Result group, and Payload types it loosely; naming the
+ * generated type here is what makes a later change to these fields a type error
+ * rather than a rule that silently stops applying.
+ */
+const consistentResult: SelectFieldSingleValidation = (_value, { siblingData }) =>
+  resultProblem(siblingData as Match["result"]) ?? true;
+
+/** The date and the opponent, which is how an editor recognises a Match. */
+const summarised: FieldHook = ({ data }) =>
+  matchSummary(data?.date, data?.opponent);
+
+/**
+ * One fixture of one Team, played or still to come (CONTEXT.md).
+ *
+ * A scheduled fixture and a completed game are **the same record at two points
+ * in its life**, never two records: a Match that has not been played simply has
+ * no outcome yet. Everything but the four facts that make a fixture a fixture is
+ * therefore optional — a CMS that refuses to save half-known history stops being
+ * used (docs/PLAN.md), and most of this club's history is half known.
+ *
+ * Appearances hang off a Match and arrive with the importer. A Match with a
+ * result and no Appearances is not an unfinished record: the sunday social
+ * side's games are scored nowhere at all.
+ */
+export const Matches = {
+  slug: "matches",
+  labels: { singular: "Match", plural: "Matches" },
+  // Newest first — the match somebody is here to edit is the one just played.
+  defaultSort: "-date",
+  admin: {
+    useAsTitle: "summary",
+    defaultColumns: ["summary", "team", "competition", "venue", "season"],
+    description:
+      "Every fixture the club plays, before and after it is played. Enter it when the fixture is known; add the result afterwards, on the same record.",
+    group: "The record",
+  },
+  access: publiclyReadable,
+  fields: [
+    {
+      name: "team",
+      type: "relationship",
+      relationTo: "teams",
+      required: true,
+      index: true,
+      admin: {
+        description:
+          "Which of the club's sides played it. Not the competition — the challenge league side and the Challenge League Div 3 are different things.",
+      },
+    },
+    {
+      name: "season",
+      type: "relationship",
+      relationTo: "seasons",
+      required: true,
+      index: true,
+    },
+    {
+      name: "competition",
+      type: "relationship",
+      relationTo: "competitions",
+      index: true,
+      admin: {
+        description:
+          "Leave empty for a friendly. A friendly genuinely has no competition, and the emptiness is the record saying so.",
+      },
+    },
+    {
+      name: "date",
+      type: "date",
+      required: true,
+      index: true,
+      admin: {
+        date: { pickerAppearance: "dayOnly", displayFormat: "d MMM yyyy" },
+      },
+    },
+    {
+      name: "startTime",
+      type: "text",
+      admin: {
+        description:
+          "24-hour, as in 14:00. Only needed until the match is played, after which the result is what the page prints.",
+        placeholder: "14:00",
+      },
+      validate: validStartTime,
+    },
+    {
+      name: "opponent",
+      type: "text",
+      required: true,
+      admin: {
+        description: "The other club, as the club itself spells it.",
+      },
+    },
+    {
+      name: "venue",
+      type: "select",
+      required: true,
+      options: [
+        { value: "home", label: "Home" },
+        { value: "away", label: "Away" },
+      ],
+      admin: {
+        description:
+          "Home is Sandy Bay. The record prints H or A beside every result.",
+      },
+    },
+    {
+      name: "ground",
+      type: "text",
+      admin: {
+        description:
+          "Where it was played — Sandy Bay, Mission Road, Yeung King Playground.",
+      },
+    },
+    {
+      name: "format",
+      type: "text",
+      admin: {
+        description:
+          "How long a game it was — 40 overs, T20. Two sides can meet twice in a season over different distances, and the record should say which was which.",
+        placeholder: "40 overs",
+      },
+    },
+    {
+      name: "scorecard",
+      type: "text",
+      admin: {
+        description:
+          "The CricClubs page for this match. The site links to it rather than reproducing the ball-by-ball detail.",
+      },
+      validate: validScorecard,
+    },
+    {
+      name: "result",
+      type: "group",
+      label: "Result",
+      admin: {
+        description:
+          "Fill this in once the match has been played. Until then, leaving the outcome empty is what marks it as a fixture.",
+      },
+      fields: [
+        {
+          name: "outcome",
+          type: "select",
+          options: [...OUTCOMES],
+          admin: {
+            description:
+              "Recorded, never worked out from the scores: a rain-adjusted target, a concession and a tie all look like something else from the totals alone.",
+          },
+          validate: consistentResult,
+        },
+        {
+          name: "margin",
+          type: "group",
+          label: "Margin",
+          admin: {
+            // Only a win and a loss have one. Hiding it elsewhere stops the
+            // question being asked, rather than answered wrongly.
+            condition: (_data, siblingData) =>
+              siblingData?.outcome === "won" || siblingData?.outcome === "lost",
+            description:
+              "As a scorer states it — 33 runs, or 5 wickets. Leave it empty if nobody recorded it; a win with no margin is still a win.",
+          },
+          fields: [
+            {
+              type: "row",
+              fields: [
+                { name: "value", type: "number", label: "By", min: 1 },
+                {
+                  name: "unit",
+                  type: "select",
+                  label: " ",
+                  options: [
+                    { value: "runs", label: "runs" },
+                    { value: "wickets", label: "wickets" },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          name: "innings",
+          type: "array",
+          labels: { singular: "Innings", plural: "Innings" },
+          // Two in a limited-overs match, four in a two-innings one.
+          maxRows: 4,
+          admin: {
+            description:
+              "One row per team innings, in the order they were batted. Stored rather than added up from the batters: extras belong to no batter, and one real export's batting figures are a run short of a total that is correct.",
+          },
+          fields: [
+            {
+              type: "row",
+              fields: [
+                {
+                  name: "side",
+                  type: "select",
+                  required: true,
+                  options: [
+                    { value: "hku", label: "HKU" },
+                    { value: "opponent", label: "Opponent" },
+                  ],
+                },
+                { name: "runs", type: "number", required: true, min: 0 },
+                {
+                  name: "wickets",
+                  type: "number",
+                  min: 0,
+                  max: 10,
+                  admin: {
+                    description:
+                      "Empty if the side was bowled out — a scorecard writes 151 all out as 151, never 151/10.",
+                  },
+                },
+              ],
+            },
+            {
+              type: "row",
+              fields: [
+                {
+                  name: "overs",
+                  type: "text",
+                  admin: {
+                    description:
+                      "Balls, not decimals: 28.3 is 28 overs and 3 balls.",
+                    placeholder: "28.3",
+                  },
+                  validate: validOvers,
+                },
+                {
+                  name: "extras",
+                  type: "number",
+                  min: 0,
+                  admin: {
+                    description:
+                      "Byes, leg byes, wides, no balls and penalties — the runs that belong to no batter.",
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: "summary",
+      type: "text",
+      index: true,
+      admin: {
+        // The panel's own title for the record. Shown rather than hidden so an
+        // editor can see they are on the right match.
+        readOnly: true,
+        position: "sidebar",
+        description: "How this match is listed. Made from the date and opponent.",
+      },
+      hooks: { beforeChange: [summarised] },
+    },
+  ],
+} satisfies CollectionConfig;

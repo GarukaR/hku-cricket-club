@@ -75,6 +75,46 @@ bucket, copy `.env.example` to `apps/cms/.env` and:
 npm run dev --workspace @hkucc/cms      # http://localhost:3001/admin
 ```
 
+## What it holds
+
+The skeleton of the record, in the vocabulary of [CONTEXT.md](../CONTEXT.md):
+
+| | |
+|---|---|
+| **Team** | The four sides the club fields, and which CricClubs entity is which |
+| **Season** | A playing year, written `2025/26` |
+| **Competition** | An external league or cup, with its division |
+| **Match** | One fixture of one Team, before and after it is played |
+
+Four decisions in there are load-bearing, and each is enforced rather than
+merely intended:
+
+- **A Match points at a Competition optionally.** A friendly has none, and the
+  emptiness is the record saying so — there is deliberately no "Friendly" row to
+  create. The Team it belongs to is required, and is not the same kind of thing:
+  *challenge league* is a Team, the *Challenge League Div 3* is a Competition.
+- **A Competition carries no Season.** The Match already states one, and a
+  second could disagree with it. A side promoted out of Div 2 gets a new
+  Competition rather than an edited one, so every Match keeps pointing at the
+  division it was actually played in.
+- **No two Teams may claim the same CricClubs entity.** Nothing in an export
+  says which of our sides an entry belongs to, so the mapping recorded on the
+  Team is the only thing that knows. Two claims would not fail the import — it
+  would file a season of matches against whichever side it read first.
+- **Outcome and margin are both stored**, and checked against each other: a tie
+  cannot carry a margin, a chase cannot be won by eleven wickets. Innings totals
+  are stored per innings with Extras beside them, because extras belong to no
+  batter and a total can never be got by summing the batting figures.
+
+Nearly everything else is optional on purpose. Most of the club's history is
+half known, and a CMS that refuses to save it stops being used. The rules above
+are the few places where a wrong value would be worse than a missing one.
+
+Each rule lives in a plain function under `apps/cms/src/lib/`, tested there, and
+is wired into the field it guards — `notation.ts` for the forms the club writes
+things in, `result.ts` for outcome and margin, `mapping.ts` for the CricClubs
+names.
+
 ## Changing the collections
 
 The database schema is pushed automatically in development and **migrated** in

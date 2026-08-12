@@ -6,7 +6,8 @@
 // renamed in Payload becomes a type error in the site rather than an undefined
 // at runtime.
 //
-// The collections it covers are still only Users and Media; the record itself —
-// Team, Season, Competition, Match, Appearance — lands with #6.
+// It covers the skeleton of the record — Team, Season, Competition and Match —
+// alongside Users and Media. Appearance, the atomic fact every career figure is
+// derived from, lands with the importer.
 
 export * from "./payload-types";

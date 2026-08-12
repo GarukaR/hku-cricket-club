@@ -7,7 +7,11 @@ import { s3Storage } from "@payloadcms/storage-s3";
 import { buildConfig } from "payload";
 import sharp from "sharp";
 
+import { Competitions } from "./collections/Competitions";
+import { Matches } from "./collections/Matches";
 import { Media } from "./collections/Media";
+import { Seasons } from "./collections/Seasons";
+import { Teams } from "./collections/Teams";
 import { Users } from "./collections/Users";
 import { readEnvUnchecked } from "./lib/env";
 import { migrations } from "./migrations";
@@ -30,7 +34,9 @@ export default buildConfig({
     },
   },
 
-  collections: [Users, Media],
+  // The record first, in the order an editor fills it in — a Match needs the
+  // Team, Season and Competition it belongs to to exist already.
+  collections: [Teams, Seasons, Competitions, Matches, Users, Media],
 
   editor: lexicalEditor(),
 

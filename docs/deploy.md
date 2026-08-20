@@ -7,7 +7,7 @@ The public site is hosted on **Vercel**, git-connected to
 |---|---|
 | Push to `main` | Deploys to production |
 | Open a pull request | Deploys a preview, commented on the PR |
-| Project | `true-theorem/hku-cricket-club` |
+| Project | `HKUCC/hku-cricket-club` — the Hobby team owned by the project identity |
 
 The CMS is **not** deployed here — it is a container on Render, and it is off
 the request path by design (see [PLAN.md](PLAN.md), and [cms.md](cms.md) for the
@@ -43,9 +43,14 @@ local development — so the two move together only by being written down here.
 Bump both or neither.
 
 Everything else is left on auto-detection: framework Next.js, `next build`, `npm
-install`. **"Include files outside the root directory" must stay on** — the
-lockfile and the `packages/domain` workspace live above `apps/web`, and the
-install would resolve neither without it.
+install`.
+
+An earlier version of this document said a setting called *"Include files
+outside the root directory"* had to stay on, because the lockfile and the
+`packages/domain` workspace live above `apps/web`. **That toggle no longer
+exists.** Vercel detects the monorepo on import, resolves the root directory to
+`apps/web` itself, and installs from the workspace root without being asked. It
+is recorded here only so the next person does not go looking for it.
 
 ### Why there is no `vercel.json`
 
@@ -74,6 +79,25 @@ has to be dynamic is a decision to argue in [PLAN.md](PLAN.md) first.
 
 ## Credentials
 
-The Vercel project belongs to the `true-theorem` team, which is a project
-identity rather than anyone's personal login — handing the site to the club is
-meant to be a credential handover, not a migration (PLAN.md, *Handover*).
+Every service this project uses is owned by one identity — the project account,
+never anyone's personal login — so handing the site to the club is a credential
+handover rather than a migration of five services and a database (PLAN.md,
+*Handover*).
+
+| | |
+|---|---|
+| Vercel | `HKUCC` team, Hobby plan |
+| Neon | the record |
+| Render | the CMS container |
+| Cloudflare | R2, the media |
+
+The site began in a personal `true-theorem` team and was moved before anything
+depended on it. That was the cheap moment: no domain attached, no environment
+variables set, no traffic. The move cost re-importing the repo and setting the
+Node version and deployment protection again — everything in *Settings that live
+in the dashboard* above — and lost nine days of deployment history, which was
+worth it to make the handover one password instead of two.
+
+The alternative was inviting the project account into the personal team, which
+Vercel bills as a second seat. A recurring cost is a worse thing to hand a
+student committee than a lost deployment log.

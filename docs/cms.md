@@ -217,3 +217,8 @@ Every service — Render, Neon, Cloudflare — is created under a **dedicated
 project identity**, never a personal login, so handing the site to the club is a
 credential handover rather than a migration of five services and a database
 (PLAN.md, *Handover*).
+
+Only Neon exists so far. Render and Cloudflare R2 have not been created under
+that identity, which is why everything above runs against `docker compose` and
+its local stand-ins rather than the real thing. Current state, and what the gap
+costs, are in [deploy.md](deploy.md) under *Credentials*.

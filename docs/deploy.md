@@ -7,7 +7,7 @@ The public site is hosted on **Vercel**, git-connected to
 |---|---|
 | Push to `main` | Deploys to production |
 | Open a pull request | Deploys a preview, commented on the PR |
-| Project | `true-theorem/hku-cricket-club` |
+| Project | `HKUCC/hku-cricket-club` — the Hobby team owned by the project identity |
 
 The CMS is **not** deployed here — it is a container on Render, and it is off
 the request path by design (see [PLAN.md](PLAN.md), and [cms.md](cms.md) for the
@@ -47,9 +47,14 @@ local development — so the two move together only by being written down here.
 Bump both or neither.
 
 Everything else is left on auto-detection: framework Next.js, `next build`, `npm
-install`. **"Include files outside the root directory" must stay on** — the
-lockfile and the `packages/domain` workspace live above `apps/web`, and the
-install would resolve neither without it.
+install`.
+
+An earlier version of this document said a setting called *"Include files
+outside the root directory"* had to stay on, because the lockfile and the
+`packages/domain` workspace live above `apps/web`. **That toggle no longer
+exists.** Vercel detects the monorepo on import, resolves the root directory to
+`apps/web` itself, and installs from the workspace root without being asked. It
+is recorded here only so the next person does not go looking for it.
 
 ### Why there is no `vercel.json`
 
@@ -130,6 +135,45 @@ which is a check that stops meaning anything.
 
 ## Credentials
 
-The Vercel project belongs to the `true-theorem` team, which is a project
-identity rather than anyone's personal login — handing the site to the club is
-meant to be a credential handover, not a migration (PLAN.md, *Handover*).
+Every service this project uses is meant to be owned by one identity — a Gmail
+account created for the club, never anyone's personal login — so handing the
+site over is a credential handover rather than a migration of five services and
+a database (PLAN.md, *Handover*). The address itself is deliberately not written
+down here: this repository is public, and an account's login address is half of
+its credential. It lives in the password manager with everything else.
+
+Two of the four exist. The table says which, because a plan recorded as an
+accomplishment is how a gap survives to the handover:
+
+| | | |
+|---|---|---|
+| Vercel | `HKUCC` team, Hobby plan | **Done** |
+| Neon | the record | **Done** — connection string in the password manager, not yet in any `.env` |
+| Render | the CMS container | **Outstanding** — signup under the project identity could not be completed |
+| Cloudflare | R2, the media | **Outstanding** — as above |
+
+Until Render and R2 exist, the CMS runs only under `docker compose`, against the
+local stand-ins described in [cms.md](cms.md). Nothing about the public site
+depends on them — it is static, and it deploys from this repository alone — but
+the importer and the media pipeline both land on the far side of that gap.
+
+### The move off the personal account
+
+The site began in a personal `true-theorem` team and was moved before anything
+depended on it. That was the cheap moment: no domain attached, no environment
+variables set, no traffic. The move cost re-importing the repo and setting the
+Node version and deployment protection again — everything in *Settings that live
+in the dashboard* above — and lost nine days of deployment history, which was
+worth it to make the handover one password instead of two.
+
+The alternative was inviting the project account into the personal team, which
+Vercel bills as a second seat. A recurring cost is a worse thing to hand a
+student committee than a lost deployment log.
+
+**The old project was deleted before the new one was created**, and that
+ordering is the reason the site still answers on its original hostname,
+<https://hku-cricket-club.vercel.app/>. The hostname is derived from the
+project name and only one project can hold it at a time, so had the two existed
+together the new one would have been given a different name and the URL would
+have changed for good. Anyone repeating this move on another service should
+check for the same trap before assuming an overlap is the safer order.

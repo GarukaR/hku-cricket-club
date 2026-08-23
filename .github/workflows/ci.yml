@@ -19,6 +19,25 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-latest
+
+    # Stands in for Neon, exactly as docker-compose.yml's `db` does locally. The
+    # site's build reads the record over HTTP, so a check that builds the site
+    # has to have a CMS to read from, and a CMS has to have a database.
+    services:
+      db:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: hkucc
+          POSTGRES_PASSWORD: hkucc
+          POSTGRES_DB: hkucc
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U hkucc -d hkucc"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 20
+
     steps:
       - uses: actions/checkout@v5
 
@@ -51,15 +70,88 @@ jobs:
       # correct right up until a reader west of Greenwich loads the page.
       - run: npm test
 
+      # The CMS is built before the site, not after, because the site's build
+      # reads the record out of it. It has no equivalent gate of its own —
+      # Render builds the image and only finds out on deploy — so a broken
+      # Payload config fails the pull request here instead.
+      - run: npm run build:cms
+
+      # A real CMS, briefly, rather than a fixture.
+      #
+      # The site's build is a client of Payload's REST API, and the thing most
+      # worth catching is the two disagreeing: a renamed field, a changed depth,
+      # a query that returns something other than what ./lib/record expects. A
+      # committed fixture would be the site's own idea of the CMS's answers,
+      # which cannot catch that by construction — it drifts in exactly the same
+      # commit that breaks production.
+      #
+      # The record is empty, and that is not a gap: every component that reads
+      # it collapses to nothing when it has nothing, so an empty CMS proves the
+      # page still renders between seasons. What the shapes *mean* is covered by
+      # the unit tests above, which is the cheaper place for it.
+      #
+      # Run from the standalone bundle, the same artefact Render runs, with
+      # NODE_ENV=production — which is what makes Payload apply `prodMigrations`
+      # as it initialises rather than pushing the schema. The migrations
+      # committed with a collection change are therefore exercised on every PR,
+      # and a collection changed without one fails here.
+      - name: Start the CMS
+        env:
+          DATABASE_URL: postgres://hkucc:hkucc@localhost:5432/hkucc
+          # Local, disposable, and 64 characters because src/lib/env.ts insists.
+          PAYLOAD_SECRET: continuous-integration-only-not-a-secret-00000000000000000000000
+          PAYLOAD_PUBLIC_SERVER_URL: http://localhost:3001
+          # Nothing uploads during a build, so these are never dialled — they
+          # exist because the CMS refuses to start with a hole in its
+          # environment, which is the behaviour we want and not one to weaken
+          # for CI's convenience.
+          R2_BUCKET: hkucc-media
+          R2_ENDPOINT: http://localhost:9000
+          R2_PUBLIC_URL: http://localhost:9000/hkucc-media
+          R2_ACCESS_KEY_ID: continuous-integration
+          R2_SECRET_ACCESS_KEY: continuous-integration
+          # SITE_REVALIDATE_URL and REVALIDATE_SECRET are deliberately unset.
+          # Both or neither, and there is no site here to announce a publish to.
+          PORT: 3001
+          HOSTNAME: 127.0.0.1
+          NODE_ENV: production
+        run: |
+          # Its output goes to a file rather than this step's log: the step ends
+          # as soon as the process is backgrounded, and anything written after
+          # that would be written to a log nobody is reading. The wait below
+          # prints it if the CMS never comes up, which is the only time it is
+          # wanted.
+          node apps/cms/.next/standalone/apps/cms/server.js > /tmp/cms.log 2>&1 &
+          echo "CMS_PID=$!" >> "$GITHUB_ENV"
+
+      # /health reaches past "the port is open" and into Postgres, so this waits
+      # for the answer the site's build actually needs. Sixty seconds: Payload
+      # initialising and applying migrations is several seconds, and a runner
+      # under load is slower than a laptop.
+      - name: Wait for the CMS
+        run: |
+          for i in $(seq 1 60); do
+            if curl -fsS http://localhost:3001/health > /dev/null; then
+              echo "CMS answered after ${i}s"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "The CMS never became healthy in 60s. Its own output:"
+          cat /tmp/cms.log
+          exit 1
+
       - run: npm run build
+        env:
+          CMS_URL: http://localhost:3001
 
       # Reads the manifests the build just wrote. Why the site has to be static,
       # and what to do if this fires, is in docs/deploy.md.
       - name: Every route is prerendered
         run: npm run assert:prerendered
 
-      # `npm run build` is the site alone, because that is what Vercel builds.
-      # The CMS has no equivalent gate — Render builds the image and only finds
-      # out on deploy — so its build runs here, where a broken Payload config
-      # fails the pull request instead of the deploy.
-      - run: npm run build:cms
+      # Always, so a failed build still leaves the runner tidy rather than
+      # holding the port for whatever the job does next.
+      - name: Stop the CMS
+        if: always()
+        run: kill "$CMS_PID" 2>/dev/null || true

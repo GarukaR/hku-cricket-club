@@ -211,6 +211,31 @@ once, before it does anything else. That is `apps/cms/src/instrumentation.ts`
 doing its job — the alternative is a service that starts, looks healthy, and
 fails weeks later when somebody uploads a photograph.
 
+## The CMS in continuous integration
+
+Every pull request starts one. The public site's build reads the record over
+HTTP, so a check that builds the site needs something to read from, and CI
+brings up Postgres as a service container and runs the CMS from its standalone
+bundle — the same artefact Render runs — for the length of the job.
+
+Deliberately a real CMS and not a fixture. The site's build is a client of
+Payload's REST API, and the failure worth catching is the two disagreeing: a
+renamed field, a changed `depth`, a query answering with something other than
+what `apps/web/src/lib/record.ts` expects. A committed fixture is the site's own
+idea of the CMS's answers and drifts in the very commit that breaks production,
+so it cannot catch that at all.
+
+It runs with `NODE_ENV=production`, which is what makes Payload apply
+`prodMigrations` as it initialises rather than pushing the schema. So the
+migration committed alongside a collection change is exercised on every pull
+request, and a collection changed without one fails there rather than on the
+deploy.
+
+Its record is empty, and that is a check rather than a gap: every component that
+reads the record collapses to nothing when it has nothing, so an empty CMS
+proves the homepage still renders between seasons. What the shapes *mean* is
+covered by the unit tests, which is the cheaper place for it.
+
 ## Credentials
 
 Every service — Render, Neon, Cloudflare — is created under a **dedicated

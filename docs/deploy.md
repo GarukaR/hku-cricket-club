@@ -79,17 +79,29 @@ has to be dynamic is a decision to argue in [PLAN.md](PLAN.md) first.
 
 ## Credentials
 
-Every service this project uses is owned by one identity — the project account,
-never anyone's personal login — so handing the site to the club is a credential
-handover rather than a migration of five services and a database (PLAN.md,
-*Handover*).
+Every service this project uses is meant to be owned by one identity — a Gmail
+account created for the club, never anyone's personal login — so handing the
+site over is a credential handover rather than a migration of five services and
+a database (PLAN.md, *Handover*). The address itself is deliberately not written
+down here: this repository is public, and an account's login address is half of
+its credential. It lives in the password manager with everything else.
 
-| | |
-|---|---|
-| Vercel | `HKUCC` team, Hobby plan |
-| Neon | the record |
-| Render | the CMS container |
-| Cloudflare | R2, the media |
+Two of the four exist. The table says which, because a plan recorded as an
+accomplishment is how a gap survives to the handover:
+
+| | | |
+|---|---|---|
+| Vercel | `HKUCC` team, Hobby plan | **Done** |
+| Neon | the record | **Done** — connection string in the password manager, not yet in any `.env` |
+| Render | the CMS container | **Outstanding** — signup under the project identity could not be completed |
+| Cloudflare | R2, the media | **Outstanding** — as above |
+
+Until Render and R2 exist, the CMS runs only under `docker compose`, against the
+local stand-ins described in [cms.md](cms.md). Nothing about the public site
+depends on them — it is static, and it deploys from this repository alone — but
+the importer and the media pipeline both land on the far side of that gap.
+
+### The move off the personal account
 
 The site began in a personal `true-theorem` team and was moved before anything
 depended on it. That was the cheap moment: no domain attached, no environment
@@ -101,3 +113,11 @@ worth it to make the handover one password instead of two.
 The alternative was inviting the project account into the personal team, which
 Vercel bills as a second seat. A recurring cost is a worse thing to hand a
 student committee than a lost deployment log.
+
+**The old project was deleted before the new one was created**, and that
+ordering is the reason the site still answers on its original hostname,
+<https://hku-cricket-club.vercel.app/>. The hostname is derived from the
+project name and only one project can hold it at a time, so had the two existed
+together the new one would have been given a different name and the URL would
+have changed for good. Anyone repeating this move on another service should
+check for the same trap before assuming an overlap is the safer order.

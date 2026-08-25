@@ -35,6 +35,13 @@ function sum(values: readonly (number | null | undefined)[]): number {
   return values.reduce<number>((run, n) => run + (n ?? 0), 0);
 }
 
+/** "1 batter", "2 batters". These sentences are read by a person checking a
+ *  scorecard against a screen, and "1 batters are recorded as out" reads like a
+ *  bug in the thing telling them about a bug. */
+function plural(n: number, one: string, many: string): string {
+  return n === 1 ? `1 ${one}` : `${n} ${many}`;
+}
+
 export function extrasTotal(extras: Extras): number {
   return sum([
     extras.byes,
@@ -101,8 +108,9 @@ export function reconcileInnings(innings: InningsToCheck): Finding[] {
         about: "wickets",
         by: Math.abs(innings.dismissals - innings.statedWickets),
         message:
-          `${innings.dismissals} batters are recorded as out, but the ` +
-          `scorecard says ${innings.statedWickets} wickets fell.`,
+          `${plural(innings.dismissals, "batter is", "batters are")} recorded ` +
+          `as out, but the scorecard says ` +
+          `${plural(innings.statedWickets, "wicket", "wickets")} fell.`,
       });
     }
   }
@@ -144,7 +152,8 @@ export function reconcileInnings(innings: InningsToCheck): Finding[] {
         about: "bowlerWickets",
         by: taken - innings.statedWickets,
         message:
-          `The bowlers are credited with ${taken} wickets but only ` +
+          `The bowlers are credited with ` +
+          `${plural(taken, "wicket", "wickets")} but only ` +
           `${innings.statedWickets} fell. A bowler cannot take a wicket that ` +
           `did not fall, so one of the two is wrong.`,
       });

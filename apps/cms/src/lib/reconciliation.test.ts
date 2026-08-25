@@ -124,6 +124,32 @@ describe("reconcileInnings — what it declines to guess", () => {
   });
 });
 
+describe("reconcileInnings — how it reads", () => {
+  it("says one batter, not one batters", () => {
+    // These sentences are read by somebody checking a scorecard against a
+    // screen. "1 batters are recorded as out" reads like a bug in the thing
+    // reporting the bug.
+    const one = reconcileInnings({ ...STUDENTS, dismissals: 1, statedWickets: 7 });
+    expect(one.find((f) => f.about === "wickets")?.message).toContain(
+      "1 batter is recorded as out",
+    );
+  });
+
+  it("says two batters", () => {
+    const two = reconcileInnings({ ...STUDENTS, dismissals: 2, statedWickets: 7 });
+    expect(two.find((f) => f.about === "wickets")?.message).toContain(
+      "2 batters are recorded as out",
+    );
+  });
+
+  it("says one wicket fell, not one wickets", () => {
+    const one = reconcileInnings({ ...STUDENTS, dismissals: 3, statedWickets: 1 });
+    expect(one.find((f) => f.about === "wickets")?.message).toContain(
+      "1 wicket fell",
+    );
+  });
+});
+
 describe("reconcileInnings — the impossible direction", () => {
   it("flags bowlers credited with more wickets than fell", () => {
     const findings = reconcileInnings({

@@ -90,6 +90,20 @@ export const Matches = {
   // Newest first — the match somebody is here to edit is the one just played.
   defaultSort: "-date",
   admin: {
+    components: {
+      views: {
+        edit: {
+          // A tab on the Match rather than a screen of its own, because a
+          // scorecard is not a thing in its own right — it is this match, told
+          // in more detail. See components/Scorecard.
+          scorecard: {
+            Component: "@/components/Scorecard#ScorecardView",
+            path: "/scorecard",
+            tab: { label: "Scorecard", href: "/scorecard" },
+          },
+        },
+      },
+    },
     useAsTitle: "summary",
     defaultColumns: ["summary", "standing", "team", "competition", "venue", "season"],
     description:
@@ -311,6 +325,25 @@ export const Matches = {
                       "Byes, leg byes, wides, no balls and penalties — the runs that belong to no batter.",
                   },
                 },
+              ],
+            },
+            // Only the two a bowler is *not* charged with are broken out here.
+            // Wides, no balls and penalties are inside `extras` and nothing
+            // needs them apart, so asking for them separately would be three
+            // more fields for no answer.
+            {
+              type: "row",
+              fields: [
+                {
+                  name: "byes",
+                  type: "number",
+                  min: 0,
+                  admin: {
+                    description:
+                      "Part of the extras above, repeated on its own. A bowler is not charged with a bye, so the bowlers' figures only add up to the total once byes and leg byes are taken off — the one check that cannot be made from the extras total alone.",
+                  },
+                },
+                { name: "legByes", label: "Leg byes", type: "number", min: 0 },
               ],
             },
           ],

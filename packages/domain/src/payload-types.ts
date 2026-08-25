@@ -272,6 +272,8 @@ export interface Match {
            * Byes, leg byes, wides, no balls and penalties — the runs that belong to no batter.
            */
           extras?: number | null;
+          byes?: number | null;
+          legByes?: number | null;
           id?: string | null;
         }[]
       | null;
@@ -611,6 +613,8 @@ export interface MatchesSelect<T extends boolean = true> {
               wickets?: T;
               overs?: T;
               extras?: T;
+              byes?: T;
+              legByes?: T;
               id?: T;
             };
       };

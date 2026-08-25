@@ -187,11 +187,35 @@ looks like:
   for R2 — no cloud account needed. The container has a read-only root
   filesystem, so the claim that it keeps no state is enforced rather than
   asserted. Everything about it is in [cms.md](cms.md).
-- **The skeleton of the record is in the CMS, and the site reads it.** Team,
-  Season, Competition and Match are editable, `packages/domain` exports their
-  generated types, and publishing one puts it on the live site within seconds.
-  Appearance — the atomic fact everything is derived from — arrives with the
-  importer.
+- **The whole record is in the CMS now, not only its skeleton.** Team, Season,
+  Competition and Match were the first half; Player, Registration and Appearance
+  are the second, and the eligibility rule came with them — registration to the
+  league and challenge league sides is mutually exclusive, and a call-up is
+  capped at two a Season. `packages/domain` exports the generated types for all
+  seven, and publishing one puts it on the live site within seconds.
+- **There are two ways into a scorecard, and neither is a legacy path.** A
+  CricClubs export is read on `/admin/import` and shown in full — both innings,
+  every batting and bowling line — before anything is saved. A match nobody
+  exported is typed into the Scorecard tab on the Match itself, one row per
+  player because one row is one Appearance. The sunday social side is scored
+  nowhere at all, so for its matches the second is the only route there will ever
+  be. Neither resolves a scorer's name to a Player yet, and the import creates no
+  Match: those are the two tickets that remain of step 5.
+- **The arithmetic warns and never blocks.** `apps/cms/src/lib/reconciliation.ts`
+  states a disagreement with both numbers named and leaves the judging to the
+  person reading it, because a real export in `docs/samples/` is short by a run
+  and its stated total is the correct one. Both screens read it, and the three
+  sample exports are its regression suite.
+- **The panel flags the scores the club still owes.** A Match whose date has
+  passed with no outcome is an outstanding result, worked out on every read
+  rather than stored — it becomes one because a day went by, not because anybody
+  saved it, so there is no write on which a stored column could be set. The
+  admin panel shows it; the public site says nothing, because a score nobody has
+  entered is not news.
+- **No build depends on Google's font servers.** The three faces are vendored in
+  `apps/web/src/app/fonts/`, with their licences beside them, and
+  `next/font/google` is gone. A build that reaches the network for a typeface
+  fails on somebody else's outage and says something else.
 - **Every layer is now proven together.** The site reads Payload over HTTP while
   it builds, caches what it rendered under one `record` tag, and a Payload hook
   calls `POST /api/revalidate` on save. Verified rather than assumed: with the
@@ -209,14 +233,19 @@ looks like:
    Deploying first was the point: it proves the pipeline before anything depends
    on it, rather than discovering it at the end.
 3. ~~Payload in a container; Dockerfile; Render + Neon + R2.~~ Done —
-   [docs/cms.md](cms.md). The collections from CONTEXT.md are step 3a, and are
-   their own ticket: getting the box right first meant the schema could then
-   change without anything else moving.
+   [docs/cms.md](cms.md). The collections from CONTEXT.md were step 3a and their
+   own ticket, and are done too: getting the box right first meant the schema
+   could then change without anything else moving.
 4. ~~Real Matches on the live site, invalidated on publish.~~ Done — the
    architecture tracer. Every layer proven together in production before more
    was built on top of it, which is why it came before the importer rather than
    after: a schema is cheap to change while nothing reads it.
-5. The importer — parsing, reconciliation, Alias resolution, the confidence gate.
+5. The importer — ~~parsing, reconciliation~~, Alias resolution, the confidence
+   gate. Half done: an export is read and the match shown in full before
+   anything is saved, and the arithmetic is stated rather than enforced. What
+   remains is turning the scorer's names into Players and the preview into a
+   saved Match — which is where the confidence gate lives, and where each
+   answered question teaches an Alias.
 6. Public pages.
 7. Derived figures and leaderboards.
 

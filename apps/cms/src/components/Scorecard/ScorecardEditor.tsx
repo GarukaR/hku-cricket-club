@@ -444,13 +444,23 @@ export function ScorecardEditor({
     }
   }
 
-  const cell: React.CSSProperties = { padding: "2px 4px", textAlign: "left" };
-  const input: React.CSSProperties = {
-    width: "100%",
-    minWidth: 46,
-    padding: "4px 6px",
+  // Sized by what actually goes in each column. A fielder's name is "Tanmay
+  // Maruti B" and a dismissal is "ctw", so one width for both means either the
+  // names are unreadable or the numbers waste half the screen.
+  const cell: React.CSSProperties = { padding: "2px 3px", textAlign: "left" };
+  const input: React.CSSProperties = { width: "100%", padding: "4px 6px" };
+  const number: React.CSSProperties = { ...input, minWidth: 48, maxWidth: 64 };
+  const code: React.CSSProperties = { ...input, minWidth: 62, maxWidth: 76 };
+  const name: React.CSSProperties = { ...input, minWidth: 148 };
+  const wide: React.CSSProperties = { ...input, minWidth: 172 };
+  const group: React.CSSProperties = {
+    borderBottom: "1px solid currentColor",
+    fontSize: 11,
+    letterSpacing: "0.08em",
+    textTransform: "uppercase",
+    opacity: 0.7,
+    paddingBottom: 4,
   };
-  const wide: React.CSSProperties = { ...input, minWidth: 120 };
 
   return (
     <div className="gutter--left gutter--right" style={{ paddingBottom: 48 }}>
@@ -467,6 +477,21 @@ export function ScorecardEditor({
           style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}
         >
           <thead>
+            {/* Two header rows, because "R" means runs scored on one side of
+                the table and runs conceded on the other. Unlabelled, they are
+                the same column name twice with different meanings. */}
+            <tr>
+              <th style={cell} />
+              <th style={{ ...cell, ...group }} colSpan={9}>
+                Batting
+              </th>
+              <th style={{ ...cell, ...group }} colSpan={5}>
+                Bowling
+              </th>
+              <th style={{ ...cell, ...group }} colSpan={3}>
+                Fielding
+              </th>
+            </tr>
             <tr>
               <th style={cell}>Player</th>
               <th style={cell}>Bat</th>
@@ -516,7 +541,7 @@ export function ScorecardEditor({
                 </td>
                 <td style={cell}>
                   <input
-                    style={input}
+                    style={code}
                     disabled={!r.batted || r.notOut}
                     value={r.howOut}
                     placeholder="ct"
@@ -525,7 +550,7 @@ export function ScorecardEditor({
                 </td>
                 <td style={cell}>
                   <input
-                    style={input}
+                    style={name}
                     disabled={!r.batted || r.notOut}
                     value={r.fielder}
                     onChange={(e) => set(i, { fielder: e.target.value })}
@@ -533,7 +558,7 @@ export function ScorecardEditor({
                 </td>
                 <td style={cell}>
                   <input
-                    style={input}
+                    style={name}
                     disabled={!r.batted || r.notOut}
                     value={r.bowler}
                     onChange={(e) => set(i, { bowler: e.target.value })}
@@ -542,7 +567,7 @@ export function ScorecardEditor({
                 {(["runs", "balls", "fours", "sixes"] as const).map((k) => (
                   <td key={k} style={cell}>
                     <input
-                      style={input}
+                      style={number}
                       disabled={!r.batted}
                       value={r[k]}
                       inputMode="numeric"
@@ -571,7 +596,7 @@ export function ScorecardEditor({
                   (k) => (
                     <td key={k} style={cell}>
                       <input
-                        style={input}
+                        style={k === "overs" ? code : number}
                         disabled={!r.bowled}
                         value={r[k]}
                         onChange={(e) =>
@@ -584,7 +609,7 @@ export function ScorecardEditor({
                 {(["catches", "runOuts", "stumpings"] as const).map((k) => (
                   <td key={k} style={cell}>
                     <input
-                      style={input}
+                      style={number}
                       value={r[k]}
                       inputMode="numeric"
                       onChange={(e) =>

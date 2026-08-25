@@ -7,8 +7,14 @@
   gap: clamp(2rem, 4vw, 2.6rem);
 }
 
+/* One half of the pair. The margin only exists to hold the other half, so with
+   nothing to hold it closes rather than leaving a column of blank paper. */
+.alone {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 @media (min-width: 780px) {
-  .lead {
+  .lead:not(.alone) {
     /* minmax(0, …) rather than a bare fraction: the scoreline sets tabular
        figures at 4.4rem, and without it the column refuses to shrink below its
        content and pushes the page sideways. */

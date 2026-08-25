@@ -16,9 +16,19 @@ import { LeadStory } from "@/components/home/LeadStory";
 import { Plates } from "@/components/home/Plates";
 import { RecentRecord } from "@/components/home/RecentRecord";
 import { TheClub } from "@/components/home/TheClub";
-import { latestResult, nextMatch, recentRecord, season } from "@/content/matches";
+import { isPlayed } from "@/lib/match";
+import { latestResult, nextFixture, seasonRecord } from "@/lib/matches";
 
-export default function Home() {
+export default async function Home() {
+  // Three independent questions to the record, so they go to the CMS together
+  // rather than one after another. Each is separately cached and separately
+  // tagged; awaiting them in sequence would add a cold start to a cold start.
+  const [latest, next, record] = await Promise.all([
+    latestResult(),
+    nextFixture(),
+    seasonRecord(),
+  ]);
+
   return (
     <>
       <a className="skip-link" href="#record">
@@ -42,8 +52,11 @@ export default function Home() {
 
       <main id="record">
         <Container>
-          <LeadStory latest={latestResult} next={nextMatch} />
-          <RecentRecord matches={recentRecord} season={season} />
+          <LeadStory
+            latest={latest && isPlayed(latest) ? latest : undefined}
+            next={next}
+          />
+          <RecentRecord matches={record.matches} season={record.season} />
           <TheClub />
           <Plates />
         </Container>
@@ -53,10 +66,10 @@ export default function Home() {
       <SiteFooter
         note={
           <>
-            Sample content. The scores, dates, margins and the 1988 handbook
-            quotation are invented, and stand in until match data is imported
-            from CricClubs. The club&rsquo;s photographs and the crest mark are
-            still to come.
+            The record is the club&rsquo;s own, entered in full. The 1988
+            handbook quotation and the plate captions are invented and stand in
+            until the club&rsquo;s history copy arrives; the club&rsquo;s
+            photographs and the crest mark are still to come.
           </>
         }
       />

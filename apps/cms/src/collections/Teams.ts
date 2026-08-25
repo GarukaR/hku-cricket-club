@@ -2,6 +2,7 @@ import type { CollectionConfig, TextFieldManyValidation } from "payload";
 
 import { entityNameProblem } from "@/lib/mapping";
 import { slugProblem } from "@/lib/notation";
+import { announceOnChange, announceOnDelete } from "@/lib/publish";
 
 import { publiclyReadable } from "./access";
 import { validated } from "./validate";
@@ -63,6 +64,8 @@ export const Teams = {
     group: "The record",
   },
   access: publiclyReadable,
+  // The record names its side on every row, so renaming one changes the page.
+  hooks: { afterChange: [announceOnChange], afterDelete: [announceOnDelete] },
   fields: [
     {
       name: "name",

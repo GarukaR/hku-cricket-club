@@ -6,13 +6,18 @@ import styles from "./RecentRecord.module.css";
 /** The season so far, newest first.
  *
  *  A Match with no Result cannot appear here — a record is of what happened — so
- *  unplayed Matches are filtered rather than rendered as blanks. */
+ *  unplayed Matches are filtered rather than rendered as blanks.
+ *
+ *  Club-wide, and every row names its side. Four sides play under one crest, and
+ *  a table that ran them together without saying so would read as one team's
+ *  season while being four — the same failure as a career total that silently
+ *  omits a season (docs/PLAN.md). */
 export function RecentRecord({
   matches,
   season,
 }: {
   matches: Match[];
-  season: string;
+  season?: string;
 }) {
   const played = matches.filter(isPlayed);
 
@@ -20,7 +25,9 @@ export function RecentRecord({
 
   return (
     <section className={styles.record} aria-labelledby="recent-record">
-      <SectionHeading id="recent-record">Recent record — {season}</SectionHeading>
+      <SectionHeading id="recent-record">
+        Recent record{season ? ` — ${season}` : ""}
+      </SectionHeading>
       <div
         className={styles.scroll}
         tabIndex={0}
@@ -31,6 +38,7 @@ export function RecentRecord({
           <thead>
             <tr>
               <th scope="col">Date</th>
+              <th scope="col">Side</th>
               <th scope="col">Opponent</th>
               <th scope="col">Ground</th>
               <th scope="col">Result</th>
@@ -38,8 +46,9 @@ export function RecentRecord({
           </thead>
           <tbody>
             {played.map((match) => (
-              <tr key={`${match.date}-${match.opponent}`}>
+              <tr key={`${match.date}-${match.team}-${match.opponent}`}>
                 <td>{shortDate(match.date)}</td>
+                <td className={styles.side}>{match.team}</td>
                 <td className={styles.opponent}>{match.opponent}</td>
                 <td>{match.ground}</td>
                 <td

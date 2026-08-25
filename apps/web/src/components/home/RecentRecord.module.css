@@ -53,6 +53,18 @@
   font-size: 1.06rem;
 }
 
+/* Subordinate to the opponent on purpose. The row's subject is who the club
+   played; the side is the qualifier that stops four sides' seasons reading as
+   one. Set in the body face like the column heads, so it registers as a label
+   rather than competing with the name beside it. */
+.side {
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-ink2);
+}
+
 .outcome {
   font-family: var(--font-body);
   font-size: 0.7rem;

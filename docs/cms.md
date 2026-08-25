@@ -120,6 +120,39 @@ is wired into the field it guards — `notation.ts` for the forms the club write
 things in, `result.ts` for outcome and margin, `mapping.ts` for the CricClubs
 names.
 
+## Saving a Match publishes it
+
+Saving anything the record's pages are built from — a Match, and also the Team,
+Season or Competition named on one — calls the site's `/api/revalidate` with a
+shared secret. The site drops the pages derived from the record and re-renders
+them on the next request. **No redeploy, no git push**; the editor sees their
+change within seconds.
+
+The notice carries no data. Payload says only that the record changed and the
+site re-reads it, so there remains exactly one way into the record rather than a
+second, unvalidated one arriving by webhook.
+
+Two variables, in `apps/cms/src/lib/publish.ts`:
+
+| | |
+|---|---|
+| `SITE_REVALIDATE_URL` | The site's address plus `/api/revalidate` |
+| `REVALIDATE_SECRET` | The same string the site is given |
+
+**Both or neither.** A URL with no secret is refused on every publish; a secret
+with no URL is a webhook that silently never fires. Each looks like working
+software right up until somebody publishes and the site does not change, so
+start-up rejects half a pair.
+
+Setting neither is a perfectly good configuration, and the normal one locally: a
+container with no deployed site to tell is a working CMS, and it says so in the
+log rather than failing. The site then shows the record as of its last build.
+
+**This can never fail a save.** An editor entering Saturday's result must not be
+stopped because Vercel is unreachable, so every failure is logged and swallowed.
+A missed notice costs at most a day, which is how long the site's cached copy
+lives before it re-reads the record anyway.
+
 ## Changing the collections
 
 The database schema is pushed automatically in development and **migrated** in
@@ -178,6 +211,31 @@ once, before it does anything else. That is `apps/cms/src/instrumentation.ts`
 doing its job — the alternative is a service that starts, looks healthy, and
 fails weeks later when somebody uploads a photograph.
 
+## The CMS in continuous integration
+
+Every pull request starts one. The public site's build reads the record over
+HTTP, so a check that builds the site needs something to read from, and CI
+brings up Postgres as a service container and runs the CMS from its standalone
+bundle — the same artefact Render runs — for the length of the job.
+
+Deliberately a real CMS and not a fixture. The site's build is a client of
+Payload's REST API, and the failure worth catching is the two disagreeing: a
+renamed field, a changed `depth`, a query answering with something other than
+what `apps/web/src/lib/record.ts` expects. A committed fixture is the site's own
+idea of the CMS's answers and drifts in the very commit that breaks production,
+so it cannot catch that at all.
+
+It runs with `NODE_ENV=production`, which is what makes Payload apply
+`prodMigrations` as it initialises rather than pushing the schema. So the
+migration committed alongside a collection change is exercised on every pull
+request, and a collection changed without one fails there rather than on the
+deploy.
+
+Its record is empty, and that is a check rather than a gap: every component that
+reads the record collapses to nothing when it has nothing, so an empty CMS
+proves the homepage still renders between seasons. What the shapes *mean* is
+covered by the unit tests, which is the cheaper place for it.
+
 ## Credentials
 
 Every service — Render, Neon, Cloudflare — is created under a **dedicated
@@ -185,7 +243,9 @@ project identity**, never a personal login, so handing the site to the club is a
 credential handover rather than a migration of five services and a database
 (PLAN.md, *Handover*).
 
-Only Neon exists so far. Render and Cloudflare R2 have not been created under
-that identity, which is why everything above runs against `docker compose` and
-its local stand-ins rather than the real thing. Current state, and what the gap
-costs, are in [deploy.md](deploy.md) under *Credentials*.
+Neon and Render exist; the CMS runs at `https://hkucc-cms.onrender.com` on the
+free tier, so it sleeps after about fifteen minutes idle. Cloudflare R2 has not
+been created under that identity, which is why uploads still run against
+`docker compose` and its local stand-in rather than the real thing. Current
+state, and what the gap costs, are in [deploy.md](deploy.md) under
+*Credentials*.

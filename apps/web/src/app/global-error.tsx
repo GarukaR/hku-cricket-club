@@ -16,39 +16,13 @@
 // worse. Single column, no contents line, no marginalia — the letterhead, what
 // happened, and the way out.
 
-import { Newsreader, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
+import { newsreader, plexSans, plexMono } from "./fonts";
 
 import { Container } from "@/components/Container";
 import { Masthead } from "@/components/Masthead";
 import { SiteFooter } from "@/components/SiteFooter";
 import "./globals.css";
 import styles from "./global-error.module.css";
-
-// The same three faces layout.tsx loads. Declared again rather than imported
-// from it because this file replaces that layout entirely — and self-hosted at
-// build time, so the page that renders when everything has failed still does not
-// depend on a request to Google.
-const newsreader = Newsreader({
-  variable: "--font-newsreader",
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["400", "500"],
-  style: ["normal", "italic"],
-});
-
-const plexSans = IBM_Plex_Sans({
-  variable: "--font-plex-sans",
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["400", "500", "600"],
-});
-
-const plexMono = IBM_Plex_Mono({
-  variable: "--font-plex-mono",
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["400", "500"],
-});
 
 export default function GlobalError({
   error,

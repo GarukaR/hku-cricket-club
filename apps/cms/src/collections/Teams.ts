@@ -1,5 +1,6 @@
 import type { CollectionConfig, TextFieldManyValidation } from "payload";
 
+import { TEAM_ROLES } from "@/lib/eligibility";
 import { entityNameProblem } from "@/lib/mapping";
 import { slugProblem } from "@/lib/notation";
 import { announceOnChange, announceOnDelete } from "@/lib/publish";
@@ -58,7 +59,7 @@ export const Teams = {
   slug: "teams",
   admin: {
     useAsTitle: "name",
-    defaultColumns: ["name", "slug", "cricclubsNames"],
+    defaultColumns: ["name", "role", "slug", "cricclubsNames"],
     description:
       "The sides the club fields. Each one's matches, squad and averages hang off its entry here.",
     group: "The record",
@@ -75,6 +76,16 @@ export const Teams = {
       admin: {
         description:
           "The club's own word for the side — league, challenge league, sunday social, student. Not Squad, side or XI.",
+      },
+    },
+    {
+      name: "role",
+      type: "select",
+      options: [...TEAM_ROLES],
+      required: true,
+      admin: {
+        description:
+          "What this side is for, as against what it is called. The eligibility rule is about the league and challenge league sides specifically and has to know which is which — and reading that off the name or the slug would rest a league rule on a public address. Renaming /teams/challenge-league for a tidier URL would switch the cap off with nothing to fail and nobody to tell.",
       },
     },
     {

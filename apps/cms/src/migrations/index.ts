@@ -1,5 +1,6 @@
 import * as migration_20260811_215940_initial from './20260811_215940_initial';
 import * as migration_20260812_010852_core_collections from './20260812_010852_core_collections';
+import * as migration_20260825_070906_player_appearance from './20260825_070906_player_appearance';
 
 export const migrations = [
   {
@@ -10,6 +11,11 @@ export const migrations = [
   {
     up: migration_20260812_010852_core_collections.up,
     down: migration_20260812_010852_core_collections.down,
-    name: '20260812_010852_core_collections'
+    name: '20260812_010852_core_collections',
+  },
+  {
+    up: migration_20260825_070906_player_appearance.up,
+    down: migration_20260825_070906_player_appearance.down,
+    name: '20260825_070906_player_appearance'
   },
 ];

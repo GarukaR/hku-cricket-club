@@ -71,6 +71,9 @@ export interface Config {
     seasons: Season;
     competitions: Competition;
     matches: Match;
+    players: Player;
+    registrations: Registration;
+    appearances: Appearance;
     users: User;
     media: Media;
     'payload-kv': PayloadKv;
@@ -84,6 +87,9 @@ export interface Config {
     seasons: SeasonsSelect<false> | SeasonsSelect<true>;
     competitions: CompetitionsSelect<false> | CompetitionsSelect<true>;
     matches: MatchesSelect<false> | MatchesSelect<true>;
+    players: PlayersSelect<false> | PlayersSelect<true>;
+    registrations: RegistrationsSelect<false> | RegistrationsSelect<true>;
+    appearances: AppearancesSelect<false> | AppearancesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -137,6 +143,10 @@ export interface Team {
    * The club's own word for the side — league, challenge league, sunday social, student. Not Squad, side or XI.
    */
   name: string;
+  /**
+   * What this side is for, as against what it is called. The eligibility rule is about the league and challenge league sides specifically and has to know which is which — and reading that off the name or the slug would rest a league rule on a public address. Renaming /teams/challenge-league for a tidier URL would switch the cap off with nothing to fail and nobody to tell.
+   */
+  role: 'league' | 'challenge-league' | 'social' | 'student';
   /**
    * The side's address on the site, as in /teams/challenge-league. Changing it breaks every link anybody has saved, so set it once.
    */
@@ -278,6 +288,108 @@ export interface Match {
   createdAt: string;
 }
 /**
+ * Everyone who has played for the club. Their figures are worked out from the matches they appear in, so there is nothing to keep up to date here.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "players".
+ */
+export interface Player {
+  id: number;
+  /**
+   * The club's own spelling of the name — the one that should appear in an averages table. Scorers' spellings go in Aliases below, not here.
+   */
+  name: string;
+  /**
+   * How scorers have spelled this person's name — G. Ranasinghe, Garuka R, Ranasinghe G are three aliases of one player. Scorers type names freely, and recording them here is what stops one person becoming three entries in the averages.
+   */
+  aliases?: string[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Who is registered to which side, for which season. Register a player once per season; the league and challenge league sides are mutually exclusive.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "registrations".
+ */
+export interface Registration {
+  id: number;
+  player: number | Player;
+  /**
+   * A player registered to the league side cannot also be registered to the challenge league side in the same season. The other way round is the same rule — it is symmetric, unlike the two-per-season call-up cap.
+   */
+  team: number | Team;
+  season: number | Season;
+  /**
+   * Appearances this player has made for the league team this season. A challenge league player may make two; after that they are not eligible for the league team again this season. Blank for every other side, because the rule runs one way only. It counts what scorers wrote down, so treat it as a floor rather than a certainty.
+   */
+  callUps?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Who played, and what they did. One record per player per match — a player who neither batted nor bowled still gets one, because they still played.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "appearances".
+ */
+export interface Appearance {
+  id: number;
+  match: number | Match;
+  player: number | Player;
+  /**
+   * Leave this unticked for did not bat — the player was in the XI but the innings ended before they were needed. That is a different thing from not playing, which is having no appearance here at all.
+   */
+  batted?: boolean | null;
+  batting?: {
+    runs?: number | null;
+    balls?: number | null;
+    fours?: number | null;
+    sixes?: number | null;
+    /**
+     * Recorded rather than worked out from the score, because it is what excludes this innings from the divisor when a batting average is taken.
+     */
+    notOut?: boolean | null;
+    /**
+     * The scorer's code — b, lbw, ct, ctw (caught behind), st, ro (run out). Free text on purpose: the list is open, and an unrecognised code is a question for a human rather than a value to guess at.
+     */
+    howOut?: string | null;
+    fielder?: string | null;
+    /**
+     * On a run out this is merely who was bowling at the time. They did not take the wicket and may not appear in the bowling figures at all.
+     */
+    bowler?: string | null;
+  };
+  /**
+   * Tick if this player bowled at all.
+   */
+  bowled?: boolean | null;
+  bowling?: {
+    /**
+     * As a scorer writes it — 7.0, or 3.2 for three overs and two balls.
+     */
+    overs?: string | null;
+    maidens?: number | null;
+    runs?: number | null;
+    /**
+     * Only wickets credited to this bowler. A run out belongs to nobody, which is why the bowlers' wickets routinely add up to less than the wickets that fell.
+     */
+    wickets?: number | null;
+    wides?: number | null;
+    noBalls?: number | null;
+  };
+  /**
+   * Always recorded, because fielding is the one thing every player in the XI does.
+   */
+  fielding?: {
+    catches?: number | null;
+    runOuts?: number | null;
+    stumpings?: number | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Committee members with access to this admin panel. The committee turns over every year — remove the outgoing members when you add the incoming ones.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -373,6 +485,18 @@ export interface PayloadLockedDocument {
         value: number | Match;
       } | null)
     | ({
+        relationTo: 'players';
+        value: number | Player;
+      } | null)
+    | ({
+        relationTo: 'registrations';
+        value: number | Registration;
+      } | null)
+    | ({
+        relationTo: 'appearances';
+        value: number | Appearance;
+      } | null)
+    | ({
         relationTo: 'users';
         value: number | User;
       } | null)
@@ -428,6 +552,7 @@ export interface PayloadMigration {
  */
 export interface TeamsSelect<T extends boolean = true> {
   name?: T;
+  role?: T;
   slug?: T;
   cricclubsNames?: T;
   updatedAt?: T;
@@ -491,6 +616,69 @@ export interface MatchesSelect<T extends boolean = true> {
       };
   summary?: T;
   standing?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "players_select".
+ */
+export interface PlayersSelect<T extends boolean = true> {
+  name?: T;
+  aliases?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "registrations_select".
+ */
+export interface RegistrationsSelect<T extends boolean = true> {
+  player?: T;
+  team?: T;
+  season?: T;
+  callUps?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "appearances_select".
+ */
+export interface AppearancesSelect<T extends boolean = true> {
+  match?: T;
+  player?: T;
+  batted?: T;
+  batting?:
+    | T
+    | {
+        runs?: T;
+        balls?: T;
+        fours?: T;
+        sixes?: T;
+        notOut?: T;
+        howOut?: T;
+        fielder?: T;
+        bowler?: T;
+      };
+  bowled?: T;
+  bowling?:
+    | T
+    | {
+        overs?: T;
+        maidens?: T;
+        runs?: T;
+        wickets?: T;
+        wides?: T;
+        noBalls?: T;
+      };
+  fielding?:
+    | T
+    | {
+        catches?: T;
+        runOuts?: T;
+        stumpings?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }

@@ -272,6 +272,9 @@ export interface Match {
            * Byes, leg byes, wides, no balls and penalties — the runs that belong to no batter.
            */
           extras?: number | null;
+          /**
+           * Part of the extras above, repeated on its own. A bowler is not charged with a bye, so the bowlers' figures only add up to the total once byes and leg byes are taken off — the one check that cannot be made from the extras total alone.
+           */
           byes?: number | null;
           legByes?: number | null;
           id?: string | null;

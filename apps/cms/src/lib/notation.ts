@@ -9,6 +9,8 @@
 // an editor reads, and the sentence is the part worth testing. Undefined means
 // there is nothing wrong.
 
+import { ballsBowled } from "./overs";
+
 /** How the club writes a Season: two consecutive years, `2025/26`. */
 const SEASON = /^(\d{4})\/(\d{2})$/;
 
@@ -39,6 +41,29 @@ export function seasonProblem(value: string | undefined): string | undefined {
 }
 
 /**
+ * The Season a date falls in, written as the club writes it.
+ *
+ * A season spans two calendar years and runs roughly September to May
+ * (CONTEXT.md), so the year a match was played in does not name it: 3 January
+ * 2026 is 2025/26, not 2026/27.
+ *
+ * This exists because a CricClubs export cannot be trusted to say. Two of the
+ * three files in docs/samples carry `2025-26` in the header and the third
+ * carries nothing at all — and the third is 2024/25, so a season read off the
+ * header would be missing exactly where it was needed. The date is on every
+ * export, so the date is what decides.
+ *
+ * June is the boundary rather than September: the off-season months belong to
+ * the season about to start, so a July friendly files forwards rather than into
+ * a season that finished two months earlier.
+ */
+export function seasonOf(date: Date): string {
+  const startsThisYear = date.getUTCMonth() >= 5; // June, zero-indexed.
+  const start = date.getUTCFullYear() - (startsThisYear ? 0 : 1);
+  return `${start}/${String((start + 1) % 100).padStart(2, "0")}`;
+}
+
+/**
  * Overs in balls notation — whole overs, then a dot, then balls 1 to 5.
  *
  * The one figure on a scorecard that is not a number. `28.3` is 28 overs and 3
@@ -53,7 +78,7 @@ export function oversProblem(value: string | undefined): string | undefined {
   const written = value?.trim() ?? "";
   if (!written) return undefined;
 
-  if (!/^\d+(\.[0-5])?$/.test(written)) {
+  if (ballsBowled(written) === undefined) {
     return `Overs are balls, not decimals — 28.3 is 28 overs and 3 balls. "${written}" is not a figure a scorer would write.`;
   }
 

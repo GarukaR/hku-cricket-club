@@ -153,6 +153,67 @@ stopped because Vercel is unreachable, so every failure is logged and swallowed.
 A missed notice costs at most a day, which is how long the site's cached copy
 lives before it re-reads the record anyway.
 
+## Screens that are not collections
+
+Two screens in this panel are ours rather than Payload's: the **Scorecard** tab
+on a Match, and **Import a scorecard** at `/admin/import`. The first is a
+document view and Payload treats it like any other; the second is a **custom
+root view**, and those come with a trap that cost a day to find.
+
+**Payload does not guard a custom root view.** `isCustomAdminView` in
+`@payloadcms/next` is documented as returning the views *"marked with `public:
+true`"*, and its implementation returns true for every custom view that has a
+path. `RootPage` uses it to skip the redirect that sends anonymous visitors to
+the login screen, so a custom root view is public unless it says otherwise.
+
+**And it can arrive without its user even when somebody is signed in.** A
+top-level navigation that reaches the panel `Sec-Fetch-Site: cross-site` — a link
+from another site, a pasted address, a restored tab — carries the session cookie,
+and Payload's CSRF check in `extractJWT` discards it, because a cookie is not
+evidence of intent when the request came from somewhere else. That is the rule
+working correctly. The RSC requests that follow are same-origin and do
+authenticate, which is the confusing part: the page renders with no user while
+the client in the same tab shows the account avatar. On Payload's own screens the
+redirect hides all of this; on a custom root view there is no redirect, so the
+screen renders signed-out.
+
+The symptom to recognise: **the nav loses "Users"** — the one collection whose
+`read` requires being signed in — while every other collection stays, and the
+account avatar disappears.
+
+So any custom root view added here must redirect for itself:
+
+```ts
+if (!permissions?.canAccessAdmin) {
+  redirect(loginUrl(adminRoute, adminPath(adminRoute, segments) + queryString(searchParams)))
+}
+```
+
+`apps/cms/src/lib/login.ts` holds the helpers and the reasoning. The question is
+`canAccessAdmin` rather than "is anybody signed in": they are not the same
+question, and Payload asks this one on every screen it guards. Everyone with an
+account here is a committee member today, so the two agree — but that is a fact
+about the club's access rules, not something a screen should depend on.
+
+Redirecting is the cure rather than a workaround: the login screen is
+same-origin, so the journey back through it authenticates normally, and an editor
+who is already signed in is bounced straight through without typing anything.
+
+One consequence worth knowing when testing by hand: **a non-browser client cannot
+authenticate against this panel.** `curl` sends no `Origin` and no
+`Sec-Fetch-Site`, so `POST /api/users/login` succeeds and the next request with
+that cookie still reports no user. That is the CSRF rule, not a broken session —
+use a browser, or an API key.
+
+That is also the answer to the `/admin/account` trouble that
+`apps/cms/.env.development.local` was written to debug: **`/admin/account` is not
+broken.** It behaves correctly on a signed-in, same-origin visit, and every way
+of reaching it that appeared to fail — a pasted address, a `curl` — is the same
+CSRF rule discarding the cookie. The note in that file can go, but the file
+should stay: it is what points local development at the docker-compose database
+and MinIO, and deleting it aims `npm run dev` at production Neon and R2. It is
+gitignored, so it is a local tidy-up rather than a change anybody else sees.
+
 ## Changing the collections
 
 The database schema is pushed automatically in development and **migrated** in

@@ -142,20 +142,19 @@ a database (PLAN.md, *Handover*). The address itself is deliberately not written
 down here: this repository is public, and an account's login address is half of
 its credential. It lives in the password manager with everything else.
 
-Two of the four exist. The table says which, because a plan recorded as an
+Three of the four exist. The table says which, because a plan recorded as an
 accomplishment is how a gap survives to the handover:
 
 | | | |
 |---|---|---|
 | Vercel | `HKUCC` team, Hobby plan | **Done** |
 | Neon | the record | **Done** — connection string in the password manager, not yet in any `.env` |
-| Render | the CMS container | **Outstanding** — signup under the project identity could not be completed |
-| Cloudflare | R2, the media | **Outstanding** — as above |
+| Render | the CMS container | **Done** — `https://hkucc-cms.onrender.com`, free tier, so it sleeps |
+| Cloudflare | R2, the media | **Outstanding** — signup under the project identity could not be completed |
 
-Until Render and R2 exist, the CMS runs only under `docker compose`, against the
-local stand-ins described in [cms.md](cms.md). Nothing about the public site
-depends on them — it is static, and it deploys from this repository alone — but
-the importer and the media pipeline both land on the far side of that gap.
+Until R2 exists the media pipeline lands on the far side of that gap, and the
+CMS's uploads run against the local stand-in described in [cms.md](cms.md).
+Nothing about the public site depends on it.
 
 ### The move off the personal account
 

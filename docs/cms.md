@@ -243,7 +243,9 @@ project identity**, never a personal login, so handing the site to the club is a
 credential handover rather than a migration of five services and a database
 (PLAN.md, *Handover*).
 
-Only Neon exists so far. Render and Cloudflare R2 have not been created under
-that identity, which is why everything above runs against `docker compose` and
-its local stand-ins rather than the real thing. Current state, and what the gap
-costs, are in [deploy.md](deploy.md) under *Credentials*.
+Neon and Render exist; the CMS runs at `https://hkucc-cms.onrender.com` on the
+free tier, so it sleeps after about fifteen minutes idle. Cloudflare R2 has not
+been created under that identity, which is why uploads still run against
+`docker compose` and its local stand-in rather than the real thing. Current
+state, and what the gap costs, are in [deploy.md](deploy.md) under
+*Credentials*.

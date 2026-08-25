@@ -320,6 +320,10 @@ export interface Registration {
    */
   team: number | Team;
   season: number | Season;
+  /**
+   * Appearances this player has made for the league team this season. A challenge league player may make two; after that they are not eligible for the league team again this season. Blank for every other side, because the rule runs one way only. It counts what scorers wrote down, so treat it as a floor rather than a certainty.
+   */
+  callUps?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -633,6 +637,7 @@ export interface RegistrationsSelect<T extends boolean = true> {
   player?: T;
   team?: T;
   season?: T;
+  callUps?: T;
   updatedAt?: T;
   createdAt?: T;
 }

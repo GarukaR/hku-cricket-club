@@ -9,6 +9,7 @@ import type {
 import { matchSummary, oversProblem, startTimeProblem } from "@/lib/notation";
 import { announceOnChange, announceOnDelete } from "@/lib/publish";
 import { OUTCOMES, resultProblem } from "@/lib/result";
+import { standingOf } from "@/lib/standing";
 
 import { publiclyReadable } from "./access";
 import { validated } from "./validate";
@@ -54,6 +55,22 @@ const deriveSummary: FieldHook = ({ data, originalDoc }) => {
   );
 };
 
+/** Where the match stands, worked out on every read.
+ *
+ *  Never stored. A Match becomes an outstanding result because a day passes,
+ *  not because anybody saves it — so there is no write on which a stored column
+ *  could be set, and one maintained by a write hook would be right only for the
+ *  matches somebody happened to edit after their date. That is exactly the set
+ *  that does not need flagging. See lib/standing. */
+const deriveStanding: FieldHook = ({ data }) => {
+  const doc = (data ?? {}) as {
+    date?: string;
+    result?: { outcome?: string | null };
+  };
+
+  return standingOf({ date: doc.date, outcome: doc.result?.outcome });
+};
+
 /**
  * One fixture of one Team, played or still to come (CONTEXT.md).
  *
@@ -74,7 +91,7 @@ export const Matches = {
   defaultSort: "-date",
   admin: {
     useAsTitle: "summary",
-    defaultColumns: ["summary", "team", "competition", "venue", "season"],
+    defaultColumns: ["summary", "standing", "team", "competition", "venue", "season"],
     description:
       "Every fixture the club plays, before and after it is played. Enter it when the fixture is known; add the result afterwards, on the same record.",
     group: "The record",
@@ -312,6 +329,22 @@ export const Matches = {
         description: "How this match is listed. Made from the date and opponent.",
       },
       hooks: { beforeChange: [deriveSummary] },
+    },
+    {
+      name: "standing",
+      type: "text",
+      label: "Standing",
+      // Computed on read and held in no column, so this adds no migration and
+      // cannot go stale: the answer depends on today's date as much as on the
+      // record.
+      virtual: true,
+      admin: {
+        readOnly: true,
+        position: "sidebar",
+        description:
+          "Whether this match still owes a result. A fixture owes nothing yet; once its date has passed and the outcome is still empty, the club has a score to enter.",
+      },
+      hooks: { afterRead: [deriveStanding] },
     },
   ],
 } satisfies CollectionConfig;

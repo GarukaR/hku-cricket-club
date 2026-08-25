@@ -35,6 +35,21 @@ export default buildConfig({
     meta: {
       titleSuffix: " — HKU Cricket Club",
     },
+    components: {
+      views: {
+        // Importing a scorecard has no record to hang off — the file is the
+        // first this record hears of the match — so it is a screen of its own
+        // rather than a tab, unlike the Scorecard on a Match. See
+        // components/Import.
+        import: {
+          Component: "@/components/Import#ImportView",
+          path: "/import",
+        },
+      },
+      // Payload's nav lists collections, and an import is not one. Without a
+      // link it is a screen at an address nobody would type.
+      afterNavLinks: ["@/components/Import#ImportLink"],
+    },
   },
 
   // The record first, in the order an editor fills it in — a Match needs the

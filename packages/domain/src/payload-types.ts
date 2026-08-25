@@ -270,6 +270,10 @@ export interface Match {
    * How this match is listed. Made from the date and opponent.
    */
   summary?: string | null;
+  /**
+   * Whether this match still owes a result. A fixture owes nothing yet; once its date has passed and the outcome is still empty, the club has a score to enter.
+   */
+  standing?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -486,6 +490,7 @@ export interface MatchesSelect<T extends boolean = true> {
             };
       };
   summary?: T;
+  standing?: T;
   updatedAt?: T;
   createdAt?: T;
 }

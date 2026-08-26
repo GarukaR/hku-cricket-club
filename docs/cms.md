@@ -237,6 +237,35 @@ panel, in front of a committee member.
 field renamed in Payload therefore becomes a type error in the site rather than
 an `undefined` at runtime, which is the entire reason that package exists.
 
+### Read what it generated, especially a required field
+
+`migrate:create` writes what the schema *should* be, not how to get there from
+what production has. For a new required field that means a bare column:
+
+```sql
+ALTER TABLE "teams" ADD COLUMN "role" "enum_teams_role" NOT NULL;
+```
+
+Which is fine against an empty table and fails against every row already in it —
+`column "role" of relation "teams" contains null values`. Hand-edit it into the
+three steps that work: add the column nullable, fill it, then tighten it.
+`20260825_070906_player_appearance.ts` is the worked example, including why the
+value it fills with was the safe guess to make.
+
+CI catches this now, and did not before:
+
+```bash
+npm run migrate:populated --workspace @hkucc/cms
+```
+
+It applies the migrations production already has, puts a row in every table,
+then runs the ones this branch adds — the same order a deploy does, and the only
+order in which a bare NOT NULL has anything to fail against. The rows are
+invented from the schema rather than written down, so a collection added later
+is covered without anybody updating a fixture, and they are truncated afterwards.
+Wants `DATABASE_URL` and the rest of the CMS's environment; against
+docker-compose that is `postgres://hkucc:hkucc@localhost:5433/hkucc`.
+
 ## Deploying it
 
 `render.yaml` is a Blueprint: point Render at the repo and it creates the
@@ -291,6 +320,17 @@ It runs with `NODE_ENV=production`, which is what makes Payload apply
 migration committed alongside a collection change is exercised on every pull
 request, and a collection changed without one fails there rather than on the
 deploy.
+
+**That is not the same as the migration being safe**, and the distinction cost a
+deploy once. A migration this job applies to a database this job created seconds
+earlier only ever meets empty tables, and the failure every schema change is
+capable of — a `NOT NULL` column added to rows that already exist — needs rows
+to fail against. So a step before it applies what production already has, seeds
+a row into every table, and runs the branch's migrations against *those*: see
+`migrate:populated` above. What the branch adds is worked out from git, which is
+why the checkout is `fetch-depth: 0`; a push to main compares against itself and
+the step is a no-op, because the same commits were checked on the pull request
+that merged them.
 
 Its record is empty, and that is a check rather than a gap: every component that
 reads the record collapses to nothing when it has nothing, so an empty CMS

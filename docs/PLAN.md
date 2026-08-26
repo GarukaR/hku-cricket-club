@@ -199,8 +199,19 @@ looks like:
   exported is typed into the Scorecard tab on the Match itself, one row per
   player because one row is one Appearance. The sunday social side is scored
   nowhere at all, so for its matches the second is the only route there will ever
-  be. Neither resolves a scorer's name to a Player yet, and the import creates no
-  Match: those are the two tickets that remain of step 5.
+  be. The import creates no Match yet, which is the one ticket left of step 5.
+- **The importer asks who a name is, once.** A spelling it recognises — the
+  club's own, or one somebody has already answered for — resolves silently; one
+  it does not is put to the editor with the Players it could be, and the answer
+  is written straight back as an Alias, so the same spelling never asks twice.
+  `apps/cms/src/lib/names.ts` holds the rule and is tested against the three real
+  exports, where twelve spellings stand for eight players. Two distinctions are
+  load-bearing: only a full name out of a batting or bowling table may *create* a
+  Player, because `Gohar A` out of a dismissal column would mint a second entry
+  for a man already in the record; and no two Players may claim one spelling, or
+  a later import cannot say which of them played. Nothing is guessed — an
+  abbreviation is offered and never applied, because `Muhammad` is two different
+  players in one of these files.
 - **The arithmetic warns and never blocks.** `apps/cms/src/lib/reconciliation.ts`
   states a disagreement with both numbers named and leaves the judging to the
   person reading it, because a real export in `docs/samples/` is short by a run
@@ -240,12 +251,12 @@ looks like:
    architecture tracer. Every layer proven together in production before more
    was built on top of it, which is why it came before the importer rather than
    after: a schema is cheap to change while nothing reads it.
-5. The importer — ~~parsing, reconciliation~~, Alias resolution, the confidence
-   gate. Half done: an export is read and the match shown in full before
-   anything is saved, and the arithmetic is stated rather than enforced. What
-   remains is turning the scorer's names into Players and the preview into a
-   saved Match — which is where the confidence gate lives, and where each
-   answered question teaches an Alias.
+5. The importer — ~~parsing, reconciliation~~, ~~Alias resolution~~, the
+   confidence gate. An export is read and the match shown in full before
+   anything is saved, the arithmetic is stated rather than enforced, and the
+   scorer's names now resolve to Players — silently where the record already
+   knows the spelling, by asking once where it does not. What remains is turning
+   the preview into a saved Match, which is where the confidence gate lives.
 6. Public pages.
 7. Derived figures and leaderboards.
 

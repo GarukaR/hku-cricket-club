@@ -1,5 +1,8 @@
 import { DefaultTemplate } from "@payloadcms/next/templates";
+import { redirect } from "next/navigation";
 import type { AdminViewServerProps } from "payload";
+
+import { adminPath, loginUrl, queryString } from "@/lib/login";
 
 import { ImportPreview } from "./ImportPreview";
 
@@ -31,6 +34,24 @@ export async function ImportView({
   searchParams,
 }: AdminViewServerProps) {
   const { locale, permissions, req, visibleEntities } = initPageResult;
+
+  // Payload guards its own screens and not this one — see lib/login for why a
+  // custom root view arrives unauthenticated, and why redirecting is the cure
+  // rather than a workaround. Without this the screen renders for anybody who
+  // knows the address, and renders signed-out for an editor who is signed in.
+  //
+  // The question is `canAccessAdmin` rather than "is anybody signed in", because
+  // they are not the same question and Payload asks this one on every screen it
+  // guards itself. Everyone with an account here is a committee member today, so
+  // the two agree — but that is a fact about the club's access rules, and a
+  // screen should not quietly depend on one staying true.
+  if (!permissions?.canAccessAdmin) {
+    const adminRoute = req.payload.config.routes.admin;
+    const segments = Array.isArray(params?.segments) ? params.segments : [];
+    const here = adminPath(adminRoute, segments) + queryString(searchParams);
+
+    redirect(loginUrl(adminRoute, here));
+  }
 
   const teams = await req.payload.find({
     collection: "teams",

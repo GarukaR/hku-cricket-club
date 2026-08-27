@@ -75,7 +75,7 @@ export function SaveImport({
       <h3 style={{ marginBottom: 4 }}>
         {verdict.confident
           ? "This is ready to publish"
-          : `This will be held — ${verdict.holds.length} ${verdict.holds.length === 1 ? "question" : "questions"} to answer`}
+          : `This will be held — ${verdict.holds.length} ${verdict.holds.length === 1 ? "thing" : "things"} to settle`}
       </h3>
 
       <p style={{ ...quiet, marginTop: 0 }}>

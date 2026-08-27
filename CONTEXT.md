@@ -101,7 +101,8 @@ different number from Matches played.
 
 **Dismissal**:
 How a batting innings ended. Scorers record it as a short code — `b`, `lbw`,
-`ct`, `ctw` (caught behind), `st`, `ro` (run out) — and the list is open, so an
+`ct`, `ctw` (caught by the wicketkeeper), `st`, `ro` (run out) — and the list is
+open, so an
 unrecognised code is a question for a human rather than a value to guess at.
 Three rules follow from it and none is optional:
 

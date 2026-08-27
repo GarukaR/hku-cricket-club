@@ -41,11 +41,19 @@ export const DISMISSALS: readonly Dismissal[] = [
   { code: "b", label: "bowled", creditsBowler: true },
   { code: "lbw", label: "lbw", creditsBowler: true },
   { code: "ct", label: "caught", creditsBowler: true, creditsFielder: "catch" },
-  // Caught behind. Scored separately from `ct` because the keeper is not a
-  // fielder in the ordinary sense, but the credit is the same catch.
+  // Caught by the wicketkeeper — the `w` is the keeper, confirmed by the club.
+  // A separate code from `ct` because the scorer distinguishes them, and the
+  // same credit because a catch is a catch.
+  //
+  // One row in docs/samples names the same man as keeper and bowler, which
+  // cannot be literally true. Nothing here acts on that, deliberately: the
+  // catch goes to the fielder the scorer named, which is the least wrong answer
+  // whether they mistyped the code or left the keeper's name out. An earlier
+  // version tried to be cleverer, withheld a real catch, and was wrong about
+  // cricket while it did so.
   {
     code: "ctw",
-    label: "caught behind",
+    label: "caught by the wicketkeeper",
     creditsBowler: true,
     creditsFielder: "catch",
   },

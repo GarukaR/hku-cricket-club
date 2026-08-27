@@ -24,3 +24,23 @@ export const publiclyReadable = {
   update: signedIn,
   delete: signedIn,
 } satisfies CollectionConfig["access"];
+
+/**
+ * The same, but a held draft is nobody's business until it is published.
+ *
+ * For the one collection that has drafts. **Payload does not do this on its
+ * own** — a draft lives in the main table beside the published records, and an
+ * anonymous `find` returns it like any other row unless something filters it.
+ * That was checked rather than assumed, because assuming it would have put
+ * matches the club has not verified in front of the league.
+ *
+ * The filter belongs here rather than in the site's queries: `read` is asked on
+ * every route into the record — REST, GraphQL, the local API — so a query that
+ * forgot could not leak, and there is nothing for a future query to remember.
+ * A signed-in editor sees everything, which is the point of a draft queue.
+ */
+export const publiclyReadableWhenPublished = {
+  ...publiclyReadable,
+  read: ({ req: { user } }) =>
+    user ? true : { _status: { equals: "published" } },
+} satisfies CollectionConfig["access"];

@@ -1,13 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
-import type { ParsedMatch } from "@/lib/cricclubs";
 import {
   aliasClash,
-  isOurSide,
-  ourNames,
-  resolveNames,
   type KnownPlayer,
   type NameSource,
   type Resolution,
@@ -44,31 +40,27 @@ const sourceLine = (sources: NameSource[]): string =>
   sources.map((source) => WHERE[source]).join(", ");
 
 type Props = {
-  match: ParsedMatch;
-  /** The CricClubs entities the side that played this match has claimed. */
-  claimed: string[];
-  /** Every Player the record holds, as the server read them. */
+  /** Every spelling in this file, already resolved against the record.
+   *
+   *  Computed by the screen rather than here, because the step after this one
+   *  needs the same answer: the confidence gate turns on whether every name
+   *  resolved, and two components working it out separately is two chances to
+   *  disagree about whether a match may publish. */
+  resolutions: Resolution[];
+  /** Every Player the record holds, as the screen currently understands it. */
   players: KnownPlayer[];
+  /** Told about a Player that was created or taught a new spelling. */
+  onPlayer: (player: KnownPlayer) => void;
   /** Payload's API route, `/api` unless the config says otherwise. */
   api: string;
 };
 
-export function ResolveNames({ match, claimed, players: known, api }: Props) {
-  const [players, setPlayers] = useState<KnownPlayer[]>(known);
+export function ResolveNames({ resolutions, players, onPlayer, api }: Props) {
   const [busy, setBusy] = useState<string | undefined>();
   const [failure, setFailure] = useState<{ spelling: string; message: string }>();
 
-  const names = useMemo(
-    () => ourNames(match, isOurSide(claimed)),
-    [match, claimed],
-  );
-  const resolved = useMemo(
-    () => resolveNames(names, players),
-    [names, players],
-  );
-
-  const answered = resolved.filter((one) => one.player);
-  const outstanding = resolved.filter((one) => !one.player);
+  const answered = resolutions.filter((one) => one.player);
+  const outstanding = resolutions.filter((one) => !one.player);
 
   /** Payload hands back `{ doc }` on both create and update, and `{ errors }`
    *  with a message worth showing when a collection refuses. */
@@ -83,11 +75,7 @@ export function ResolveNames({ match, claimed, players: known, api }: Props) {
         const [first] = body?.errors ?? [];
         throw new Error(first?.message ?? `The record refused this (${response.status}).`);
       }
-      // Replace or add, so a second answer for the same Player sees the first.
-      setPlayers((before) => [
-        ...before.filter((player) => player.id !== body.doc.id),
-        body.doc as KnownPlayer,
-      ]);
+      onPlayer(body.doc as KnownPlayer);
     } catch (thrown) {
       setFailure({ spelling, message: (thrown as Error).message });
     } finally {
@@ -133,13 +121,13 @@ export function ResolveNames({ match, claimed, players: known, api }: Props) {
     );
   }
 
-  if (names.length === 0) return null;
+  if (resolutions.length === 0) return null;
 
   return (
     <section style={{ marginTop: 40 }}>
       <h3 style={{ marginBottom: 4 }}>The club&apos;s players in this file</h3>
       <p style={{ ...quiet, marginTop: 0 }}>
-        {answered.length} of {resolved.length} spellings already resolve.{" "}
+        {answered.length} of {resolutions.length} spellings already resolve.{" "}
         {outstanding.length === 0
           ? "Nothing here needs a decision."
           : "The rest are below. Each answer is saved as an alias, so the same spelling never asks twice."}

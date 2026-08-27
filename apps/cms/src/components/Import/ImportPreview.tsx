@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import {
   ExportProblem,
@@ -12,7 +12,12 @@ import {
 import { sameEntity } from "@/lib/mapping";
 import { competitionLabel } from "@/lib/notation";
 import { ballsBowled, economyRate, oversSpoken } from "@/lib/overs";
-import type { KnownPlayer } from "@/lib/names";
+import {
+  isOurSide,
+  ourNames,
+  resolveNames,
+  type KnownPlayer,
+} from "@/lib/names";
 import {
   extrasTotal,
   reconcileInnings,
@@ -21,6 +26,7 @@ import {
 } from "@/lib/reconciliation";
 
 import { ResolveNames } from "./ResolveNames";
+import { SaveImport } from "./SaveImport";
 import {
   cell,
   DASH,
@@ -35,7 +41,7 @@ import {
 /** One of the club's sides and the CricClubs entries it has claimed. Nothing in
  *  an export says which of our four sides it belongs to, so this is the only
  *  thing that knows (CONTEXT.md, lib/mapping). */
-export type Side = { name: string; cricclubsNames: string[] };
+export type Side = { id: number | string; name: string; cricclubsNames: string[] };
 
 /** Which of the club's sides played this match, if any of them has said so. */
 export function ourSide(match: ParsedMatch, sides: Side[]): Side | undefined {
@@ -272,14 +278,20 @@ function Ours({ match, sides }: { match: ParsedMatch; sides: Side[] }) {
 
 export function ImportPreview({
   sides,
-  players,
+  players: known,
   api,
+  adminRoute,
 }: {
   sides: Side[];
   players: KnownPlayer[];
   api: string;
+  adminRoute: string;
 }) {
   const [match, setMatch] = useState<ParsedMatch | undefined>();
+  // Held here rather than inside the name resolver, because the step after it
+  // needs the same answer: whether every name resolved is one of the three
+  // things the confidence gate turns on.
+  const [players, setPlayers] = useState<KnownPlayer[]>(known);
   const [problem, setProblem] = useState<string | undefined>();
   const [file, setFile] = useState<string | undefined>();
 
@@ -307,6 +319,18 @@ export function ImportPreview({
   const competition = match
     ? competitionLabel(match.competition, match.division)
     : "";
+
+  const side = match ? ourSide(match, sides) : undefined;
+  const resolutions = useMemo(
+    () =>
+      match && side
+        ? resolveNames(
+            ourNames(match, isOurSide(side.cricclubsNames)),
+            players,
+          )
+        : [],
+    [match, side, players],
+  );
 
   return (
     <div className="gutter--left gutter--right" style={{ paddingBottom: 64 }}>
@@ -369,16 +393,24 @@ export function ImportPreview({
           ))}
 
           <ResolveNames
-            match={match}
-            claimed={ourSide(match, sides)?.cricclubsNames ?? []}
+            resolutions={resolutions}
             players={players}
             api={api}
+            onPlayer={(written) =>
+              setPlayers((before) => [
+                ...before.filter((player) => player.id !== written.id),
+                written,
+              ])
+            }
           />
 
-          <p style={{ ...quiet, marginTop: 40 }}>
-            The match itself has not been saved. Turning this file into a Match
-            with its Appearances is the next step, and it has not happened yet.
-          </p>
+          <SaveImport
+            api={api}
+            match={match}
+            side={side}
+            resolutions={resolutions}
+            adminRoute={adminRoute}
+          />
         </>
       )}
     </div>

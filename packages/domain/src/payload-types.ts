@@ -291,6 +291,7 @@ export interface Match {
   standing?: string | null;
   updatedAt: string;
   createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * Everyone who has played for the club. Their figures are worked out from the matches they appear in, so there is nothing to keep up to date here.
@@ -625,6 +626,7 @@ export interface MatchesSelect<T extends boolean = true> {
   standing?: T;
   updatedAt?: T;
   createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

@@ -252,6 +252,66 @@ and collide — `Mohammad` is two different players in a single file.
 **A wrong answer is corrected on the Player**, under Aliases. Remove the spelling
 and the next import asks about it again.
 
+## A confident import publishes itself
+
+The moment this record stops needing anybody to administer it. An export that
+raises no question goes from CricClubs to the live site in two clicks; one that
+raises a question stops, as a draft, and states the question.
+
+**The gate is three conditions** (`apps/cms/src/lib/confidence.ts`):
+
+1. every name resolves to a Player,
+2. the arithmetic reconciles,
+3. no dismissal code appears that nothing recognises.
+
+Each is a case where publishing would put something *wrong* on the site rather
+than something incomplete — a stranger in the averages, a total that contradicts
+itself, a wicket credited on a guess. Everything else about a scorecard is
+allowed to be half known, because most of the club's history is.
+
+Against the three real exports: the two Saturday files publish, and the
+University Cricket League file holds and names the innings whose batters make
+114 against a stated 115.
+
+**A held match is saved in full**, as a draft, with its scorecard already
+entered. It is a real record of a real game somebody has a question about, not a
+queue of unread files — an editor opening it finds the match there and the
+question stated. Drafts are Payload's, on Matches alone.
+
+> **A local database that predates drafts needs a hand.** Development pushes
+> the schema rather than migrating it, so Payload adds `_status` with its own
+> default of `draft` and creates no version rows — and the migration's backfill,
+> which fixes both, never runs. The symptom is a Matches list with one row in it
+> and a public site that still shows everything. Either `docker compose down -v`
+> and start clean, or run the two `INSERT`/`UPDATE` statements out of
+> `20260827_075412_match_drafts.ts` by hand.
+
+> **Drafts do not hide themselves.** A draft sits in the main table beside the
+> published records, and an anonymous read returns it like any other row. What
+> keeps a held match off the public site is `publiclyReadableWhenPublished` in
+> `collections/access.ts`, which narrows `read` to published for everybody who
+> is not signed in. Removing it would not fail anything visibly; it would start
+> printing unverified matches.
+>
+> **And a Match with no version row is not in the panel's list at all**, while
+> its own page opens fine and the public site still shows it. That is why the
+> migration seeds one version per existing Match: without it the committee would
+> open Matches after the deploy and find one match instead of a season, with
+> every check we have still green.
+
+**Two things the import asks for**, because the file does not carry them:
+
+- **Who a name belongs to** — see above, and each answer is kept.
+- **Home or away.** A CricClubs export has no ground and no venue in it at all.
+  One click, not a form, and not guessed: a wrong venue is visibly wrong on a
+  page the other club reads too.
+
+**Importing the same file twice is safe**, and normal — scorers correct
+scorecards after the fact. A match is recognised by side, date and opponent
+(`sameFixture`), and there is one Appearance per player per match, so a second
+run updates rather than duplicates. It is also the fix for an import that failed
+halfway: press the button again.
+
 ## Changing the collections
 
 The database schema is pushed automatically in development and **migrated** in

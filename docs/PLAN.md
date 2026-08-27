@@ -116,8 +116,10 @@ Cricket League — and encoded in the importer:
   Students' batters sum to 114 against a stated 115, and 115 is correct: both the
   winning margin and the opposition's bowling figures confirm it. This is why the
   total is stored and the mismatch only warns.
-- A catch can name no fielder, and `ctw` has been seen with the fielder equal to
-  the bowler. Ambiguity is a question for a human, never a guess.
+- A catch can name no fielder at all, and it can name the bowler. The second is
+  not an anomaly: **caught and bowled** is an ordinary dismissal, and the bowler
+  is credited with the catch as well as the wicket. Reading it as a contradiction
+  and withholding the catch was a real bug in the importer, corrected on #11.
 - `Dot Balls` is zero throughout some files. Treat it as optional.
 
 ## Design
@@ -199,7 +201,12 @@ looks like:
   exported is typed into the Scorecard tab on the Match itself, one row per
   player because one row is one Appearance. The sunday social side is scored
   nowhere at all, so for its matches the second is the only route there will ever
-  be. The import creates no Match yet, which is the one ticket left of step 5.
+  be. **The import screen now saves**: a clean export publishes itself and is on
+  the live site without anybody filling in a form, and one with a question in it
+  is held as a draft with its scorecard already entered and the question stated.
+  The gate is the three conditions in `apps/cms/src/lib/confidence.ts`; Matches
+  is the one collection with drafts, and `publiclyReadableWhenPublished` is what
+  keeps a held one off the site — Payload does not do that on its own.
 - **The importer asks who a name is, once.** A spelling it recognises — the
   club's own, or one somebody has already answered for — resolves silently; one
   it does not is put to the editor with the Players it could be, and the answer
@@ -251,12 +258,11 @@ looks like:
    architecture tracer. Every layer proven together in production before more
    was built on top of it, which is why it came before the importer rather than
    after: a schema is cheap to change while nothing reads it.
-5. The importer — ~~parsing, reconciliation~~, ~~Alias resolution~~, the
-   confidence gate. An export is read and the match shown in full before
-   anything is saved, the arithmetic is stated rather than enforced, and the
-   scorer's names now resolve to Players — silently where the record already
-   knows the spelling, by asking once where it does not. What remains is turning
-   the preview into a saved Match, which is where the confidence gate lives.
+5. ~~The importer — parsing, reconciliation, Alias resolution, the confidence
+   gate.~~ Done. An export is read and shown in full, the arithmetic is stated
+   rather than enforced, the scorer's names resolve to Players, and a confident
+   import publishes itself while one with a question in it is held as a draft
+   that says what the question is.
 6. Public pages.
 7. Derived figures and leaderboards.
 

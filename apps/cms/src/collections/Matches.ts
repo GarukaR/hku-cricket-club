@@ -11,7 +11,7 @@ import { announceOnChange, announceOnDelete } from "@/lib/publish";
 import { OUTCOMES, resultProblem } from "@/lib/result";
 import { standingOf } from "@/lib/standing";
 
-import { publiclyReadable } from "./access";
+import { publiclyReadableWhenPublished } from "./access";
 import { validated } from "./validate";
 
 /** A web address, and one a browser can follow. `URL.canParse` alone accepts
@@ -110,7 +110,34 @@ export const Matches = {
       "Every fixture the club plays, before and after it is played. Enter it when the fixture is known; add the result afterwards, on the same record.",
     group: "The record",
   },
-  access: publiclyReadable,
+  access: publiclyReadableWhenPublished,
+
+  /**
+   * A Match can be held back, and only a Match.
+   *
+   * The importer publishes what it is confident about and holds what it is not
+   * (lib/confidence), so there has to be a state between "not in the record"
+   * and "on the live site". Payload's own drafts rather than a boolean of ours,
+   * because they bring the version history, the panel's publish control and a
+   * queue of held records with them.
+   *
+   * **What they do not bring is the thing they sound like they bring.** A draft
+   * lives in the main table beside the published records, and an anonymous read
+   * returns it like any other row — checked, not assumed. Keeping held matches
+   * off the public site is `publiclyReadableWhenPublished`, on `access` above.
+   *
+   * Nothing else in the record has versions. A Team, a Season or a Competition
+   * has no half-known state worth holding: it exists or it does not.
+   */
+  versions: {
+    drafts: {
+      // An editor's own save means what it says. Nothing here should quietly
+      // become live because a form was left open, and nothing should quietly
+      // stay held because it was not.
+      autosave: false,
+    },
+  },
+
   // Saving a Match is what makes it appear on the live site — see lib/publish.
   hooks: { afterChange: [announceOnChange], afterDelete: [announceOnDelete] },
   fields: [

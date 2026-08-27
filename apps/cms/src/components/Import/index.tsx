@@ -87,6 +87,7 @@ export async function ImportView({
     >
       <ImportPreview
         sides={teams.docs.map((team) => ({
+          id: team.id,
           name: team.name,
           cricclubsNames: team.cricclubsNames ?? [],
         }))}
@@ -101,6 +102,10 @@ export async function ImportView({
         // route is read from the config rather than written out, because a
         // config that moved it would otherwise break this screen silently.
         api={req.payload.config.routes.api}
+        // Only so a saved match can be linked to. Read from the config for the
+        // same reason as the API route: a panel mounted somewhere else should
+        // move this link with it rather than break it.
+        adminRoute={req.payload.config.routes.admin}
       />
     </DefaultTemplate>
   );

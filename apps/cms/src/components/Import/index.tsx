@@ -53,13 +53,25 @@ export async function ImportView({
     redirect(loginUrl(adminRoute, here));
   }
 
-  const teams = await req.payload.find({
-    collection: "teams",
-    depth: 0,
-    pagination: false,
-    req,
-    sort: "name",
-  });
+  // Two lists, both small and both read here rather than in the browser: the
+  // screen has to be able to say what it knows before a file is chosen, and a
+  // fetch on mount would leave it briefly claiming to know nothing.
+  const [teams, players] = await Promise.all([
+    req.payload.find({
+      collection: "teams",
+      depth: 0,
+      pagination: false,
+      req,
+      sort: "name",
+    }),
+    req.payload.find({
+      collection: "players",
+      depth: 0,
+      pagination: false,
+      req,
+      sort: "name",
+    }),
+  ]);
 
   return (
     <DefaultTemplate
@@ -78,6 +90,17 @@ export async function ImportView({
           name: team.name,
           cricclubsNames: team.cricclubsNames ?? [],
         }))}
+        players={players.docs.map((player) => ({
+          id: player.id,
+          name: player.name,
+          aliases: player.aliases ?? [],
+        }))}
+        // Answering a name writes through Payload's own REST API rather than a
+        // route of ours, so that the collection's validation is on the path —
+        // including the rule that no two Players may claim one spelling. The
+        // route is read from the config rather than written out, because a
+        // config that moved it would otherwise break this screen silently.
+        api={req.payload.config.routes.api}
       />
     </DefaultTemplate>
   );

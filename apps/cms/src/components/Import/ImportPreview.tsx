@@ -12,6 +12,7 @@ import {
 import { sameEntity } from "@/lib/mapping";
 import { competitionLabel } from "@/lib/notation";
 import { ballsBowled, economyRate, oversSpoken } from "@/lib/overs";
+import type { KnownPlayer } from "@/lib/names";
 import {
   extrasTotal,
   reconcileInnings,
@@ -19,43 +20,31 @@ import {
   type Finding,
 } from "@/lib/reconciliation";
 
+import { ResolveNames } from "./ResolveNames";
+import {
+  cell,
+  DASH,
+  figure,
+  heading,
+  headingRight,
+  panel,
+  quiet,
+  scorecard,
+} from "./styles";
+
 /** One of the club's sides and the CricClubs entries it has claimed. Nothing in
  *  an export says which of our four sides it belongs to, so this is the only
  *  thing that knows (CONTEXT.md, lib/mapping). */
-type Side = { name: string; cricclubsNames: string[] };
+export type Side = { name: string; cricclubsNames: string[] };
 
-const cell: React.CSSProperties = {
-  padding: "3px 8px 3px 0",
-  textAlign: "left",
-  verticalAlign: "top",
-};
-const figure: React.CSSProperties = { ...cell, textAlign: "right", paddingRight: 16 };
-const heading: React.CSSProperties = {
-  ...cell,
-  borderBottom: "1px solid currentColor",
-  fontSize: 11,
-  letterSpacing: "0.08em",
-  textTransform: "uppercase",
-  opacity: 0.7,
-};
-const headingRight: React.CSSProperties = { ...heading, textAlign: "right", paddingRight: 16 };
-const panel: React.CSSProperties = {
-  marginTop: 16,
-  padding: 12,
-  border: "1px solid currentColor",
-  borderRadius: 4,
-  maxWidth: "72ch",
-};
-const quiet: React.CSSProperties = { opacity: 0.75, maxWidth: "72ch" };
-
-/** Content width, not page width. A scorecard's columns sit next to each other;
- *  stretched across a wide screen a batter's name and his score end up at
- *  opposite edges and the eye cannot carry one to the other. */
-const scorecard: React.CSSProperties = { borderCollapse: "collapse", fontSize: 13 };
-
-/** An absent figure, never a zero: a column the scorer left empty says nothing,
- *  and a nought there would say something. */
-const DASH = "–";
+/** Which of the club's sides played this match, if any of them has said so. */
+export function ourSide(match: ParsedMatch, sides: Side[]): Side | undefined {
+  return sides.find((side) =>
+    (side.cricclubsNames ?? []).some((entity) =>
+      match.teams.some((played) => sameEntity(entity, played)),
+    ),
+  );
+}
 
 const show = (n: number | null | undefined): string =>
   n == null ? DASH : String(n);
@@ -254,23 +243,20 @@ function Innings({ innings, order }: { innings: ParsedInnings; order: number }) 
  *  the file — it is a mapping nobody has entered yet, and the difference matters
  *  because one is fixed on the Team and the other is not fixable at all. */
 function Ours({ match, sides }: { match: ParsedMatch; sides: Side[] }) {
-  const claims = sides.flatMap((side) =>
-    (side.cricclubsNames ?? []).map((entity) => ({ side, entity })),
-  );
+  const side = ourSide(match, sides);
 
-  for (const played of match.teams) {
-    const claim = claims.find(({ entity }) => sameEntity(entity, played));
-    if (claim) {
-      const other = match.teams.find((team) => team !== played);
-      return (
-        <p style={quiet}>
-          <strong>{played}</strong> is the club&apos;s{" "}
-          <strong>{claim.side.name}</strong>{" "}
-          side. {other} is the opposition, and their players are shown in full
-          here without becoming Players in the record.
-        </p>
-      );
-    }
+  if (side) {
+    const played = match.teams.find((team) =>
+      side.cricclubsNames.some((entity) => sameEntity(entity, team)),
+    );
+    const other = match.teams.find((team) => team !== played);
+    return (
+      <p style={quiet}>
+        <strong>{played}</strong> is the club&apos;s{" "}
+        <strong>{side.name}</strong> side. {other} is the opposition, and their
+        players are shown in full here without becoming Players in the record.
+      </p>
+    );
   }
 
   return (
@@ -284,7 +270,15 @@ function Ours({ match, sides }: { match: ParsedMatch; sides: Side[] }) {
   );
 }
 
-export function ImportPreview({ sides }: { sides: Side[] }) {
+export function ImportPreview({
+  sides,
+  players,
+  api,
+}: {
+  sides: Side[];
+  players: KnownPlayer[];
+  api: string;
+}) {
   const [match, setMatch] = useState<ParsedMatch | undefined>();
   const [problem, setProblem] = useState<string | undefined>();
   const [file, setFile] = useState<string | undefined>();
@@ -323,9 +317,11 @@ export function ImportPreview({ sides }: { sides: Side[] }) {
         sanctioned way in, and the only one that keeps working.
       </p>
       <p style={quiet}>
-        Nothing is uploaded and nothing is saved. The file is read here, in this
-        browser, so that the match can be checked against the paper scorecard
-        before any of it reaches the record.
+        The file is never uploaded. It is read here, in this browser, so that
+        the match can be checked against the paper scorecard before any of it
+        reaches the record. The one thing that <em>is</em> saved is an answer:
+        naming the player behind a scorer&apos;s spelling writes an alias
+        straight away, so the next export carrying it resolves without asking.
       </p>
 
       <p style={{ marginTop: 24 }}>
@@ -372,10 +368,16 @@ export function ImportPreview({ sides }: { sides: Side[] }) {
             <Innings key={i} innings={innings} order={i + 1} />
           ))}
 
+          <ResolveNames
+            match={match}
+            claimed={ourSide(match, sides)?.cricclubsNames ?? []}
+            players={players}
+            api={api}
+          />
+
           <p style={{ ...quiet, marginTop: 40 }}>
-            None of this has been saved. Turning these names into Players and
-            this match into a Match are the next two steps, and neither has
-            happened yet.
+            The match itself has not been saved. Turning this file into a Match
+            with its Appearances is the next step, and it has not happened yet.
           </p>
         </>
       )}

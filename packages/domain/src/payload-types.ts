@@ -305,7 +305,7 @@ export interface Player {
    */
   name: string;
   /**
-   * How scorers have spelled this person's name — G. Ranasinghe, Garuka R, Ranasinghe G are three aliases of one player. Scorers type names freely, and recording them here is what stops one person becoming three entries in the averages.
+   * How scorers have spelled this person's name — G. Ranasinghe, Garuka R, Ranasinghe G are three aliases of one player. Scorers type names freely, and recording them here is what stops one person becoming three entries in the averages. Most of these are written by the import screen as questions get answered, and this is where a wrong answer is corrected: remove the spelling here and the next import will ask about it again.
    */
   aliases?: string[] | null;
   updatedAt: string;

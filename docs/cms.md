@@ -214,6 +214,44 @@ should stay: it is what points local development at the docker-compose database
 and MinIO, and deleting it aims `npm run dev` at production Neon and R2. It is
 gitignored, so it is a local tidy-up rather than a change anybody else sees.
 
+## Who a name belongs to
+
+Scorers type names freely. One export in `docs/samples/` carries a man three
+ways — `Jaya Ramesh Chaliki` in the bowling table, `Jaya Ramesh C` in a
+dismissal, `Jaya Ram` in the fall of wickets — and across the University Cricket
+League file twelve spellings stand for eight players. Resolving them is what
+stops one person becoming three entries in the averages.
+
+The import screen does it by **asking, once**. A spelling it recognises resolves
+silently; one it does not is put to the editor with the Players it could be, and
+the answer is written straight back as an Alias on the Player. The next export
+carrying that spelling resolves without asking, so early imports ask a lot and by
+mid-season they ask nothing. The rule is `apps/cms/src/lib/names.ts`, tested
+against the three real exports.
+
+Four things it will not do, each for a reason a file in `docs/samples/` proves:
+
+- **It never guesses.** `Gohar A` is *offered* as possibly `Gohar Ali`, never
+  applied. `Muhammad` abbreviates two different players inside one file, so a
+  list that picked one would be right about half the time.
+- **Only a full name may create a Player** — a name out of a batting or bowling
+  table. An abbreviation from a dismissal column can be matched to somebody who
+  exists but can never mint them, because a Player made from `Yash D C` is a
+  second entry for a man already in the record, spelled worse.
+- **No two Players may claim one spelling.** Enforced on the Aliases field
+  itself, so it holds whether the spelling arrives from the import screen or is
+  typed in by hand. Two claims would make a later import unanswerable — and,
+  worse, answerable differently on different days.
+- **The opposition are never resolved.** Their card is shown in full and none of
+  it becomes a Player, which is what keeps the record a squad rather than a
+  league.
+
+The fall of wickets is not read at all: those names truncate to eight characters
+and collide — `Mohammad` is two different players in a single file.
+
+**A wrong answer is corrected on the Player**, under Aliases. Remove the spelling
+and the next import asks about it again.
+
 ## Changing the collections
 
 The database schema is pushed automatically in development and **migrated** in

@@ -80,8 +80,22 @@ function heldBack() {
     );
   }
 
-  const changed = git("diff", "--name-only", base, "--", MIGRATIONS_DIR)
-    .split("\n")
+  // Tracked changes, and untracked files as well. `git diff` cannot see a file
+  // that has never been added, and a migration `payload migrate:create` wrote
+  // thirty seconds ago is exactly that — which is to say, this check would have
+  // been silent at the one moment somebody most wants to run it. In CI the
+  // files are always committed and only the first list matters; locally the
+  // second is the whole point.
+  const changed = [
+    ...git("diff", "--name-only", base, "--", MIGRATIONS_DIR).split("\n"),
+    ...git(
+      "ls-files",
+      "--others",
+      "--exclude-standard",
+      "--",
+      MIGRATIONS_DIR,
+    ).split("\n"),
+  ]
     .map((line) => path.basename(line.trim()))
     .filter((name) => name.endsWith(".ts") && name !== "index.ts");
 

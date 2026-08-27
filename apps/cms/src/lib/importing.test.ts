@@ -182,9 +182,10 @@ describe("the Appearances an export becomes", () => {
     expect(ruthvik?.bowled).toBe(true);
   });
 
-  it("credits nobody with the catch the scorer gave to the bowler", () => {
-    // `Usman Ayub,ct,Jaya Ramesh C,Jaya Ramesh C`. The wicket is his; the catch
-    // is not credited to anybody, because a bowler does not catch his own ball.
+  it("gives a bowler his own return catch", () => {
+    // `Usman Ayub,ct,Jaya Ramesh C,Jaya Ramesh C` — caught and bowled. He gets
+    // the wicket and the catch, because taking a return catch is an ordinary
+    // way to dismiss somebody rather than a scorer's mistake.
     const { appearances } = importedFrom(CHARLIE_BEARS, ["HKU CC"]);
     const playerFor = knowing(CHARLIE_BEARS, ["HKU CC"]);
 
@@ -193,7 +194,7 @@ describe("the Appearances an export becomes", () => {
     );
 
     expect(jaya?.bowling?.wickets).toBe(3);
-    expect(jaya?.fielding?.catches ?? 0).toBe(0);
+    expect(jaya?.fielding?.catches).toBe(1);
   });
 
   it("never makes an Appearance for the opposition", () => {

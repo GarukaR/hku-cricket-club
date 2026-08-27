@@ -13,16 +13,17 @@
 // knowing it. A scorecard lists only the players the scorer entered, so this is
 // a floor and never the whole XI.
 //
-// Two things the file does not say, and this does not invent:
+// One thing the file does not say, and this does not invent: **venue**. A
+// CricClubs export carries no ground and no home-or-away at all, so it is asked
+// for once on the import screen rather than guessed — a wrong venue is visibly
+// wrong on a page the opposition also read.
 //
-//   - **Venue.** A CricClubs export carries no ground and no home-or-away. It is
-//     asked for once on the import screen rather than guessed, because a wrong
-//     venue is visibly wrong on a page the opposition also read.
-//   - **Who kept wicket, when a `ctw` names the bowler as the fielder.** The
-//     wicket is credited and the catch is not. See lib/dismissal.
+// The fielder named is credited whoever they turn out to be, **including when
+// they are the bowler**. That is caught and bowled, an ordinary dismissal, and
+// the bowler earns the catch as well as the wicket.
 
 import type { ParsedBatter, ParsedInnings, ParsedMatch } from "./cricclubs";
-import { dismissalOf, fielderIsBowler } from "./dismissal";
+import { dismissalOf } from "./dismissal";
 import { canonicalName } from "./names";
 import { extrasTotal } from "./reconciliation";
 
@@ -229,7 +230,6 @@ export function documentsFor({
     for (const batter of innings.batting) {
       const dismissal = dismissalOf(batter.howOut);
       if (!dismissal?.creditsFielder) continue;
-      if (fielderIsBowler(batter)) continue;
 
       const appearance = forPlayer(batter.fielder);
       if (!appearance) continue;

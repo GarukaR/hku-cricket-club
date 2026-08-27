@@ -95,26 +95,3 @@ export function unknownDismissals(match: ParsedMatch): string[] {
 
   return unknown;
 }
-
-/**
- * Whether a `ctw` names the same person as fielder and bowler.
- *
- * One real export does exactly this, and it cannot be true: a bowler does not
- * catch his own delivery behind the stumps. Either the scorer put the bowler in
- * the fielder column or the keeper's name is missing. It is a question for a
- * person and never a guess (docs/PLAN.md), so the credit is withheld and the
- * match is held — the wicket still belongs to the bowler, but nobody is given a
- * catch on the strength of it.
- */
-export function fielderIsBowler(batter: {
-  howOut?: string;
-  fielder?: string;
-  bowler?: string;
-}): boolean {
-  const dismissal = dismissalOf(batter.howOut);
-  if (!dismissal?.creditsFielder) return false;
-
-  const fielder = batter.fielder?.trim().toLowerCase();
-  const bowler = batter.bowler?.trim().toLowerCase();
-  return Boolean(fielder && bowler && fielder === bowler);
-}

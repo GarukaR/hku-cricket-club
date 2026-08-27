@@ -17,14 +17,13 @@
 // scorecard is allowed to be half known, because most of the club's history is,
 // and a record that refuses to hold what it half knows stops being used.
 //
-// What is deliberately *not* a condition: a `ctw` naming the same person as
-// fielder and bowler. One real export does it, and it cannot be true — but the
-// answer is to withhold that one catch and say so, not to hold a whole match.
-// The wicket still belongs to the bowler, nobody is credited on a guess, and
-// the file is otherwise perfect. See lib/dismissal.
+// What is deliberately *not* a condition: anything about who caught the ball. A
+// dismissal naming the bowler as the fielder is **caught and bowled**, which is
+// an ordinary way to get out and not a contradiction — an earlier version of
+// this file claimed otherwise and quietly withheld real catches.
 
 import { inningsToCheck, type ParsedMatch } from "./cricclubs";
-import { fielderIsBowler, unknownDismissals } from "./dismissal";
+import { unknownDismissals } from "./dismissal";
 import type { Resolution } from "./names";
 import { reconcileInnings } from "./reconciliation";
 
@@ -106,17 +105,6 @@ export function confidenceIn(
         `${list(unknown.map((code) => `“${code}”`))} ${unknown.length === 1 ? "is a dismissal code" : "are dismissal codes"} nothing here recognises. ` +
         "Rather than guess what it credits — a hit wicket read as a catch would credit a fielder who was standing still — the match is held. " +
         "Adding it to lib/dismissal with what it credits is a two-minute job, and the import then goes through.",
-    });
-  }
-
-  // Stated, never a reason to stop.
-  const ambiguous = match.innings
-    .flatMap((innings) => innings.batting)
-    .filter(fielderIsBowler);
-
-  for (const batter of ambiguous) {
-    notes.push({
-      message: `${batter.name} is down as caught by the bowler, ${batter.bowler}. A bowler does not catch his own delivery, so the wicket is credited and the catch is not. Correct it on the match if you know who took it.`,
     });
   }
 

@@ -116,8 +116,10 @@ Cricket League — and encoded in the importer:
   Students' batters sum to 114 against a stated 115, and 115 is correct: both the
   winning margin and the opposition's bowling figures confirm it. This is why the
   total is stored and the mismatch only warns.
-- A catch can name no fielder, and `ctw` has been seen with the fielder equal to
-  the bowler. Ambiguity is a question for a human, never a guess.
+- A catch can name no fielder at all, and it can name the bowler. The second is
+  not an anomaly: **caught and bowled** is an ordinary dismissal, and the bowler
+  is credited with the catch as well as the wicket. Reading it as a contradiction
+  and withholding the catch was a real bug in the importer, corrected on #11.
 - `Dot Balls` is zero throughout some files. Treat it as optional.
 
 ## Design

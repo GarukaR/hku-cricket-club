@@ -61,9 +61,9 @@ describe("a clean import", () => {
     expect(verdict.confident).toBe(true);
   });
 
-  it("still says what it withheld", () => {
-    // `Usman Ayub,ct,Jaya Ramesh C,Jaya Ramesh C` — the catch is not credited,
-    // and the match publishes anyway. Withholding a credit is not a guess.
+  it("says nothing about a bowler taking his own return catch", () => {
+    // Caught and bowled is an ordinary dismissal. Remarking on it would train
+    // an editor to click past remarks.
     const verdict = judge(
       CHARLIE_BEARS,
       ["HKU CC"],
@@ -71,8 +71,7 @@ describe("a clean import", () => {
     );
 
     expect(verdict.confident).toBe(true);
-    expect(verdict.notes).toHaveLength(1);
-    expect(verdict.notes[0].message).toContain("Usman Ayub");
+    expect(verdict.notes).toEqual([]);
   });
 });
 

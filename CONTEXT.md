@@ -103,11 +103,14 @@ different number from Matches played.
 How a batting innings ended. Scorers record it as a short code — `b`, `lbw`,
 `ct`, `ctw` (caught behind), `st`, `ro` (run out) — and the list is open, so an
 unrecognised code is a question for a human rather than a value to guess at.
-Two rules follow from it and neither is optional:
+Three rules follow from it and none is optional:
 
 - A **run out is credited to no bowler**, so wickets fallen is routinely greater
   than the sum of the bowlers' wickets. Treating those as equal will reject
   perfectly valid matches.
+- A dismissal naming the **bowler as the fielder** is caught and bowled — a
+  return catch off his own delivery. He is credited with both, and nothing about
+  it is ambiguous.
 - The bowler named alongside a run out is merely who was bowling at the time.
   They did not take the wicket, and may not appear in the bowling figures at
   all.

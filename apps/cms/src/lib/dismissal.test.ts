@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
 import { parseExport } from "./cricclubs";
-import { dismissalOf, fielderIsBowler, unknownDismissals } from "./dismissal";
+import { dismissalOf, unknownDismissals } from "./dismissal";
 
 const sample = (name: string): string =>
   readFileSync(
@@ -81,27 +81,24 @@ describe("codes an export contains", () => {
   });
 });
 
-describe("a catch the scorer credited to the bowler", () => {
-  it("is spotted in the file that actually does it", () => {
-    // `Usman Ayub,ct,Jaya Ramesh C,Jaya Ramesh C` — a bowler does not catch his
-    // own delivery behind the stumps, so the credit is a question, not a guess.
+describe("caught and bowled", () => {
+  it("is an ordinary dismissal and not a contradiction", () => {
+    // `Usman Ayub,ct,Jaya Ramesh C,Jaya Ramesh C` — the bowler took the return
+    // catch off his own delivery, which happens every week. An earlier version
+    // of this module treated it as impossible and withheld the catch.
     const caught = CHARLIE_BEARS.innings
       .flatMap((innings) => innings.batting)
-      .filter(fielderIsBowler);
+      .filter(
+        (batter) =>
+          batter.howOut === "ct" &&
+          batter.fielder != null &&
+          batter.fielder === batter.bowler,
+      );
 
     expect(caught).toHaveLength(1);
     expect(caught[0].name).toBe("Usman Ayub");
-  });
-
-  it("leaves an ordinary catch alone", () => {
-    expect(
-      fielderIsBowler({ howOut: "ct", fielder: "Tiran R", bowler: "Nitesh H" }),
-    ).toBe(false);
-  });
-
-  it("says nothing about a dismissal that credits no fielder", () => {
-    expect(
-      fielderIsBowler({ howOut: "b", fielder: "Nitesh H", bowler: "Nitesh H" }),
-    ).toBe(false);
+    // Nothing here treats it specially: the code credits a catch, full stop.
+    expect(dismissalOf(caught[0].howOut)?.creditsFielder).toBe("catch");
+    expect(dismissalOf(caught[0].howOut)?.creditsBowler).toBe(true);
   });
 });

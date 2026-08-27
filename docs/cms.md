@@ -278,12 +278,26 @@ entered. It is a real record of a real game somebody has a question about, not a
 queue of unread files — an editor opening it finds the match there and the
 question stated. Drafts are Payload's, on Matches alone.
 
+> **A local database that predates drafts needs a hand.** Development pushes
+> the schema rather than migrating it, so Payload adds `_status` with its own
+> default of `draft` and creates no version rows — and the migration's backfill,
+> which fixes both, never runs. The symptom is a Matches list with one row in it
+> and a public site that still shows everything. Either `docker compose down -v`
+> and start clean, or run the two `INSERT`/`UPDATE` statements out of
+> `20260827_075412_match_drafts.ts` by hand.
+
 > **Drafts do not hide themselves.** A draft sits in the main table beside the
 > published records, and an anonymous read returns it like any other row. What
 > keeps a held match off the public site is `publiclyReadableWhenPublished` in
 > `collections/access.ts`, which narrows `read` to published for everybody who
 > is not signed in. Removing it would not fail anything visibly; it would start
 > printing unverified matches.
+>
+> **And a Match with no version row is not in the panel's list at all**, while
+> its own page opens fine and the public site still shows it. That is why the
+> migration seeds one version per existing Match: without it the committee would
+> open Matches after the deploy and find one match instead of a season, with
+> every check we have still green.
 
 **Two things the import asks for**, because the file does not carry them:
 

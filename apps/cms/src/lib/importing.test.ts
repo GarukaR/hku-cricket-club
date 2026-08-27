@@ -85,6 +85,22 @@ describe("the Match an export becomes", () => {
     expect(ours?.byes).toBe(0);
   });
 
+  it("writes a side bowled out as a total with no wickets against it", () => {
+    // IRC Charlie Bears made 133 all out. CricClubs states the ten; the record
+    // refuses it, because 133 all out is written 133 and never 133/10. Caught
+    // by the panel rejecting the save, which is the only place it could have
+    // been caught — the two notations only meet here.
+    const { match } = importedFrom(CHARLIE_BEARS, ["HKU CC"]);
+    const them = match.result.innings.find((one) => one.side === "opponent");
+    const us = match.result.innings.find((one) => one.side === "hku");
+
+    expect(them?.runs).toBe(133);
+    expect(them?.wickets).toBeUndefined();
+    // And a side not bowled out keeps its figure.
+    expect(us?.runs).toBe(138);
+    expect(us?.wickets).toBe(5);
+  });
+
   it("marks which innings was ours and which was theirs", () => {
     const { match } = importedFrom(UCL, ["HKU Students (UCL)"]);
 

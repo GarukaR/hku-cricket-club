@@ -117,7 +117,14 @@ function inningsFor(
   return {
     side: weBatted(innings, ours) ? "hku" : "opponent",
     runs: innings.total,
-    wickets: innings.wickets,
+    // All out is written as the *absence* of a wickets figure, never as ten:
+    // a scorecard says 133, not 133/10 (collections/Matches). CricClubs states
+    // the ten, so this is where the two notations meet — and the record refuses
+    // the value outright rather than storing a second way of saying one thing.
+    wickets:
+      innings.wickets != null && innings.wickets >= 10
+        ? undefined
+        : innings.wickets,
     overs: innings.overs,
     extras: extrasTotal(innings.extras),
     // A column the scorer left empty says nothing, and a null would say

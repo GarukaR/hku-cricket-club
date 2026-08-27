@@ -88,6 +88,56 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "_matches_v_updated_at_idx" ON "_matches_v" USING btree ("updated_at");
   CREATE INDEX "_matches_v_latest_idx" ON "_matches_v" USING btree ("latest");
   CREATE INDEX "matches__status_idx" ON "matches" USING btree ("_status");`)
+
+  // Hand-added, and the second thing this migration would have got wrong.
+  //
+  // Payload's Matches *list* reads through the versions table, so a Match with
+  // no version row does not appear in it at all — while the document itself
+  // still opens fine and the public site still sees it. The failure is
+  // therefore invisible to every check we have: the site is correct, the API is
+  // correct, and the committee opens the panel to find one match instead of a
+  // season. Found by enabling drafts against a database that had matches in it
+  // and counting the rows on screen.
+  //
+  // So every existing Match gets the version it never had, marked published for
+  // the same reason the column above is: nothing predating this could have been
+  // held back.
+  await db.execute(sql`
+  INSERT INTO "_matches_v" (
+    "parent_id", "version_team_id", "version_season_id", "version_competition_id",
+    "version_date", "version_start_time", "version_opponent", "version_venue",
+    "version_ground", "version_format", "version_scorecard", "version_result_outcome",
+    "version_result_margin_value", "version_result_margin_unit", "version_summary",
+    "version_updated_at", "version_created_at", "version__status",
+    "created_at", "updated_at", "latest"
+  )
+  SELECT
+    m."id", m."team_id", m."season_id", m."competition_id",
+    m."date", m."start_time", m."opponent", m."venue"::text::"enum__matches_v_version_venue",
+    m."ground", m."format", m."scorecard", m."result_outcome"::text::"enum__matches_v_version_result_outcome",
+    m."result_margin_value", m."result_margin_unit"::text::"enum__matches_v_version_result_margin_unit", m."summary",
+    m."updated_at", m."created_at", 'published',
+    now(), now(), true
+  FROM "matches" m
+  WHERE NOT EXISTS (SELECT 1 FROM "_matches_v" v WHERE v."parent_id" = m."id");`)
+
+  // The innings go with it. Without them the version is a hollow copy, and
+  // "restore this version" in the panel would quietly wipe a scorecard —
+  // a destructive button that looks like an undo.
+  await db.execute(sql`
+  INSERT INTO "_matches_v_version_result_innings" (
+    "_order", "_parent_id", "_uuid", "side", "runs", "wickets", "overs", "extras", "byes", "leg_byes"
+  )
+  SELECT
+    i."_order", v."id", i."id",
+    i."side"::text::"enum__matches_v_version_result_innings_side",
+    i."runs", i."wickets", i."overs", i."extras", i."byes", i."leg_byes"
+  FROM "matches_result_innings" i
+  JOIN "_matches_v" v ON v."parent_id" = i."_parent_id"
+  WHERE NOT EXISTS (
+    SELECT 1 FROM "_matches_v_version_result_innings" existing
+    WHERE existing."_parent_id" = v."id"
+  );`)
 }
 
 export async function down({ db, payload, req }: MigrateDownArgs): Promise<void> {

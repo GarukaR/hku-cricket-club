@@ -39,7 +39,13 @@ jobs:
           --health-retries 20
 
     steps:
+      # Full history, not the default single commit. The migration check below
+      # has to work out which migrations production has already run, which it
+      # does by asking git what this branch adds — and a shallow clone has
+      # nothing to compare against.
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       # Matched to the runtime Vercel builds on, so the check that gates a merge
       # runs what production will run. Bump both together, never one.
@@ -95,6 +101,41 @@ jobs:
       # as it initialises rather than pushing the schema. The migrations
       # committed with a collection change are therefore exercised on every PR,
       # and a collection changed without one fails here.
+      # The migrations this branch adds, run the way the deploy will run them:
+      # against a database with rows in it.
+      #
+      # Starting the CMS below applies migrations too, but only ever to a
+      # database this job created seconds earlier — and an empty table accepts
+      # `ADD COLUMN ... NOT NULL` where production's does not. That is the worst
+      # shape a check can have: green all the way through, then a failed deploy
+      # on Render with the site's own build fine and nothing here to point at.
+      #
+      # So this applies what production already has, puts a row in every table,
+      # and only then runs what the branch adds — and takes the rows out again,
+      # because the empty record the steps below rely on is a check of its own.
+      # apps/cms/scripts/migrate-populated.mjs has the detail.
+      #
+      # The base is the pull request's, so "what the branch adds" means what
+      # production has not seen. A push to main compares against itself and the
+      # step is a no-op, which is right: the same commits were checked on the
+      # pull request that merged them.
+      - name: Migrations run against a populated database
+        env:
+          MIGRATE_BASE_REF: ${{ github.event.pull_request.base.sha || 'origin/main' }}
+          # It loads the CMS's own config, so it needs the CMS's environment —
+          # the same values as the step below, minus NODE_ENV. Production is
+          # what makes Payload apply `prodMigrations` on connect, and this step
+          # is deliberately in charge of when migrations run.
+          DATABASE_URL: postgres://hkucc:hkucc@localhost:5432/hkucc
+          PAYLOAD_SECRET: continuous-integration-only-not-a-secret-00000000000000000000000
+          PAYLOAD_PUBLIC_SERVER_URL: http://localhost:3001
+          R2_BUCKET: hkucc-media
+          R2_ENDPOINT: http://localhost:9000
+          R2_PUBLIC_URL: http://localhost:9000/hkucc-media
+          R2_ACCESS_KEY_ID: continuous-integration
+          R2_SECRET_ACCESS_KEY: continuous-integration
+        run: npm run migrate:populated --workspace @hkucc/cms
+
       - name: Start the CMS
         env:
           DATABASE_URL: postgres://hkucc:hkucc@localhost:5432/hkucc

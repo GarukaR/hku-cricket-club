@@ -120,6 +120,11 @@ Cricket League — and encoded in the importer:
   not an anomaly: **caught and bowled** is an ordinary dismissal, and the bowler
   is credited with the catch as well as the wicket. Reading it as a contradiction
   and withholding the catch was a real bug in the importer, corrected on #11.
+- `ctw` is caught by the wicketkeeper, and one sample row names the same man as
+  keeper and bowler — which, unlike the above, genuinely cannot be. The importer
+  does nothing about it on purpose: the catch goes to the fielder the scorer
+  named, because there is no telling whether the code or the name is the slip.
+  **Do not add a rule here.** Trying to was how the bug above got written.
 - `Dot Balls` is zero throughout some files. Treat it as optional.
 
 ## Design

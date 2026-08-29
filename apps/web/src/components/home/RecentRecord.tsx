@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { SectionHeading } from "@/components/SectionHeading";
 import { shortDate } from "@/lib/dates";
 import { isPlayed, resultSummary, tone, type Match } from "@/lib/match";
@@ -46,8 +48,12 @@ export function RecentRecord({
           </thead>
           <tbody>
             {played.map((match) => (
-              <tr key={`${match.date}-${match.team}-${match.opponent}`}>
-                <td>{shortDate(match.date)}</td>
+              <tr key={match.id}>
+                <td>
+                  <Link className={styles.rowLink} href={`/matches/${match.id}`}>
+                    {shortDate(match.date)}
+                  </Link>
+                </td>
                 <td className={styles.side}>{match.team}</td>
                 <td className={styles.opponent}>{match.opponent}</td>
                 <td>{match.ground}</td>

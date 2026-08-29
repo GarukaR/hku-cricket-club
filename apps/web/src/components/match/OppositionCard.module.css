@@ -1,0 +1,38 @@
+/* The opposition's card sits in the same rule-topped frame as HKU's, but reads
+   as the lighter, display-only fact it is: a note explaining the absence
+   rather than a table with nothing in it. */
+.card {
+  border-top: 2px solid var(--color-ink);
+  padding-top: 1.4rem;
+  margin-top: clamp(2.2rem, 5vw, 3rem);
+}
+
+.note {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  color: var(--color-ink2);
+  max-width: 48ch;
+  margin-top: 0.4rem;
+}
+
+.figures {
+  margin-top: 1.1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 2rem;
+}
+
+.figures dt {
+  font-family: var(--font-body);
+  font-size: 0.64rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-ink2);
+}
+
+.figures dd {
+  margin: 0.1rem 0 0;
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-variant-numeric: tabular-nums;
+}

@@ -1,0 +1,51 @@
+/* One page per Match: the record's own content column beside its marginalia,
+   the same device the homepage uses for the next fixture — a standing fact
+   held off to the side rather than competing with the result. */
+.layout {
+  padding-block: clamp(2.2rem, 5.5vw, 3.4rem) clamp(3rem, 7vw, 4.2rem);
+  display: grid;
+  /* minmax(0, …), not a bare 1fr: HKU's card sets a batting table in tabular
+     figures, and without it the track refuses to shrink below that table's own
+     width and pushes the page sideways (docs/PLAN.md's own LeadStory carries
+     the same note). */
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(2rem, 4vw, 2.6rem);
+}
+
+@media (min-width: 780px) {
+  .layout {
+    grid-template-columns: minmax(0, 1.62fr) minmax(0, 1fr);
+    gap: clamp(2.4rem, 5vw, 3.6rem);
+    align-items: start;
+  }
+}
+
+.unscored,
+.fixture {
+  margin-top: clamp(1.8rem, 4vw, 2.6rem);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  line-height: 1.62;
+  color: var(--color-ink2);
+  max-width: 52ch;
+}
+
+.deepLink {
+  margin-top: clamp(1.6rem, 3.5vw, 2.2rem);
+}
+
+.deepLink a {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 0.15em;
+}
+
+.deepLink a:hover {
+  color: var(--color-ink);
+}

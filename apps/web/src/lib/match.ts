@@ -19,11 +19,16 @@ export type Outcome =
 /** A team innings — one side's turn to bat.
  *
  *  `wickets` absent means the side was bowled out, exactly as a scorecard reads
- *  it: 151 all out is written `151`, never `151/10`. */
+ *  it: 151 all out is written `151`, never `151/10`. `overs` and `extras` are
+ *  carried for the opposition's card, which is a team total and nothing more —
+ *  the club keeps no player-by-player record for the other side (CONTEXT.md,
+ *  docs/PLAN.md — opposition players are display-only). */
 export type Innings = {
   side: string;
   runs: number;
   wickets?: number;
+  overs?: string;
+  extras?: number;
 };
 
 /** The outcome of a played Match, and by how much.
@@ -50,6 +55,8 @@ export type Result = {
  *  prints them therefore has to survive their absence rather than printing the
  *  word "undefined" into the record. */
 export type Match = {
+  /** The CMS's own id — every Match gets a page at `/matches/[id]`. */
+  id: number;
   /** ISO date, `YYYY-MM-DD`. Formatted for display in ./dates. */
   date: string;
   /** Which of the club's sides played it — league, student, and so on. The
@@ -63,6 +70,9 @@ export type Match = {
   competition?: string;
   /** 24-hour local start time, for a Match not yet played. */
   time?: string;
+  /** The CricClubs page for this Match. The site links to it rather than
+   *  reproducing the ball-by-ball detail (CONTEXT.md — Scorecard). */
+  scorecard?: string;
   result?: Result;
 };
 

@@ -1,0 +1,38 @@
+/* The same content-column-beside-marginalia device as a Match's own page and
+   a Team's squad - the profile is the record's page for a person, the way
+   those are its pages for a game and a side. */
+.layout {
+  padding-block: clamp(2.2rem, 5.5vw, 3.4rem) clamp(3rem, 7vw, 4.2rem);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(2rem, 4vw, 2.6rem);
+}
+
+@media (min-width: 780px) {
+  .layout {
+    grid-template-columns: minmax(0, 1.62fr) minmax(0, 1fr);
+    gap: clamp(2.4rem, 5vw, 3.6rem);
+    align-items: start;
+  }
+}
+
+.layout > article > * + * {
+  margin-top: clamp(1.8rem, 4vw, 2.6rem);
+}
+
+.empty {
+  margin-top: 1.4rem;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  line-height: 1.62;
+  color: var(--color-ink2);
+  max-width: 52ch;
+}
+
+.coverage {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  line-height: 1.62;
+  color: var(--color-ink2);
+  margin-top: 0.4rem;
+}

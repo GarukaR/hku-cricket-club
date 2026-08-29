@@ -1,6 +1,14 @@
 import { describe, expect, it } from "vitest";
 
-import { dismissal, economyRate, strikeRate, type Batting, type Bowling } from "./appearance";
+import {
+  ballsBowled,
+  dismissal,
+  economyRate,
+  oversBowled,
+  strikeRate,
+  type Batting,
+  type Bowling,
+} from "./appearance";
 
 describe("dismissal", () => {
   it("reads not out first, whatever howOut holds", () => {
@@ -73,5 +81,37 @@ describe("economyRate", () => {
   it("is undefined for a spell with no overs recorded", () => {
     expect(economyRate({ runs: 20 })).toBe("–");
     expect(economyRate(undefined)).toBe("–");
+  });
+});
+
+describe("ballsBowled", () => {
+  it("reads balls notation as deliveries, not as a decimal", () => {
+    // 28.3 is 28 overs and 3 balls — 171 deliveries. Read as a decimal this
+    // would come to 170.3, and every figure built on it would be wrong.
+    expect(ballsBowled("28.3")).toBe(171);
+  });
+
+  it("reads a whole number of overs with no remainder", () => {
+    expect(ballsBowled("10")).toBe(60);
+    expect(ballsBowled("0")).toBe(0);
+  });
+
+  it("is undefined for anything no scorer would have written", () => {
+    expect(ballsBowled(undefined)).toBeUndefined();
+    expect(ballsBowled("")).toBeUndefined();
+    // A sixth ball completes the over, so .6 cannot occur.
+    expect(ballsBowled("10.6")).toBeUndefined();
+  });
+});
+
+describe("oversBowled", () => {
+  it("is the reverse of ballsBowled", () => {
+    expect(oversBowled(171)).toBe("28.3");
+    expect(oversBowled(60)).toBe("10");
+  });
+
+  it("reads a total with no partial over as a whole number, never a trailing .0", () => {
+    expect(oversBowled(0)).toBe("0");
+    expect(oversBowled(36)).toBe("6");
   });
 });

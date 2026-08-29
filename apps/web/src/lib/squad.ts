@@ -31,21 +31,24 @@ export function playingRoleLabel(value: string | undefined): string | undefined 
 }
 
 export type SquadMember = {
+  playerId: number;
   player: string;
   playingRole?: string;
 };
 
 function asMember(stored: Stored): SquadMember | undefined {
-  const player = named(stored.player);
+  const relation = stored.player;
+  if (typeof relation !== "object" || relation === null) return undefined;
+
+  const player = named(relation);
   if (!player) return undefined;
 
-  const relation = stored.player;
-  const playingRole =
-    typeof relation === "object" && relation !== null
-      ? ((relation as { playingRole?: unknown }).playingRole as string | null | undefined)
-      : undefined;
+  const playingRole = (relation as { playingRole?: unknown }).playingRole as
+    | string
+    | null
+    | undefined;
 
-  return { player, ...(playingRole ? { playingRole } : {}) };
+  return { playerId: relation.id, player, ...(playingRole ? { playingRole } : {}) };
 }
 
 /**

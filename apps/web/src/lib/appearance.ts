@@ -57,11 +57,21 @@ const BALLS_IN_AN_OVER = 6;
 /** Overs in balls notation, as deliveries. `28.3` is 28 overs and 3 balls —
  *  171 deliveries — read as a decimal it is 170.3 and every economy rate is
  *  wrong by a little (see apps/cms/src/lib/overs.ts, the importer's own
- *  version of this rule). */
-function ballsBowled(overs: string | undefined): number | undefined {
+ *  version of this rule). Exported for ./career, which sums deliveries across
+ *  many spells before converting the total back with `oversBowled`. */
+export function ballsBowled(overs: string | undefined): number | undefined {
   const match = /^(\d+)(?:\.([0-5]))?$/.exec(overs?.trim() ?? "");
   if (!match) return undefined;
   return Number(match[1]) * BALLS_IN_AN_OVER + Number(match[2] ?? 0);
+}
+
+/** Deliveries back into the notation a scorer writes them in — the reverse of
+ *  `ballsBowled`. A whole number of overs is written bare, never with a
+ *  trailing `.0`, exactly as a scorecard would. */
+export function oversBowled(balls: number): string {
+  const whole = Math.floor(balls / BALLS_IN_AN_OVER);
+  const rest = balls % BALLS_IN_AN_OVER;
+  return rest === 0 ? String(whole) : `${whole}.${rest}`;
 }
 
 /** Runs conceded per over, to one decimal place, or `–` when there is nothing

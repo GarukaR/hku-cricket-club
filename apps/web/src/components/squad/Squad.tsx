@@ -76,8 +76,10 @@ export async function Squad({
             </thead>
             <tbody>
               {squad.members.map((member) => (
-                <tr key={member.player}>
-                  <td>{member.player}</td>
+                <tr key={member.playerId}>
+                  <td>
+                    <Link href={`/players/${member.playerId}`}>{member.player}</Link>
+                  </td>
                   <td className={styles.role}>
                     {playingRoleLabel(member.playingRole)}
                   </td>

@@ -1,7 +1,7 @@
-import type { Match as Stored } from "@hkucc/domain";
+import type { Appearance as StoredAppearance, Match as Stored } from "@hkucc/domain";
 import { describe, expect, it } from "vitest";
 
-import { asMatch } from "./record";
+import { asAppearance, asMatch } from "./record";
 
 /** A stored Match with everything the CMS requires and nothing it does not, so
  *  each test states only the field it is about. */
@@ -20,6 +20,17 @@ function stored(overrides: Partial<Stored> = {}): Stored {
 }
 
 describe("asMatch", () => {
+  it("carries the id every Match page is addressed by", () => {
+    expect(asMatch(stored({ id: 42 })).id).toBe(42);
+  });
+
+  it("carries the CricClubs scorecard link when one is entered", () => {
+    expect(asMatch(stored()).scorecard).toBeUndefined();
+    expect(
+      asMatch(stored({ scorecard: "https://cricclubs.com/x" })).scorecard,
+    ).toBe("https://cricclubs.com/x");
+  });
+
   it("reads a day-only date as an ISO date, without applying a time zone", () => {
     // Midnight UTC, so nothing here may shift it back to the 24th.
     expect(asMatch(stored()).date).toBe("2026-04-25");
@@ -143,5 +154,58 @@ describe("asMatch", () => {
       expect(asMatch(stored({ competition: 7 })).competition).toBeUndefined();
       expect(asMatch(stored({ team: 3 })).team).toBe("");
     });
+  });
+});
+
+/** A stored Appearance with everything the collection requires. */
+function storedAppearance(
+  overrides: Partial<StoredAppearance> = {},
+): StoredAppearance {
+  return {
+    id: 1,
+    match: 1,
+    player: { id: 1, name: "Garuka Ranasinghe", updatedAt: "", createdAt: "" },
+    updatedAt: "",
+    createdAt: "",
+    ...overrides,
+  } as StoredAppearance;
+}
+
+describe("asAppearance", () => {
+  it("names the player, from the populated relation", () => {
+    expect(asAppearance(storedAppearance()).player).toBe("Garuka Ranasinghe");
+  });
+
+  it("reads an unticked batted as did not bat, not as an absent Appearance", () => {
+    // Did not bat and did not play must never be conflated (CONTEXT.md). This
+    // is the first: the Appearance exists, batted is false, and there is no
+    // batting detail to go with it.
+    const appearance = asAppearance(storedAppearance({ batted: false }));
+    expect(appearance.batted).toBe(false);
+    expect(appearance.batting).toBeUndefined();
+  });
+
+  it("carries batting detail only when the player actually batted", () => {
+    const appearance = asAppearance(
+      storedAppearance({ batted: true, batting: { runs: 45, balls: 30 } }),
+    );
+    expect(appearance.batted).toBe(true);
+    expect(appearance.batting).toEqual({ runs: 45, balls: 30, notOut: false });
+  });
+
+  it("keeps a nought maidens rather than reading it as absent", () => {
+    const appearance = asAppearance(
+      storedAppearance({ bowled: true, bowling: { overs: "7.0", maidens: 0 } }),
+    );
+    expect(appearance.bowling?.maidens).toBe(0);
+  });
+
+  it("carries fielding counts even for a player who neither batted nor bowled", () => {
+    const appearance = asAppearance(
+      storedAppearance({ fielding: { catches: 1 } }),
+    );
+    expect(appearance.batted).toBe(false);
+    expect(appearance.bowled).toBe(false);
+    expect(appearance.fielding).toEqual({ catches: 1, runOuts: undefined, stumpings: undefined });
   });
 });

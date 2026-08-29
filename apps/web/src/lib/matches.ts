@@ -13,11 +13,12 @@
 
 import { cacheLife, cacheTag } from "next/cache";
 
-import type { Match as Stored } from "@hkucc/domain";
+import type { Appearance as StoredAppearance, Match as Stored } from "@hkucc/domain";
 
+import type { Appearance } from "./appearance";
 import { query } from "./cms";
 import { isPlayed, type Match } from "./match";
-import { asMatch } from "./record";
+import { asAppearance, asMatch } from "./record";
 
 /** Everything derived from the Matches collection, under one name.
  *
@@ -136,4 +137,68 @@ export async function seasonRecord(): Promise<{
   });
 
   return { season: season.name, matches: docs.map(asMatch) };
+}
+
+/**
+ * One Match by id — what its own page reads.
+ *
+ * `undefined` covers both a bad address and a Match still held as a draft:
+ * `publiclyReadableWhenPublished` (apps/cms/src/collections/access.ts) is what
+ * keeps a held Match from ever reaching this query, and either way the page's
+ * job is the same — say the address does not resolve, not why.
+ */
+export async function matchById(id: number): Promise<Match | undefined> {
+  "use cache";
+  cacheTag(RECORD);
+  cacheLife(LIFE);
+
+  const docs = await query<Stored>("matches", {
+    "where[id][equals]": String(id),
+    limit: "1",
+    depth: DEPTH,
+  });
+
+  return docs[0] && asMatch(docs[0]);
+}
+
+/**
+ * Every Appearance recorded for one Match — HKU's players only, never the
+ * opposition's (docs/PLAN.md — opposition players are display-only, with no
+ * Appearance of their own).
+ *
+ * Ordered by id, which is the order the importer wrote them in: for whoever
+ * batted, that is the batting order a scorecard's table is read in (see
+ * apps/cms/src/lib/importing.ts). Nothing on the Appearance itself records a
+ * batting position, so this is the nearest the record comes to one.
+ */
+export async function appearancesFor(matchId: number): Promise<Appearance[]> {
+  "use cache";
+  cacheTag(RECORD);
+  cacheLife(LIFE);
+
+  const docs = await query<StoredAppearance>("appearances", {
+    "where[match][equals]": String(matchId),
+    sort: "id",
+    limit: "50",
+    depth: "1",
+  });
+
+  return docs.map(asAppearance);
+}
+
+/**
+ * Every Match's id, so the site can build every Match's page at build time —
+ * the public site is fully static (docs/PLAN.md).
+ */
+export async function allMatchIds(): Promise<number[]> {
+  "use cache";
+  cacheTag(RECORD);
+  cacheLife(LIFE);
+
+  const docs = await query<{ id: number }>("matches", {
+    limit: "1000",
+    depth: "0",
+  });
+
+  return docs.map((doc) => doc.id);
 }

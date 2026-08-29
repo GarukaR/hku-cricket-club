@@ -10,8 +10,9 @@
 // margin of one wicket, a side bowled out, a four-innings game — be tested
 // without a network or a database.
 
-import type { Match as Stored } from "@hkucc/domain";
+import type { Appearance as StoredAppearance, Match as Stored } from "@hkucc/domain";
 
+import type { Appearance, Batting, Bowling, Fielding } from "./appearance";
 import type { Innings, Match, Outcome, Result } from "./match";
 
 /** A populated relationship, or just its id.
@@ -57,6 +58,8 @@ function innings(
     side: stored.side === "hku" ? "HKU" : opponent,
     runs: stored.runs,
     ...(stored.wickets == null ? {} : { wickets: stored.wickets }),
+    ...(stored.overs ? { overs: stored.overs } : {}),
+    ...(stored.extras == null ? {} : { extras: stored.extras }),
   };
 }
 
@@ -106,6 +109,7 @@ export function asMatch(stored: Stored): Match {
   const played = result(stored.result, opponent);
 
   return {
+    id: stored.id,
     date: isoDate(stored.date),
     team: named(stored.team) ?? "",
     opponent,
@@ -114,6 +118,63 @@ export function asMatch(stored: Stored): Match {
     ...(stored.format ? { format: stored.format } : {}),
     ...(competition ? { competition } : {}),
     ...(stored.startTime ? { time: stored.startTime } : {}),
+    ...(stored.scorecard ? { scorecard: stored.scorecard } : {}),
     ...(played ? { result: played } : {}),
+  };
+}
+
+/** A number the CMS stored, with a stored `null` read as absent rather than as
+ *  the falsy `0` — a bowler's nought maidens is a real figure, not a gap. */
+function num(value: number | null | undefined): number | undefined {
+  return value == null ? undefined : value;
+}
+
+function battingOf(stored: NonNullable<StoredAppearance["batting"]>): Batting {
+  return {
+    runs: num(stored.runs),
+    balls: num(stored.balls),
+    fours: num(stored.fours),
+    sixes: num(stored.sixes),
+    notOut: Boolean(stored.notOut),
+    ...(stored.howOut ? { howOut: stored.howOut } : {}),
+    ...(stored.fielder ? { fielder: stored.fielder } : {}),
+    ...(stored.bowler ? { bowler: stored.bowler } : {}),
+  };
+}
+
+function bowlingOf(stored: NonNullable<StoredAppearance["bowling"]>): Bowling {
+  return {
+    ...(stored.overs ? { overs: stored.overs } : {}),
+    maidens: num(stored.maidens),
+    runs: num(stored.runs),
+    wickets: num(stored.wickets),
+  };
+}
+
+function fieldingOf(stored: NonNullable<StoredAppearance["fielding"]>): Fielding {
+  return {
+    catches: num(stored.catches),
+    runOuts: num(stored.runOuts),
+    stumpings: num(stored.stumpings),
+  };
+}
+
+/**
+ * One HKU player's Appearance, as the page reads it.
+ *
+ * `batted` false is **did not bat** — the record is there, but with no batting
+ * detail because the innings ended before the player was needed. That has to
+ * read differently from **did not play**, which is this player never having an
+ * Appearance at all — a distinction the page, not this mapping, is responsible
+ * for keeping (CONTEXT.md).
+ */
+export function asAppearance(stored: StoredAppearance): Appearance {
+  return {
+    player: named(stored.player) ?? "",
+    batted: Boolean(stored.batted),
+    ...(stored.batted && stored.batting ? { batting: battingOf(stored.batting) } : {}),
+    bowled: Boolean(stored.bowled),
+    ...(stored.bowled && stored.bowling ? { bowling: bowlingOf(stored.bowling) } : {}),
+    ...(stored.fielding ? { fielding: fieldingOf(stored.fielding) } : {}),
   };
 }

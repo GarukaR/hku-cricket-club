@@ -109,6 +109,7 @@ describe("inningsSpoken", () => {
 
 describe("isPlayed", () => {
   const scheduled: Match = {
+    id: 1,
     date: "2026-05-02",
     team: "league",
     opponent: "HKUST",

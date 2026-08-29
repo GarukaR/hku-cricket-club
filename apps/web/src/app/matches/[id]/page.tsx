@@ -110,6 +110,13 @@ export default async function MatchPage({
                         />
                       )}
                     </>
+                  ) : match.scorecard ? (
+                    <p className={styles.unscored}>
+                      A scorecard exists for this match, but its detail has
+                      not been entered here yet — the result above is what
+                      the club has recorded so far. The link below goes
+                      straight to CricClubs for the full card.
+                    </p>
                   ) : (
                     <p className={styles.unscored}>
                       No scorecard exists for this match. Not every one of the

@@ -28,6 +28,15 @@ import styles from "./page.module.css";
 
 export async function generateStaticParams() {
   const ids = await allMatchIds();
+  if (ids.length === 0) {
+    // Cache Components refuses to build a route whose generateStaticParams
+    // returns nothing at all (Next.js: "empty-generate-static-params") — and
+    // an empty record is a real, tested state here (docs/cms.md), not a
+    // hypothetical one. No id the CMS ever hands out is non-numeric, so this
+    // resolves the same way a bad address does: loadMatch's own
+    // Number.isInteger check fails it, and the page calls notFound().
+    return [{ id: "__placeholder__" }];
+  }
   return ids.map((id) => ({ id: String(id) }));
 }
 

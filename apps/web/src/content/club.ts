@@ -16,7 +16,7 @@ export const navItems: NavItem[] = [
   { label: "The Club", href: "/#the-club" },
   { label: "Fixtures", href: PENDING },
   { label: "Records", href: "/#recent-record" },
-  { label: "Members", href: PENDING },
+  { label: "Members", href: "/teams" },
   { label: "Archive", href: PENDING },
   { label: "Admission", href: "/#admission" },
 ];

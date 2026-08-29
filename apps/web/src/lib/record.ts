@@ -13,17 +13,7 @@
 import type { Match as Stored } from "@hkucc/domain";
 
 import type { Innings, Match, Outcome, Result } from "./match";
-
-/** A populated relationship, or just its id.
- *
- *  Payload returns the id alone beyond the requested depth. Every query here
- *  asks for enough depth to populate these, so an id arriving means the query
- *  changed — the name is dropped rather than printed as a number. */
-function named(relation: unknown): string | undefined {
-  if (typeof relation !== "object" || relation === null) return undefined;
-  const name = (relation as { name?: unknown }).name;
-  return typeof name === "string" && name !== "" ? name : undefined;
-}
+import { named } from "./relations";
 
 /** Payload stores a day-only date as midnight UTC, and the site formats dates
  *  explicitly in UTC for the same reason (see ./dates): a date-only value has no

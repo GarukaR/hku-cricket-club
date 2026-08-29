@@ -1,0 +1,99 @@
+/* The same content-column-beside-marginalia device as a Match's own page —
+   the squad is the record's list of who, the way a Match page is its list of
+   what happened. */
+.layout {
+  padding-block: clamp(2.2rem, 5.5vw, 3.4rem) clamp(3rem, 7vw, 4.2rem);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(2rem, 4vw, 2.6rem);
+}
+
+@media (min-width: 780px) {
+  .layout {
+    grid-template-columns: minmax(0, 1.62fr) minmax(0, 1fr);
+    gap: clamp(2.4rem, 5vw, 3.6rem);
+    align-items: start;
+  }
+}
+
+.scroll {
+  overflow-x: auto;
+  margin-top: 1.4rem;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-display);
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: 0.72rem 0.6rem;
+  border-bottom: 1px solid var(--color-rule);
+  white-space: nowrap;
+}
+
+.table th:first-child,
+.table td:first-child {
+  padding-left: 0;
+}
+
+.table th:last-child,
+.table td:last-child {
+  padding-right: 0;
+}
+
+.table th {
+  font-family: var(--font-body);
+  font-size: 0.66rem;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-ink2);
+}
+
+.table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.role {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--color-ink2);
+}
+
+.empty {
+  margin-top: 1.4rem;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  line-height: 1.62;
+  color: var(--color-ink2);
+  max-width: 52ch;
+}
+
+.seasons {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.seasons a {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+.seasons a:hover {
+  color: var(--color-ink);
+  text-decoration: underline;
+}
+
+.activeSeason {
+  color: var(--color-ink);
+  font-weight: 500;
+}

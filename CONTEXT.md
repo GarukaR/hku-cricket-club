@@ -125,6 +125,16 @@ rather than inferred from the score.
 A person who has been registered to at least one Team in at least one Season.
 Distinct from a prospective member who has only made an Enquiry.
 
+**Playing role**:
+How a Player is normally selected to contribute — batter, bowler, wicketkeeper,
+or all-rounder. Recorded on the Player, not derived: unlike a career figure, it
+cannot be worked out from Appearances, since a season with few wickets does not
+mean a bowler stopped being one. Optional, since most of the record predates
+anyone writing it down.
+_Avoid_: Role on its own — the codebase's `TeamRole` (which side a Team is,
+for the eligibility rule) is a different thing that happens to share the word,
+and the two must never be conflated.
+
 **Scorecard**:
 The league's own authoritative record of a Match, kept on CricClubs by whoever
 scored the game. The club's site links to a Scorecard and imports figures from

@@ -19,10 +19,12 @@ which is what this project has.
 
 **The visual direction is already chosen and is not open for reinterpretation.**
 It is **D2 "Since 1913"** — a printed university record: centred masthead under
-a double rule, results as an archive table, marginalia for standing facts,
+a single rule, results as an archive table, marginalia for standing facts,
 committed light theme — carrying **d1's scoreline treatment** for the latest
 result. Two other directions were designed, prototyped and rejected for reasons
-recorded in `docs/PLAN.md` and `design/README.md`.
+recorded in `docs/PLAN.md` and `design/README.md`. (The rule started as a
+double rule in the original prototype; #64 dropped the second, lighter line as
+clutter, prototyped and approved before it shipped.)
 
 The design skills vendored in `.agents/skills/` — `design-taste-frontend`,
 `high-end-visual-design`, `minimalist-ui`, `industrial-brutalist-ui`,

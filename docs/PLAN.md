@@ -139,8 +139,12 @@ nothing published looks broken rather than merely stale.
 
 Prototype variant **B (Letterpress)** won: the scoreline keeps d1's structure but
 is set entirely in d2's materials. The lede folds into the letterhead above the
-double rule so the result is the page's only hero; the drop cap moves to the one
-section with running prose; the next fixture takes d2's marginalia voice.
+rule so the result is the page's only hero; the drop cap moves to the one
+section with running prose; the next fixture takes d2's marginalia voice. The
+rule itself was a double rule at first — a 2px ink line and a lighter 1px line
+directly under it — until #64 found the second line read as clutter rather
+than a flourish once real content sat under it; a single ink rule replaced it,
+prototyped and approved before shipping.
 
 Colour descends from the crest by construction. Anchors are **sampled from
 `design/logo.svg`**, `derive.js` solves lightness for WCAG AA, and it refuses to

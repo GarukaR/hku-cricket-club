@@ -6,7 +6,7 @@ import Link from "next/link";
 
 import { Container } from "@/components/Container";
 import { Masthead } from "@/components/Masthead";
-import { SectionHeading } from "@/components/SectionHeading";
+import { PageTitle } from "@/components/PageTitle";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteNav } from "@/components/SiteNav";
 import { longDate } from "@/lib/dates";
@@ -34,7 +34,7 @@ export default async function FixturesPage() {
 
       <main id="fixtures">
         <Container>
-          <SectionHeading id="fixtures-heading">Fixtures</SectionHeading>
+          <PageTitle id="fixtures-heading">Fixtures</PageTitle>
           {fixtures.length > 0 ? (
             <div className={styles.scroll} tabIndex={0} role="region" aria-labelledby="fixtures-heading">
               <table className={styles.table}>

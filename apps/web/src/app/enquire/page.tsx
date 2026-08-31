@@ -11,6 +11,7 @@ import type { Metadata } from "next";
 import { Container } from "@/components/Container";
 import { Fact, Marginalia } from "@/components/Marginalia";
 import { Masthead } from "@/components/Masthead";
+import { PageTitle } from "@/components/PageTitle";
 import { SectionHeading } from "@/components/SectionHeading";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteNav } from "@/components/SiteNav";
@@ -40,7 +41,7 @@ export default function EnquirePage() {
         <Container>
           <div className={styles.layout}>
             <article>
-              <SectionHeading id="enquire-heading">Enquire</SectionHeading>
+              <PageTitle id="enquire-heading">Enquire</PageTitle>
               <p className={styles.blurb}>
                 New members are received throughout the season, whether or not
                 you have played before. Write a line about yourself and the

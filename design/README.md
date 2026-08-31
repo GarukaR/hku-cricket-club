@@ -64,8 +64,31 @@ node design/shoot.js     # renders all three at desktop + mobile, both themes fo
 Also reports horizontal overflow and any JS errors per page. Output PNGs are not
 committed — they are regenerable and run to ~6 MB.
 
+## The navbar mark (#25)
+
+`Cricket logo_final2.ai` turned out to have no embedded PDF-compatible content —
+Illustrator's own placeholder text is all any tool here can read from it, and
+neither the club nor this project has Illustrator to re-save it with that option
+on. So the mark below is hand-redrawn from `design/logo.svg` instead: a
+lower-fidelity source than the ticket asked for, but the only one available, and
+its colours are already this project's sampled ground truth (see above).
+
+Three candidates were drawn and rendered at the sizes the mark actually has to
+work at — 64px masthead, 28px navbar, 16px favicon — on the real paper
+background, before anything was committed:
+
+| Candidate | Kept | Dropped | Verdict |
+|---|---|---|---|
+| **A — chosen** | Shield, chief, green/blue field, crossed bats and ball | HKUCC lettering, motto ribbon | Closest to the original crest in spirit; still reads clearly at 16px. |
+| B | Bats and ball only, in a plain roundel | The shield entirely | Simplest and most bulletproof at tiny sizes, but reads as a generic sport mark rather than this club's crest — nothing in it is specific to HKUCC once the shield is gone. |
+| C | Shield, chief, green/blue field | Crossed bats and ball | Keeps the one shape no other Hong Kong club shares, but drops the only part of the mark that says "cricket" at a glance. |
+
+The chosen redraw is `design/crest-mark.svg` — the canonical copy, with the
+sampled hex values and the reason they are hardcoded (a favicon cannot resolve a
+CSS custom property) recorded in its own header comment. `apps/web/src/app/icon.svg`
+and `Masthead.tsx` both carry the same shape; keep all three in sync by hand if
+it is ever redrawn again.
+
 ## Still needed from the club
 
-- A simplified navbar mark traced from the `.ai`, since the full crest's ribbon
-  lettering dies below ~80px.
 - Real content: history copy, committee list, squad, fixtures, training times, photos.

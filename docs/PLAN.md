@@ -157,7 +157,7 @@ derived figures, join enquiry, the CMS, the importer.
 
 **Deferred to v1.1** (all blocked on other people): Facebook, Instagram and
 YouTube ingestion, gallery, honours board, committee, real history copy,
-photographs, the simplified navbar mark.
+photographs.
 
 **Start the Meta App Review on day one anyway** — it is the longest lead time and
 costs nothing to have running in the background.
@@ -184,10 +184,14 @@ looks like:
   sides play under one crest, and a table that ran them together silently would
   read as one team's season while being four — the same failure as a career total
   that omits a season. Per-team pages get their own tags when they exist.
-- **Two placeholders remain on the page, each marked in code:** the crest in the
-  masthead (traced mark still outstanding) and the plates (no photographs yet).
-  The Admission button's destination is resolved — it leads to `/enquire`
-  (issue #16).
+- **One placeholder remains on the page, marked in code:** the plates (no
+  photographs yet). The Admission button's destination is resolved — it leads
+  to `/enquire` (issue #16). The masthead's crest placeholder is gone (#25) —
+  see `design/crest-mark.svg` and `design/README.md`. It is a redraw of
+  `design/logo.svg` rather than a true trace of `Cricket logo_final2.ai`: that
+  file has no PDF-compatible content embedded, so nothing here can read its
+  real paths. A cleaner re-save of the `.ai` would let a higher-fidelity mark
+  replace this one later.
 - The **workspaces layout exists**: `apps/web` holds the site, `apps/cms` holds
   Payload, and `packages/domain` now holds Payload's generated types rather than
   nothing. Every root script delegates to a workspace, so `npm run dev`, `build`,
@@ -312,4 +316,7 @@ transfer to the club.
 - A further export or two covering **retired, hit wicket and caught-and-bowled**,
   so the dismissal codes are known rather than guessed.
 - History copy, the honours board, the committee list, training times, photographs.
-- The navbar mark, traced from `Cricket logo_final2.ai`.
+- A re-save of `Cricket logo_final2.ai` with "Create PDF Compatible File" turned
+  on (needs Illustrator, which nobody working on this has). The navbar mark
+  (#25) currently ships hand-redrawn from `design/logo.svg` instead, because
+  the `.ai` as supplied has no readable vector data at all.

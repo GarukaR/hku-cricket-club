@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { Marginalia } from "@/components/Marginalia";
+import { Fact, Marginalia } from "@/components/Marginalia";
 import { SectionHeading } from "@/components/SectionHeading";
 import { standingFacts } from "@/content/club";
 import styles from "./TheClub.module.css";
@@ -42,16 +42,5 @@ export function TheClub() {
         </Marginalia>
       </div>
     </section>
-  );
-}
-
-/* A flat dt/dd sequence, not a wrapped pair: the marginalia's first-of-type rule
-   depends on the list being flat, and a <div> between <dl> and <dt> buys nothing. */
-function Fact({ term, detail }: { term: string; detail: string }) {
-  return (
-    <>
-      <dt>{term}</dt>
-      <dd>{detail}</dd>
-    </>
   );
 }

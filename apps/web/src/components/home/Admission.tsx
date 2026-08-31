@@ -1,12 +1,10 @@
+import Link from "next/link";
+
 import { Container } from "@/components/Container";
 import styles from "./Admission.module.css";
 
-/** The club's invitation, and the page's only call to action.
- *
- *  PLACEHOLDER DESTINATION. The enquiry route is its own v1 ticket and the club
- *  has not given a contact address yet, so the button holds "#" rather than an
- *  invented mailbox or a route that would 404. It is the last placeholder left on
- *  this page and the only one a visitor can walk into. */
+/** The club's invitation, and the page's only call to action — through to the
+ *  Enquiry form at /enquire (docs/PLAN.md, issue #16). */
 export function Admission() {
   return (
     <section
@@ -22,9 +20,9 @@ export function Admission() {
           New members are received throughout the season. Come to a Wednesday
           net, or write to the Secretary.
         </p>
-        <a className={styles.enquire} href="#">
+        <Link className={styles.enquire} href="/enquire">
           Enquire
-        </a>
+        </Link>
       </Container>
     </section>
   );

@@ -12,7 +12,7 @@
 import type { Metadata } from "next";
 
 import { Container } from "@/components/Container";
-import { Marginalia } from "@/components/Marginalia";
+import { Fact, Marginalia } from "@/components/Marginalia";
 import { Masthead } from "@/components/Masthead";
 import { SectionHeading } from "@/components/SectionHeading";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -91,16 +91,6 @@ export default function ClubPage() {
           </>
         }
       />
-    </>
-  );
-}
-
-/* A flat dt/dd sequence, not a wrapped pair — see TheClub's identical note. */
-function Fact({ term, detail }: { term: string; detail: string }) {
-  return (
-    <>
-      <dt>{term}</dt>
-      <dd>{detail}</dd>
     </>
   );
 }

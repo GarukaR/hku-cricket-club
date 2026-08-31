@@ -9,6 +9,7 @@ import sharp from "sharp";
 
 import { Appearances } from "./collections/Appearances";
 import { Competitions } from "./collections/Competitions";
+import { Enquiries } from "./collections/Enquiries";
 import { Matches } from "./collections/Matches";
 import { Media } from "./collections/Media";
 import { Players } from "./collections/Players";
@@ -53,7 +54,8 @@ export default buildConfig({
   },
 
   // The record first, in the order an editor fills it in — a Match needs the
-  // Team, Season and Competition it belongs to to exist already.
+  // Team, Season and Competition it belongs to to exist already. Enquiries
+  // sits after it: recruitment, not the record, and dependent on nothing.
   collections: [
     Teams,
     Seasons,
@@ -64,6 +66,7 @@ export default buildConfig({
     Appearances,
     Users,
     Media,
+    Enquiries,
   ],
 
   editor: lexicalEditor(),

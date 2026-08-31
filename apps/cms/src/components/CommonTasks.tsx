@@ -60,7 +60,7 @@ export function CommonTasks({ payload }: Partial<ServerProps>) {
         A short written guide is at <code>docs/editor-guide.md</code> in the
         club&apos;s repository, with a{" "}
         <a
-          href="https://drive.google.com/file/d/1paFuB04Vd9mDCwMc4xn74jG_BkWznv_W/view?usp=sharing"
+          href="https://drive.google.com/file/d/1PXH7kTAjWL-Zolo5bjzXwT_GNIO2jesm/view?usp=drive_link"
           target="_blank"
           rel="noreferrer"
         >

@@ -16,6 +16,15 @@
   color-scheme: light;
 }
 
+/* An anchor link — Records, Admission, the 404's own list — used to jump
+   instantly, which read as a snap rather than a page turning. The blanket
+   `prefers-reduced-motion: reduce` rule at the foot of this file already
+   forces this back to instant for anyone who has asked for that, so this is
+   safe to set unconditionally rather than behind its own media query. */
+html {
+  scroll-behavior: smooth;
+}
+
 /* Components style through the tokens and never hard-code a hex, so the whole
    palette stays traceable back to the crest. */
 body {
@@ -35,6 +44,20 @@ body {
 
 main {
   flex: 1 0 auto;
+  /* The one authored moment for moving between pages: a page's own content
+     settles in rather than snapping into place, while the letterhead and nav
+     around it — identical on every page — stay exactly where they are rather
+     than replaying an entrance they have no reason to. Expo-out, the same
+     family of ease already on the skip-link and nav-link transitions, so the
+     site has one motion signature rather than several. */
+  animation: page-enter 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
 }
 
 :focus-visible {

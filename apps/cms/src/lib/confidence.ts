@@ -123,7 +123,7 @@ export function confidenceIn(
   if (resolutions.length > 0 && resolutions.length < FULL_SQUAD) {
     notes.push({
       message:
-        `Only ${resolutions.length} players are recorded in this scorecard. ` +
+        `Only ${resolutions.length} ${resolutions.length === 1 ? "player is" : "players are"} recorded in this scorecard. ` +
         "A squad member who neither batted nor bowled, and made no catch or run out either, gets no Appearance at all once this saves — worth checking for anyone missing before it does.",
     });
   }

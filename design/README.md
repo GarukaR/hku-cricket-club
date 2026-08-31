@@ -32,8 +32,9 @@ All three take their colours from the club crest:
 >
 > The supplied SVG is an auto-trace rather than a redraw — hundreds of near-identical
 > reds and an opaque white background — so it is a reliable source for colour but not
-> a shipping asset. The ribbon lettering is unreadable much below 80px, so a
-> simplified navbar mark still has to be drawn from `Cricket logo_final2.ai`.
+> a shipping asset. The ribbon lettering is unreadable much below 80px, which is why
+> the navbar mark (below) is a redraw rather than the crest scaled down — and, as it
+> turned out, a redraw of this file rather than of `Cricket logo_final2.ai`.
 
 Used at full strength these four saturated colours read as a fairground, and gold
 fails contrast badly on white. So `derive.js` holds each crest **hue** and solves for

@@ -3,22 +3,22 @@
 // These are real. Only the training time is provisional, pending the club
 // (docs/PLAN.md, "Still needed from the club").
 
-import { PENDING, type NavItem } from "@/lib/nav";
+import type { NavItem } from "@/lib/nav";
 
 /** The masthead nav.
  *
- *  Items whose page has not been built yet are PENDING rather than a route that
- *  would 404 — the public pages are build order step 4. The Club and Members
- *  are real routes; Records and Admission are homepage sections, addressed
- *  from the root because this nav is also set on the 404, which is reached
- *  from any address at all, and a bare "#recent-record" there would scroll
- *  nowhere. */
+ *  Every item is a real route now (#62) — `lib/nav.ts`'s `PENDING` still
+ *  exists for the next section that gets a label before it gets a page. The
+ *  Club, Fixtures, Members and Archive are their own routes; Records and
+ *  Admission are homepage sections, addressed from the root because this nav
+ *  is also set on the 404, which is reached from any address at all, and a
+ *  bare "#recent-record" there would scroll nowhere. */
 export const navItems: NavItem[] = [
   { label: "The Club", href: "/club" },
-  { label: "Fixtures", href: PENDING },
+  { label: "Fixtures", href: "/fixtures" },
   { label: "Records", href: "/#recent-record" },
   { label: "Members", href: "/teams" },
-  { label: "Archive", href: PENDING },
+  { label: "Archive", href: "/archive" },
   { label: "Admission", href: "/#admission" },
 ];
 

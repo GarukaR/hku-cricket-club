@@ -58,7 +58,11 @@ export type FieldingFigures = {
   runOuts: number;
 };
 
-const UNDEFINED = "–"; // en dash
+// en dash. Exported for ./leaderboards, which has to tell a genuinely
+// undefined average apart from a low one — the qualification rule alone does
+// not: five not-out innings clears the threshold while leaving the average
+// undefined all the same (CONTEXT.md — Undefined average).
+export const UNDEFINED = "–";
 
 /** The highest innings, marked not out only when the innings that set it was.
  *  A higher, dismissed innings always beats a lower not-out one - the mark

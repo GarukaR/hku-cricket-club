@@ -1,6 +1,5 @@
-/* The same content-column-beside-marginalia device as a Match's own page —
-   the squad is the record's list of who, the way a Match page is its list of
-   what happened. */
+/* The same content-column-beside-marginalia device as Squad's own page — see
+   Squad.module.css. */
 .layout {
   padding-block: clamp(2.2rem, 5.5vw, 3.4rem) clamp(3rem, 7vw, 4.2rem);
   display: grid;
@@ -31,21 +30,53 @@
   text-decoration: underline;
 }
 
+.section {
+  margin-top: clamp(1.8rem, 4vw, 2.4rem);
+}
+
+.section:first-of-type {
+  margin-top: 1.4rem;
+}
+
+.subheading {
+  margin: 0 0 0.8rem;
+  font-family: var(--font-body);
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-ink);
+  border-bottom: 1px solid var(--color-rule);
+  padding-bottom: 0.5rem;
+}
+
+/* Stated beside both averages tables, not just once at the top of the page —
+   an unexplained omission from either one reads as a bug (issue #15). */
+.note {
+  margin: 1.2rem 0 0;
+  padding: 0.9rem 1rem;
+  border-left: 2px solid var(--color-brass);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--color-ink2);
+}
+
 .scroll {
   overflow-x: auto;
-  margin-top: 1.4rem;
 }
 
 .table {
   width: 100%;
   border-collapse: collapse;
   font-family: var(--font-display);
+  font-variant-numeric: tabular-nums;
 }
 
 .table th,
 .table td {
   text-align: left;
-  padding: 0.72rem 0.6rem;
+  padding: 0.6rem 0.6rem;
   border-bottom: 1px solid var(--color-rule);
   white-space: nowrap;
 }
@@ -53,6 +84,7 @@
 .table th:first-child,
 .table td:first-child {
   padding-left: 0;
+  white-space: normal;
 }
 
 .table th:last-child,
@@ -62,9 +94,9 @@
 
 .table th {
   font-family: var(--font-body);
-  font-size: 0.66rem;
+  font-size: 0.64rem;
   font-weight: 400;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--color-ink2);
 }
@@ -82,13 +114,6 @@
 .table td a:hover {
   color: var(--color-accent);
   border-bottom-color: currentColor;
-}
-
-.role {
-  font-family: var(--font-body);
-  font-size: 0.78rem;
-  letter-spacing: 0.04em;
-  color: var(--color-ink2);
 }
 
 .empty {

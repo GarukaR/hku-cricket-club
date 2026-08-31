@@ -11,6 +11,7 @@ import type { Registration as Stored } from "@hkucc/domain";
 import { query } from "./cms";
 import { RECORD } from "./matches";
 import { named } from "./relations";
+import { seasonByName } from "./seasons";
 
 const LIFE = "days";
 
@@ -69,12 +70,7 @@ export async function squadFor(
   cacheTag(RECORD);
   cacheLife(LIFE);
 
-  const seasons = await query<{ id: number; name: string }>("seasons", {
-    "where[name][equals]": seasonName,
-    limit: "1",
-    depth: "0",
-  });
-  const season = seasons[0];
+  const season = await seasonByName(seasonName);
   if (!season) return { members: [] };
 
   const docs = await query<Stored>("registrations", {

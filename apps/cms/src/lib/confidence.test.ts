@@ -137,6 +137,35 @@ describe("an import that stops", () => {
   });
 });
 
+describe("a short scorecard", () => {
+  it("notes rather than holds when fewer than eleven of the club's players appear", () => {
+    const players = recordKnowing(CHARLIE_BEARS, ["HKU CC"]);
+    const resolutions = resolveNames(
+      ourNames(CHARLIE_BEARS, isOurSide(["HKU CC"])),
+      players,
+    ).slice(0, 8);
+
+    const verdict = confidenceIn(CHARLIE_BEARS, resolutions);
+
+    // Confident either way — a short scorecard is a normal state for this
+    // club (CONTEXT.md), not a reason to stop.
+    expect(verdict.confident).toBe(true);
+    expect(verdict.holds).toEqual([]);
+    expect(verdict.notes).toHaveLength(1);
+    expect(verdict.notes[0].message).toContain("Only 8 players");
+  });
+
+  it("says nothing when the whole squad appears", () => {
+    const verdict = judge(
+      CHARLIE_BEARS,
+      ["HKU CC"],
+      recordKnowing(CHARLIE_BEARS, ["HKU CC"]),
+    );
+
+    expect(verdict.notes).toEqual([]);
+  });
+});
+
 describe("what the opposition cannot do", () => {
   it("never holds a match for a name that is not ours", () => {
     // Every one of our players known, none of theirs. The opposition resolve to

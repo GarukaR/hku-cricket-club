@@ -3,7 +3,8 @@
 For whoever is on the committee this year. You should not need this — the
 admin panel explains itself, field by field, and the dashboard lists the
 common tasks the moment you sign in. This is the backup, for the one time a
-screen leaves you unsure. A three-minute recording covering the same ground
+screen leaves you unsure. A short
+[recording covering the same ground](https://drive.google.com/file/d/1PXH7kTAjWL-Zolo5bjzXwT_GNIO2jesm/view?usp=drive_link)
 sits alongside this file.
 
 If you are reading this because you have just been handed the club's

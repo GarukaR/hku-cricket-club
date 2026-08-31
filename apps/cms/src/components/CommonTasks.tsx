@@ -58,9 +58,16 @@ export function CommonTasks({ payload }: Partial<ServerProps>) {
       </ol>
       <p style={{ ...quiet, marginTop: 12, marginBottom: 0, fontSize: 12 }}>
         A short written guide is at <code>docs/editor-guide.md</code> in the
-        club&apos;s repository, with a short recording alongside it — neither
-        is the primary way to learn this panel, and you should not need
-        either.
+        club&apos;s repository, with a{" "}
+        <a
+          href="https://drive.google.com/file/d/1PXH7kTAjWL-Zolo5bjzXwT_GNIO2jesm/view?usp=drive_link"
+          target="_blank"
+          rel="noreferrer"
+        >
+          short recording
+        </a>{" "}
+        alongside it — neither is the primary way to learn this panel, and
+        you should not need either.
       </p>
     </div>
   );

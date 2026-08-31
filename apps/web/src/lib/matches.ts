@@ -22,9 +22,11 @@ import { asAppearance, asMatch } from "./record";
 
 /** Everything derived from the Matches collection, under one name.
  *
- *  One tag rather than several because there is, today, one page reading the
- *  record. Per-team and per-season tags become worth their complexity when the
- *  team pages exist and a publish should leave the other sides' pages alone. */
+ *  One tag rather than several because every page reading the record today —
+ *  the homepage, Fixtures, Archive, a Match's own page — wants to know about
+ *  the same publish. Per-team and per-season tags become worth their
+ *  complexity only once a publish needs to leave some of those pages alone,
+ *  which nothing here needs yet. */
 export const RECORD = "record";
 
 /** A safety net, not the mechanism.
@@ -168,6 +170,12 @@ export async function seasonRecord(): Promise<{
  * A season with no result yet (freshly created for an upcoming fixture) is
  * dropped rather than shown as an empty archive entry: an Archive is of what
  * happened, the same reasoning `RecentRecord` already applies within a season.
+ *
+ * Each season's own `matches` here is unfiltered — an unplayed fixture inside
+ * an otherwise-archived season is still in the array `RecentRecord` receives.
+ * That is deliberate rather than sloppy: `RecentRecord` already filters to
+ * `isPlayed` before it renders a row, so asking the same question twice would
+ * only be two places that could disagree about what "played" means.
  */
 export async function archiveRecord(): Promise<
   { season: string; matches: Match[] }[]

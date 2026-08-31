@@ -46,6 +46,11 @@ export type Confidence = {
   notes: Note[];
 };
 
+/** A full squad, for the purpose of noticing a short one. Eleven regardless of
+ *  format — the note is about whether everyone who played is on this
+ *  scorecard, not about overs or divisions. */
+const FULL_SQUAD = 11;
+
 const list = (written: string[]): string =>
   written.length === 1
     ? written[0]
@@ -105,6 +110,21 @@ export function confidenceIn(
         `${list(unknown.map((code) => `“${code}”`))} ${unknown.length === 1 ? "is a dismissal code" : "are dismissal codes"} nothing here recognises. ` +
         "Rather than guess what it credits — a hit wicket read as a catch would credit a fielder who was standing still — the match is held. " +
         "Adding it to lib/dismissal with what it credits is a two-minute job, and the import then goes through.",
+    });
+  }
+
+  // Not a fourth condition — nothing here is wrong, so nothing here holds the
+  // match. But an Appearance only exists for a name this scorecard mentions,
+  // and a short scorecard is not always a short squad: it can just as easily
+  // be a scorer who only entered who batted and bowled (CONTEXT.md, "not
+  // reliably the whole XI — some list eleven, some list eight"). Worth an
+  // editor's glance either way, because whoever it misses gets no Appearance
+  // and no place in their own career figures once this saves.
+  if (resolutions.length > 0 && resolutions.length < FULL_SQUAD) {
+    notes.push({
+      message:
+        `Only ${resolutions.length} players are recorded in this scorecard. ` +
+        "A squad member who neither batted nor bowled, and made no catch or run out either, gets no Appearance at all once this saves — worth checking for anyone missing before it does.",
     });
   }
 

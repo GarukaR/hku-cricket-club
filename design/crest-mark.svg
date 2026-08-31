@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  The simplified navbar mark — hand-redrawn from design/logo.svg (#25), not
+  traced from design/Cricket logo_final2.ai: that file was saved without
+  embedded PDF-compatible content, so no tool here can read its real paths.
+
+  Candidate A of three prototyped and rendered at real sizes (64px masthead,
+  28px navbar, 16px favicon) before this was chosen — see design/README.md for
+  the two that lost and why. Kept: the shield, the red chief, the green/blue
+  split field, the crossed bats and ball. Dropped: the HKUCC lettering and the
+  motto ribbon, both unreadable well before 64px.
+
+  Colour is hardcoded here rather than through var(--color-*), which is the one
+  deliberate exception to "style through the tokens" (CLAUDE.md): a favicon is
+  fetched and rendered outside the page's own stylesheet, so it cannot resolve
+  a CSS custom property. These five hex values are not new — they are copied
+  from apps/web/src/app/tokens.css as generated today (accent, blue, red,
+  brass, ink). If design/derive.js's CREST anchors ever change and `npm run
+  tokens` is re-run, this file has to be updated by hand to match — nothing
+  wires the two together automatically.
+-->
+<svg viewBox="0 0 100 112" xmlns="http://www.w3.org/2000/svg">
+  <path d="M8,34 L50,34 L50,104 C22,90 8,74 8,52 L8,34 Z" fill="#0B6555"/>
+  <path d="M92,34 L50,34 L50,104 C78,90 92,74 92,52 L92,34 Z" fill="#1C5578"/>
+  <path d="M8,6 L92,6 L92,34 L8,34 Z" fill="#761513"/>
+  <line x1="30" y1="98" x2="72" y2="46" stroke="#76650F" stroke-width="9" stroke-linecap="round"/>
+  <line x1="70" y1="98" x2="28" y2="46" stroke="#76650F" stroke-width="9" stroke-linecap="round"/>
+  <circle cx="50" cy="74" r="7" fill="#761513" stroke="#1A1514" stroke-width="1.5"/>
+  <path d="M8,6 L92,6 L92,52 C92,74 78,90 50,104 C22,90 8,74 8,52 Z" fill="none" stroke="#1A1514" stroke-width="3"/>
+</svg>

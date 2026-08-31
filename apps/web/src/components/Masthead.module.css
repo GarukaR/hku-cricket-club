@@ -8,24 +8,15 @@
   padding-block: clamp(2rem, 5vw, 3.2rem) 0;
 }
 
-/* PLACEHOLDER crest — a pennant carrying the club's initials, standing in until
-   the navbar mark is traced from design/Cricket logo_final2.ai. The full crest's
-   ribbon lettering is unreadable below ~80px, so the real mark has to be drawn,
-   not scaled. Never generate a substitute: it must be the club's own crest. */
-.arms {
+/* The simplified crest (#25) — shield, chief and field, crossed bats and
+   ball. No lettering and no motto ribbon: both are unreadable well before this
+   size, which is why the mark is a redraw rather than the full crest scaled
+   down. See design/crest-mark.svg and design/README.md. */
+.crest {
   width: 64px;
-  height: 76px;
+  height: auto;
   margin: 0 auto 1.1rem;
-  background: var(--color-accent);
-  color: var(--color-on-accent);
-  clip-path: polygon(0 0, 100% 0, 100% 66%, 50% 100%, 0 66%);
-  display: grid;
-  place-items: center;
-  font-family: var(--font-display);
-  font-size: 1.5rem;
-  font-weight: 500;
-  letter-spacing: 0.03em;
-  line-height: 1;
+  display: block;
 }
 
 .name {

@@ -1,0 +1,14 @@
+<!-- The navbar mark (#25), duplicated from design/crest-mark.svg rather than
+     referenced: Next's app/icon.svg has to be a real static file, and this one
+     also can't use var(--color-*) — a favicon renders outside the page's own
+     stylesheet. See that file for why these five hex values are hardcoded and
+     where they come from. Keep the two in sync by hand. -->
+<svg viewBox="0 0 100 112" xmlns="http://www.w3.org/2000/svg">
+  <path d="M8,34 L50,34 L50,104 C22,90 8,74 8,52 L8,34 Z" fill="#0B6555"/>
+  <path d="M92,34 L50,34 L50,104 C78,90 92,74 92,52 L92,34 Z" fill="#1C5578"/>
+  <path d="M8,6 L92,6 L92,34 L8,34 Z" fill="#761513"/>
+  <line x1="30" y1="98" x2="72" y2="46" stroke="#76650F" stroke-width="9" stroke-linecap="round"/>
+  <line x1="70" y1="98" x2="28" y2="46" stroke="#76650F" stroke-width="9" stroke-linecap="round"/>
+  <circle cx="50" cy="74" r="7" fill="#761513" stroke="#1A1514" stroke-width="1.5"/>
+  <path d="M8,6 L92,6 L92,52 C92,74 78,90 50,104 C22,90 8,74 8,52 Z" fill="none" stroke="#1A1514" stroke-width="3"/>
+</svg>

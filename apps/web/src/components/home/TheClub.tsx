@@ -1,9 +1,13 @@
+import Link from "next/link";
+
 import { Marginalia } from "@/components/Marginalia";
 import { SectionHeading } from "@/components/SectionHeading";
 import { standingFacts } from "@/content/club";
 import styles from "./TheClub.module.css";
 
-/** Who the club is, with its standing facts in the margin.
+/** Who the club is, with its standing facts in the margin — a teaser for the
+ *  full story at /club, which is where the running prose and its drop cap live
+ *  (docs/PLAN.md, issue #17).
  *
  *  The copy here is the club's own, apart from the 1988 handbook line, which is
  *  invented and marked as such in the footer until real history copy arrives
@@ -20,16 +24,14 @@ export function TheClub() {
             at Sandy Bay, the University&rsquo;s ground on the western shore,
             with league fixtures on Saturdays.
           </p>
-          <p>
-            Membership is open to current students, staff and alumni of the
-            University of Hong Kong. Experience is welcome but not required; a
-            good number of the present side had never played before joining.
-          </p>
           <blockquote className={styles.quote}>
             A university club is only ever eleven people wide and a hundred years
             deep.
             <cite>Club handbook, 1988</cite>
           </blockquote>
+          <p className={styles.more}>
+            <Link href="/club">The Club&rsquo;s full story →</Link>
+          </p>
         </div>
         <Marginalia>
           <dl>

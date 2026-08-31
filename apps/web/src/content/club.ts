@@ -8,12 +8,13 @@ import { PENDING, type NavItem } from "@/lib/nav";
 /** The masthead nav.
  *
  *  Items whose page has not been built yet are PENDING rather than a route that
- *  would 404 — the public pages are build order step 4. The three that resolve
- *  today are sections of the homepage, and they are addressed from the root:
- *  this nav is also set on the 404, which is reached from any address at all,
- *  and a bare "#the-club" there would scroll nowhere. */
+ *  would 404 — the public pages are build order step 4. The Club and Members
+ *  are real routes; Records and Admission are homepage sections, addressed
+ *  from the root because this nav is also set on the 404, which is reached
+ *  from any address at all, and a bare "#recent-record" there would scroll
+ *  nowhere. */
 export const navItems: NavItem[] = [
-  { label: "The Club", href: "/#the-club" },
+  { label: "The Club", href: "/club" },
   { label: "Fixtures", href: PENDING },
   { label: "Records", href: "/#recent-record" },
   { label: "Members", href: "/teams" },
@@ -30,6 +31,7 @@ export const standingFacts: { term: string; detail: string }[] = [
   },
   { term: "Season", detail: "September – May" },
   { term: "Training", detail: "Wednesdays, 18:30" },
+  { term: "Motto", detail: "In Ludo Sapientia — wisdom in play" },
 ];
 
 /** PLACEHOLDER — captions for plates the club has not sent yet. The frames are

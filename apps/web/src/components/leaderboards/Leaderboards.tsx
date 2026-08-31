@@ -166,7 +166,7 @@ function BattingAverageTable({ rows }: { rows: Tables["battingAverage"] }) {
             <th scope="col">Player</th>
             <th scope="col">Inns</th>
             <th scope="col">Runs</th>
-            <th scope="col">Avg</th>
+            <th scope="col">Bat avg</th>
           </tr>
         </thead>
         <tbody>
@@ -196,7 +196,7 @@ function BowlingAverageTable({ rows }: { rows: Tables["bowlingAverage"] }) {
             <th scope="col">Player</th>
             <th scope="col">Overs</th>
             <th scope="col">Wkts</th>
-            <th scope="col">Avg</th>
+            <th scope="col">Bowl avg</th>
           </tr>
         </thead>
         <tbody>

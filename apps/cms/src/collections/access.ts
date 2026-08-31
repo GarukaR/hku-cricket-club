@@ -44,3 +44,20 @@ export const publiclyReadableWhenPublished = {
   read: ({ req: { user } }) =>
     user ? true : { _status: { equals: "published" } },
 } satisfies CollectionConfig["access"];
+
+/**
+ * The reverse of the record: anyone may write, only the committee may read.
+ *
+ * For the one collection a stranger creates rather than the club — an
+ * Enquiry. The public site has no login and never will (docs/PLAN.md: a
+ * committee that will not administer a website will not administer accounts
+ * for its prospective members either), so `create` has to be open the same way
+ * `publiclyReadable`'s `read` is. What somebody has written about themselves is
+ * not the public record, though, so `read` is `signedIn` rather than `true`.
+ */
+export const submittableByAnyone = {
+  read: signedIn,
+  create: () => true,
+  update: signedIn,
+  delete: signedIn,
+} satisfies CollectionConfig["access"];

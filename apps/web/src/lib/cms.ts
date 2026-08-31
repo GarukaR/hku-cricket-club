@@ -1,15 +1,22 @@
-// Reading the record out of Payload, over HTTP.
+// Talking to Payload over HTTP — reading the record, and the one write the
+// site makes.
 //
-// This is the site's only outbound dependency, and it is a *build-time* one. A
-// visitor never comes through here: pages are prerendered and cached, so the
-// CMS being asleep — which on Render's free tier is its normal state — cannot
-// affect anybody reading the site (docs/PLAN.md, "the CMS is off the request
-// path"). What it can affect is a deploy, which is what the retry below is for.
+// Reading is a *build-time* dependency. A visitor never comes through `query`:
+// pages are prerendered and cached, so the CMS being asleep — which on
+// Render's free tier is its normal state — cannot affect anybody reading the
+// site (docs/PLAN.md, "the CMS is off the request path"). What it can affect
+// is a deploy, which is what the retry below is for.
+//
+// `create` is the one exception, and a deliberate one (issue #16): an Enquiry
+// has nowhere else to be written, and there is no version of "someone wants to
+// join" that can wait for the next deploy. A visitor submitting the form *can*
+// wake a sleeping container, the one place in the whole site that is true —
+// see the enquiry form's own handling of what that costs in the meantime.
 //
 // Read access on the record is public (apps/cms/src/collections/access.ts), so
-// nothing here carries a credential. That is a deliberate decision and not an
-// oversight: the record *is* the public site, and a login in front of it would
-// protect nothing while having to be handed to the build.
+// nothing here carries a credential for `query`. `create` is equally
+// credential-free for the same reason `submittableByAnyone` exists: the club
+// has no login to hand a stranger before it will hear from them.
 
 /** Long enough to sit through a cold start.
  *
@@ -86,6 +93,62 @@ export async function query<T>(
       "If Render is asleep this should have woken it; if it is down, the site " +
       "cannot be rebuilt until it is back. The deployment already live is " +
       "unaffected. See docs/deploy.md.",
+    { cause: last },
+  );
+}
+
+/** Payload's own shape for a rejected create — the message a collection's
+ *  `beforeValidate` hook throws (see Enquiries' `rejectSpam`) arrives here,
+ *  and is deliberately not surfaced to whoever gets this back: a bot told
+ *  precisely why it was caught is a bot that adjusts. */
+export class CreateRejected extends Error {}
+
+/**
+ * One document, written to Payload.
+ *
+ * The same tolerance for a sleeping container as `query`, because a visitor
+ * submitting the form is exactly the request that would otherwise wake it —
+ * there is no build in front of this one to sit through the wait instead. A
+ * rejected submission (validation, or the spam check) is distinguished from
+ * an unreachable CMS: the first is the visitor's to fix, the second is the
+ * club's, and the enquiry form treats them differently.
+ */
+export async function create(
+  collection: string,
+  data: Record<string, unknown>,
+): Promise<void> {
+  const url = `${baseUrl()}/api/${collection}`;
+  let last: unknown;
+
+  for (let attempt = 1; attempt <= ATTEMPTS; attempt++) {
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+        signal: AbortSignal.timeout(TIMEOUT_MS),
+      });
+
+      if (response.status >= 400 && response.status < 500) {
+        const body = await response.json().catch(() => undefined);
+        throw new CreateRejected(
+          body?.errors?.[0]?.message ?? `${response.status} ${response.statusText}`,
+        );
+      }
+
+      if (!response.ok) {
+        throw new Error(`${response.status} ${response.statusText}`);
+      }
+
+      return;
+    } catch (cause) {
+      if (cause instanceof CreateRejected) throw cause;
+      last = cause;
+    }
+  }
+
+  throw new Error(
+    `Could not write to ${collection} on the CMS at ${baseUrl()} after ${ATTEMPTS} attempts.`,
     { cause: last },
   );
 }

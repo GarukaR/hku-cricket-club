@@ -18,3 +18,16 @@ export function Marginalia({
     </aside>
   );
 }
+
+/** One row of a `Marginalia`'s `<dl>` — a flat `dt`/`dd` pair, not a wrapped
+ *  one, because the marginalia's first-of-type rule (Marginalia.module.css)
+ *  depends on the list being flat and a `<div>` between `<dl>` and `<dt>` buys
+ *  nothing. Every page with standing facts in its margin uses this one. */
+export function Fact({ term, detail }: { term: string; detail: string }) {
+  return (
+    <>
+      <dt>{term}</dt>
+      <dd>{detail}</dd>
+    </>
+  );
+}

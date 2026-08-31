@@ -4,6 +4,7 @@ import * as migration_20260825_070906_player_appearance from './20260825_070906_
 import * as migration_20260825_075036_innings_byes from './20260825_075036_innings_byes';
 import * as migration_20260827_075412_match_drafts from './20260827_075412_match_drafts';
 import * as migration_20260829_174552_add_player_playing_role from './20260829_174552_add_player_playing_role';
+import * as migration_20260831_132736_add_enquiries from './20260831_132736_add_enquiries';
 
 export const migrations = [
   {
@@ -34,6 +35,11 @@ export const migrations = [
   {
     up: migration_20260829_174552_add_player_playing_role.up,
     down: migration_20260829_174552_add_player_playing_role.down,
-    name: '20260829_174552_add_player_playing_role'
+    name: '20260829_174552_add_player_playing_role',
+  },
+  {
+    up: migration_20260831_132736_add_enquiries.up,
+    down: migration_20260831_132736_add_enquiries.down,
+    name: '20260831_132736_add_enquiries'
   },
 ];

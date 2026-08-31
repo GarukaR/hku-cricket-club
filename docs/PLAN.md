@@ -36,10 +36,13 @@ on the box. Free-tier fragility therefore stops being a risk and becomes an
 inconvenience: if Render changes terms, the same image runs elsewhere behind one
 connection string.
 
-**The CMS is off the request path.** The public site is static, so the box being
-asleep, wedged or reaped never takes the site down — it only delays publishing.
-Render's spin-down is free uptime rather than a defect, because nobody but the
-committee ever touches it.
+**The CMS is off the request path — for reading.** The public site is static,
+so the box being asleep, wedged or reaped never takes the site down — it only
+delays publishing. Render's spin-down is free uptime rather than a defect,
+because nobody but the committee ever touches it. The one deliberate exception
+is the Enquiry form (issue #16): submitting it is a write a visitor's own
+request makes, and there is no build in front of it to sit through a cold
+start instead. See `apps/web/src/lib/cms.ts`'s `create`.
 
 ### Rejected
 
@@ -181,9 +184,10 @@ looks like:
   sides play under one crest, and a table that ran them together silently would
   read as one team's season while being four — the same failure as a career total
   that omits a season. Per-team pages get their own tags when they exist.
-- **Three placeholders remain on the page, each marked in code:** the crest in the
-  masthead (traced mark still outstanding), the plates (no photographs yet), and
-  the Admission button's destination (the enquiry route is its own ticket).
+- **Two placeholders remain on the page, each marked in code:** the crest in the
+  masthead (traced mark still outstanding) and the plates (no photographs yet).
+  The Admission button's destination is resolved — it leads to `/enquire`
+  (issue #16).
 - The **workspaces layout exists**: `apps/web` holds the site, `apps/cms` holds
   Payload, and `packages/domain` now holds Payload's generated types rather than
   nothing. Every root script delegates to a workspace, so `npm run dev`, `build`,

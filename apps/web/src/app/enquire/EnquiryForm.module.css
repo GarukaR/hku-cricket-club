@@ -80,8 +80,12 @@
   transition: background-color 0.15s ease-out, opacity 0.15s ease-out;
 }
 
+/* The same swap Admission's own "Enquire" button uses on hover — a token pair
+   traded for each other, never a mix against an unrelated colour. */
 .submit:hover:not(:disabled) {
-  background-color: color-mix(in srgb, var(--color-accent) 85%, black);
+  background-color: var(--color-on-accent);
+  color: var(--color-accent);
+  border-color: var(--color-accent);
 }
 
 .submit:disabled {

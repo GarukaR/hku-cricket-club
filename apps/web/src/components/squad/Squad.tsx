@@ -128,6 +128,9 @@ function SquadShell({
           <div className={styles.layout}>
             <article>
               <SectionHeading id="squad-heading">{team}</SectionHeading>
+              <p className={styles.more}>
+                <Link href={`/teams/${teamSlug}/leaderboards`}>Leaderboards →</Link>
+              </p>
               {children}
             </article>
 

@@ -27,6 +27,24 @@ export async function currentSeasonName(): Promise<string | undefined> {
   return current?.name;
 }
 
+/** One Season by its own name — what a page reached by `/[season]` resolves
+ *  before it can query anything scoped to it (Squad, Leaderboards). Undefined
+ *  for a name that does not exist; the caller reads that as "not found", not
+ *  as an empty season. */
+export async function seasonByName(name: string): Promise<Season | undefined> {
+  "use cache";
+  cacheTag(RECORD);
+  cacheLife(LIFE);
+
+  const docs = await query<Season>("seasons", {
+    "where[name][equals]": name,
+    limit: "1",
+    depth: "0",
+  });
+
+  return docs[0];
+}
+
 /** `2025/26` on a squad page's address — `2025-26`, since a Season's own
  *  written form cannot sit inside one URL segment. */
 export function seasonSlug(name: string): string {

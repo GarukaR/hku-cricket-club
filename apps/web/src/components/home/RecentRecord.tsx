@@ -17,24 +17,36 @@ import styles from "./RecentRecord.module.css";
 export function RecentRecord({
   matches,
   season,
+  id = "recent-record",
+  title,
 }: {
   matches: Match[];
   season?: string;
+  /** Unique when more than one of these lands on the same page — the Archive
+   *  page renders one per season, and duplicate ids break the labelling this
+   *  otherwise relies on. Defaults to the homepage's original id, so its own
+   *  call site needs no change. */
+  id?: string;
+  /** Overrides the computed "Recent record — {season}" heading. The Archive
+   *  page passes the season name alone: under its own "Archive" heading,
+   *  "Recent record — 2025/26" for a season two years gone reads as a
+   *  contradiction, whereas "2025/26" on its own reads as an index entry. */
+  title?: string;
 }) {
   const played = matches.filter(isPlayed);
 
   if (played.length === 0) return null;
 
   return (
-    <section className={styles.record} aria-labelledby="recent-record">
-      <SectionHeading id="recent-record">
-        Recent record{season ? ` — ${season}` : ""}
+    <section className={styles.record} aria-labelledby={id}>
+      <SectionHeading id={id}>
+        {title ?? `Recent record${season ? ` — ${season}` : ""}`}
       </SectionHeading>
       <div
         className={styles.scroll}
         tabIndex={0}
         role="region"
-        aria-labelledby="recent-record"
+        aria-labelledby={id}
       >
         <table className={styles.table}>
           <thead>

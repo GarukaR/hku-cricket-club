@@ -96,6 +96,28 @@ export async function nextFixture(): Promise<Match | undefined> {
   return docs[0] && asMatch(docs[0]);
 }
 
+/**
+ * Every fixture still to come, whichever side plays it, soonest first.
+ *
+ * The same question `nextFixture()` asks, without the `limit: "1"` — this is
+ * the Fixtures page's whole list rather than the homepage's single teaser.
+ */
+export async function upcomingFixtures(): Promise<Match[]> {
+  "use cache";
+  cacheTag(RECORD);
+  cacheLife(LIFE);
+
+  const docs = await query<Stored>("matches", {
+    "where[result.outcome][exists]": "false",
+    "where[date][greater_than_equal]": today(),
+    sort: "date",
+    limit: "50",
+    depth: DEPTH,
+  });
+
+  return docs.map(asMatch);
+}
+
 /** The season the site is currently reporting on — the newest one the club has
  *  created. Seasons are named `2025/26`, so newest-first by name is newest-first
  *  by year, which is the same order the CMS lists them in. */
@@ -137,6 +159,43 @@ export async function seasonRecord(): Promise<{
   });
 
   return { season: season.name, matches: docs.map(asMatch) };
+}
+
+/**
+ * Every season with a played Match in it, newest first — the Archive page's
+ * whole record, rather than `seasonRecord()`'s current one.
+ *
+ * A season with no result yet (freshly created for an upcoming fixture) is
+ * dropped rather than shown as an empty archive entry: an Archive is of what
+ * happened, the same reasoning `RecentRecord` already applies within a season.
+ */
+export async function archiveRecord(): Promise<
+  { season: string; matches: Match[] }[]
+> {
+  "use cache";
+  cacheTag(RECORD);
+  cacheLife(LIFE);
+
+  const seasons = await query<{ id: number; name: string }>("seasons", {
+    sort: "-name",
+    limit: "100",
+    depth: "0",
+  });
+
+  const bySeason = await Promise.all(
+    seasons.map(async (season) => {
+      const docs = await query<Stored>("matches", {
+        "where[season][equals]": String(season.id),
+        sort: "-date",
+        limit: "100",
+        depth: DEPTH,
+      });
+
+      return { season: season.name, matches: docs.map(asMatch) };
+    }),
+  );
+
+  return bySeason.filter(({ matches }) => matches.some(isPlayed));
 }
 
 /**

@@ -53,7 +53,13 @@ export default buildConfig({
       // A held match on the one screen every editor sees on signing in,
       // rather than behind a filter on the Matches list somebody has to
       // think to reach for (#45). See components/DraftQueue.
-      beforeDashboard: ["@/components/DraftQueue#DraftQueue"],
+      //
+      // Guidance first, then anything outstanding: a newcomer with nothing
+      // held sees only the task list; a returning editor sees both (#18).
+      beforeDashboard: [
+        "@/components/CommonTasks#CommonTasks",
+        "@/components/DraftQueue#DraftQueue",
+      ],
     },
   },
 

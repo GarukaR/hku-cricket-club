@@ -290,9 +290,12 @@ with a per-Team split.
 ## Handover
 
 Guidance lives **inside the CMS**, not in a document beside it: field help text,
-a dashboard panel, an import flow whose questions explain themselves. A committee
-that will not administer a website will not read its manual. One short page and a
-three-minute recording as backup.
+a dashboard panel, an import flow whose questions explain themselves (#18). A
+committee that will not administer a website will not read its manual. One short
+page — [`docs/editor-guide.md`](editor-guide.md) — and a three-minute recording
+as backup, neither the primary route. The recording is the one part of #18 still
+outstanding: it needs an actual screen capture with narration, which is a human
+task rather than one this record can do to itself.
 
 Every service is created under a **dedicated project identity**, never a personal
 login, so adoption by the club is a credential handover rather than a migration

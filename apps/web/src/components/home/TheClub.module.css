@@ -27,17 +27,6 @@
   margin: 0 0 1.1rem;
 }
 
-/* The page's one drop cap, and it lives here: this is the only running prose on
-   the homepage, and an initial set over anything shorter is an ornament rather
-   than a piece of typesetting. */
-.prose > p:first-of-type::first-letter {
-  float: left;
-  font-size: 3.3em;
-  line-height: 0.84;
-  padding: 0.04em 0.09em 0 0;
-  color: var(--color-accent);
-}
-
 .quote {
   margin: 2rem 0;
   padding: 1.5rem 0;
@@ -57,4 +46,19 @@
   text-transform: uppercase;
   color: var(--color-ink2);
   margin-top: 0.9rem;
+}
+
+.more {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  margin: 0;
+}
+
+.more a {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+.more a:hover {
+  text-decoration: underline;
 }

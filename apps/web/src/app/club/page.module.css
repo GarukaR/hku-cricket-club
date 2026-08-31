@@ -1,0 +1,66 @@
+/* The same content-column-beside-marginalia device as a Match or Squad page —
+   see Squad.module.css. */
+.layout {
+  padding-block: clamp(2.2rem, 5.5vw, 3.4rem) clamp(3rem, 7vw, 4.2rem);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(2rem, 4vw, 2.6rem);
+}
+
+@media (min-width: 780px) {
+  .layout {
+    grid-template-columns: minmax(0, 1.62fr) minmax(0, 1fr);
+    gap: clamp(2.4rem, 5vw, 3.6rem);
+    align-items: start;
+  }
+}
+
+.prose {
+  font-family: var(--font-display);
+  font-size: 1.03rem;
+  line-height: 1.68;
+  margin-top: 1.4rem;
+}
+
+.prose p {
+  max-width: 62ch;
+  margin: 0 0 1.1rem;
+}
+
+/* The page's drop cap — moved here from the homepage teaser, because this is
+   the one page with genuine running prose to open (docs/PLAN.md, issue #17). */
+.prose > p:first-of-type::first-letter {
+  float: left;
+  font-size: 3.6em;
+  line-height: 0.82;
+  padding: 0.04em 0.1em 0 0;
+  color: var(--color-accent);
+}
+
+/* Named as what it is rather than dressed up as history: a dashed rule and a
+   tinted ground read as a reserved space in a printed record, the same honesty
+   Plates.module.css uses for a photograph that has not arrived. */
+.placeholder {
+  margin-top: 1.6rem;
+  padding: 1.2rem 1.3rem;
+  max-width: 62ch;
+  border: 1px dashed var(--color-rule);
+  background: color-mix(in srgb, var(--color-surface) 55%, transparent);
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--color-ink2);
+}
+
+.placeholder p:last-child {
+  margin: 0;
+}
+
+.placeholderLabel {
+  margin: 0 0 0.6rem;
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-brass);
+}

@@ -406,5 +406,26 @@ export const Matches = {
       },
       hooks: { afterRead: [deriveStanding] },
     },
+    {
+      name: "heldReasons",
+      label: "What this is waiting on",
+      type: "text",
+      hasMany: true,
+      // Written once, by the importer, when it holds a match rather than
+      // publishing it — see lib/confidence and lib/saving. Unlike `standing`
+      // this cannot be recomputed on read: the answer depends on the export
+      // file, which no longer exists once the import screen closes. It is a
+      // record of a question asked at a moment in time, not a live fact.
+      admin: {
+        readOnly: true,
+        position: "sidebar",
+        condition: (data) => (data?.heldReasons?.length ?? 0) > 0,
+        description:
+          "Why the importer held this instead of publishing it. Settle each one and re-import, or publish anyway once the paper scorecard has been checked by eye.",
+        // The default hasMany-text UI is pill chips built for short tags —
+        // wrong for a sentence, which it truncates. See components/HeldReasons.
+        components: { Field: "@/components/HeldReasons#HeldReasonsField" },
+      },
+    },
   ],
 } satisfies CollectionConfig;

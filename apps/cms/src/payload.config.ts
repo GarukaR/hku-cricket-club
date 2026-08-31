@@ -50,6 +50,10 @@ export default buildConfig({
       // Payload's nav lists collections, and an import is not one. Without a
       // link it is a screen at an address nobody would type.
       afterNavLinks: ["@/components/Import#ImportLink"],
+      // A held match on the one screen every editor sees on signing in,
+      // rather than behind a filter on the Matches list somebody has to
+      // think to reach for (#45). See components/DraftQueue.
+      beforeDashboard: ["@/components/DraftQueue#DraftQueue"],
     },
   },
 

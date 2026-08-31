@@ -1,0 +1,14 @@
+/* One tier above SectionHeading's quiet small caps, one tier below the
+   Masthead's own name — a page reads: club name, then this, then everything
+   else. Italic serif rather than upright: distinct from both neighbours by
+   character, not only by size, so the eye never has to measure two headings
+   against each other to tell which is which. */
+.title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1.5rem, 4.4vw, 2rem);
+  color: var(--color-ink);
+  margin: 0 0 1.4rem;
+  text-wrap: balance;
+}

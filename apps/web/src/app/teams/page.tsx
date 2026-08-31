@@ -5,7 +5,7 @@ import Link from "next/link";
 
 import { Container } from "@/components/Container";
 import { Masthead } from "@/components/Masthead";
-import { SectionHeading } from "@/components/SectionHeading";
+import { PageTitle } from "@/components/PageTitle";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteNav } from "@/components/SiteNav";
 import { allTeams } from "@/lib/teams";
@@ -31,7 +31,7 @@ export default async function TeamsPage() {
 
       <main id="teams">
         <Container>
-          <SectionHeading id="teams-heading">The sides</SectionHeading>
+          <PageTitle id="teams-heading">The sides</PageTitle>
           {teams.length > 0 ? (
             <ul className={styles.teams}>
               {teams.map((team) => (

@@ -14,6 +14,7 @@ import type { Metadata } from "next";
 import { Container } from "@/components/Container";
 import { Fact, Marginalia } from "@/components/Marginalia";
 import { Masthead } from "@/components/Masthead";
+import { PageTitle } from "@/components/PageTitle";
 import { SectionHeading } from "@/components/SectionHeading";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteNav } from "@/components/SiteNav";
@@ -40,7 +41,7 @@ export default function ClubPage() {
         <Container>
           <div className={styles.layout}>
             <article>
-              <SectionHeading id="club-heading">The Club</SectionHeading>
+              <PageTitle id="club-heading">The Club</PageTitle>
               <div className={styles.prose}>
                 <p>
                   The Club was formed in 1913, two years after the University

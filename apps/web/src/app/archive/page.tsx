@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 
 import { Container } from "@/components/Container";
 import { Masthead } from "@/components/Masthead";
-import { SectionHeading } from "@/components/SectionHeading";
+import { PageTitle } from "@/components/PageTitle";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteNav } from "@/components/SiteNav";
 import { RecentRecord } from "@/components/home/RecentRecord";
@@ -33,7 +33,7 @@ export default async function ArchivePage() {
 
       <main id="archive">
         <Container>
-          <SectionHeading id="archive-heading">Archive</SectionHeading>
+          <PageTitle id="archive-heading">Archive</PageTitle>
           {seasons.length > 0 ? (
             seasons.map(({ season, matches }) => (
               <RecentRecord

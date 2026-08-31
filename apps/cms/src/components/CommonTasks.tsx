@@ -48,7 +48,7 @@ export function CommonTasks({ payload }: Partial<ServerProps>) {
         <li style={{ marginTop: 6 }}>
           <strong>Start a new season.</strong> Add the year to{" "}
           <Link href={`${admin}/collections/seasons`}>Seasons</Link> in
-          September, before the first fixture of it is entered.
+          September, before the first match of it is entered.
         </li>
         <li style={{ marginTop: 6 }}>
           <strong>Add a photograph.</strong> Upload it to{" "}

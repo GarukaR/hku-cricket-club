@@ -204,6 +204,61 @@ describe("an import that is not confident", () => {
     // a real game with a question about it, not a queue of unread files.
     expect(record.appearances.length).toBeGreaterThan(0);
   });
+
+  // #45: a held match is only findable in the panel by its question if the
+  // question outlives the import screen — the parsed export does not.
+  it("writes why it was held onto the match itself", async () => {
+    const record = fakeRecord();
+    vi.stubGlobal("fetch", record.fetcher);
+
+    await run({
+      api: "/api",
+      match: UCL,
+      side: STUDENTS,
+      resolutions: resolutionsFor(
+        UCL,
+        STUDENTS.cricclubsNames,
+        knowingEverybody(UCL, STUDENTS.cricclubsNames),
+      ),
+      venue: "away",
+      confident: false,
+      holds: [
+        { about: "names", message: "Gohar A has not been matched to a player." },
+        { about: "arithmetic", message: "HKU: batters sum to 114, stated 115." },
+      ],
+    });
+
+    const written = record.wrote.find(
+      (one) => one.method === "POST" && one.url.includes("/matches"),
+    );
+    expect(written?.body?.heldReasons).toEqual([
+      "Gohar A has not been matched to a player.",
+      "HKU: batters sum to 114, stated 115.",
+    ]);
+  });
+
+  it("writes an empty heldReasons when nothing was held", async () => {
+    const record = fakeRecord();
+    vi.stubGlobal("fetch", record.fetcher);
+
+    await run({
+      api: "/api",
+      match: CHARLIE_BEARS,
+      side: SIDE,
+      resolutions: resolutionsFor(
+        CHARLIE_BEARS,
+        SIDE.cricclubsNames,
+        knowingEverybody(CHARLIE_BEARS, SIDE.cricclubsNames),
+      ),
+      venue: "home",
+      confident: true,
+    });
+
+    const written = record.wrote.find(
+      (one) => one.method === "POST" && one.url.includes("/matches"),
+    );
+    expect(written?.body?.heldReasons).toEqual([]);
+  });
 });
 
 describe("the same file twice", () => {

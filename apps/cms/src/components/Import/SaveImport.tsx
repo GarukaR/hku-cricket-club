@@ -61,6 +61,7 @@ export function SaveImport({
           resolutions,
           venue,
           confident: verdict.confident,
+          holds: verdict.holds,
         }),
       );
     } catch (thrown) {

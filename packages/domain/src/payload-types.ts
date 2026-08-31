@@ -291,6 +291,10 @@ export interface Match {
    * Whether this match still owes a result. A fixture owes nothing yet; once its date has passed and the outcome is still empty, the club has a score to enter.
    */
   standing?: string | null;
+  /**
+   * Why the importer held this instead of publishing it. Settle each one and re-import, or publish anyway once the paper scorecard has been checked by eye.
+   */
+  heldReasons?: string[] | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -654,6 +658,7 @@ export interface MatchesSelect<T extends boolean = true> {
       };
   summary?: T;
   standing?: T;
+  heldReasons?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;

@@ -15,6 +15,7 @@
 // Re-importing is a normal thing to want anyway — scorers correct scorecards
 // after the fact.
 
+import type { Hold } from "./confidence";
 import type { ParsedMatch } from "./cricclubs";
 import {
   documentsFor,
@@ -185,7 +186,9 @@ async function writeAppearance(
  * `confident` decides only the status. Everything else is written either way,
  * because a held match is a real record of a real game that somebody has a
  * question about — not a queue of unparsed files. An editor opening the draft
- * finds the scorecard already there and the question already stated.
+ * finds the scorecard already there and the question already stated — `holds`
+ * is written onto the Match itself (`heldReasons`) so that is still true after
+ * the import screen has been closed and the parsed file is gone (#45).
  */
 export async function saveImport({
   api,
@@ -194,6 +197,7 @@ export async function saveImport({
   resolutions,
   venue,
   confident,
+  holds = [],
 }: {
   api: string;
   match: ParsedMatch;
@@ -201,6 +205,7 @@ export async function saveImport({
   resolutions: Resolution[];
   venue: "home" | "away";
   confident: boolean;
+  holds?: Hold[];
 }): Promise<SaveOutcome> {
   const bySpelling = new Map(
     resolutions
@@ -233,6 +238,10 @@ export async function saveImport({
     season,
     competition,
     _status: confident ? "published" : "draft",
+    // Cleared on a confident import — re-running one that used to have a
+    // question against a scorecard that has since been fixed should not leave
+    // a stale answer sitting in the sidebar of a now-published match.
+    heldReasons: holds.map((hold) => hold.message),
   };
 
   const written = already

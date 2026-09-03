@@ -1,4 +1,4 @@
-// The four sides the club fields, each linking to its own squad.
+// The four Teams the club fields, each linking to its own squad.
 
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -11,7 +11,7 @@ import { SiteNav } from "@/components/SiteNav";
 import { allTeams } from "@/lib/teams";
 import styles from "./page.module.css";
 
-export const metadata: Metadata = { title: "Members" };
+export const metadata: Metadata = { title: "Teams" };
 
 export default async function TeamsPage() {
   const teams = await allTeams();
@@ -19,7 +19,7 @@ export default async function TeamsPage() {
   return (
     <>
       <a className="skip-link" href="#teams">
-        Skip to the sides
+        Skip to the teams
       </a>
 
       <header>
@@ -31,7 +31,7 @@ export default async function TeamsPage() {
 
       <main id="teams">
         <Container>
-          <PageTitle id="teams-heading">The sides</PageTitle>
+          <PageTitle id="teams-heading">Teams</PageTitle>
           {teams.length > 0 ? (
             <ul className={styles.teams}>
               {teams.map((team) => (

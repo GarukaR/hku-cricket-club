@@ -13,17 +13,41 @@
   border-top: 1px solid var(--color-rule);
 }
 
+/* Scaled and toned down from the page's italic heading (issue #71 follow-up)
+   — full ink and the heading's own size read as two headings stacked rather
+   than heading-then-content. Quiet by default, full ink only on hover/focus,
+   with a trailing arrow that picks up the accent colour as the wayfinding
+   cue. Confirmed against a `?variant=` prototype (prototype/71-teams-list-
+   hierarchy) rather than decided from a description. */
 .team {
-  display: block;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.6rem;
   padding-block: 1rem;
   font-family: var(--font-display);
-  font-size: clamp(1.3rem, 3.4vw, 1.8rem);
-  color: var(--color-ink);
+  font-size: clamp(1.05rem, 2.6vw, 1.3rem);
+  color: var(--color-ink2);
   text-decoration: none;
+  transition: color 0.15s ease-out;
 }
 
-.team:hover {
+.team:hover,
+.team:focus-visible {
+  color: var(--color-ink);
+}
+
+.team:hover .arrow,
+.team:focus-visible .arrow {
   color: var(--color-accent);
+  transform: translateX(0.15rem);
+}
+
+.arrow {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--color-rule);
+  transition: color 0.15s ease-out, transform 0.15s ease-out;
 }
 
 .empty {

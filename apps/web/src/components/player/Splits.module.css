@@ -1,6 +1,17 @@
+/* Edge fade as on the homepage's Recent record (components/home/RecentRecord.module.css)
+   — the only hint on a phone that the row keeps going past what fits. */
 .scroll {
   overflow-x: auto;
   margin-top: 1rem;
+  background:
+    linear-gradient(to right, var(--color-bg) 50%, transparent) left,
+    linear-gradient(to left, var(--color-bg) 50%, transparent) right,
+    linear-gradient(to right, color-mix(in srgb, var(--color-ink) 20%, transparent), transparent) left,
+    linear-gradient(to left, color-mix(in srgb, var(--color-ink) 20%, transparent), transparent) right;
+  background-repeat: no-repeat;
+  background-color: var(--color-bg);
+  background-size: 2rem 100%, 2rem 100%, 0.9rem 100%, 0.9rem 100%;
+  background-attachment: local, local, scroll, scroll;
 }
 
 .table {

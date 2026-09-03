@@ -8,9 +8,22 @@
 
 /* Ground names do not wrap, so on a narrow screen the table scrolls inside its
    own frame rather than widening the page. Focusable, or a keyboard user could
-   not reach the columns the scroll hides. */
+   not reach the columns the scroll hides. The edge fade is the only hint that
+   Result sits off the initial screen on a phone — without it the cut-off
+   column reads as a bug rather than an invitation to scroll. It disappears on
+   its own at either end, because the two cover gradients scroll with the
+   content while the tint gradients stay pinned to the frame. */
 .scroll {
   overflow-x: auto;
+  background:
+    linear-gradient(to right, var(--color-bg) 50%, transparent) left,
+    linear-gradient(to left, var(--color-bg) 50%, transparent) right,
+    linear-gradient(to right, color-mix(in srgb, var(--color-ink) 20%, transparent), transparent) left,
+    linear-gradient(to left, color-mix(in srgb, var(--color-ink) 20%, transparent), transparent) right;
+  background-repeat: no-repeat;
+  background-color: var(--color-bg);
+  background-size: 2rem 100%, 2rem 100%, 0.9rem 100%, 0.9rem 100%;
+  background-attachment: local, local, scroll, scroll;
 }
 
 .table {

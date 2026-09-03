@@ -66,27 +66,29 @@ export async function Squad({
       activeSlug={seasonSlug(squad.season ?? resolved)}
     >
       {squad.members.length > 0 ? (
-        <div className={styles.scroll} tabIndex={0} role="region" aria-label="Squad">
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th scope="col">Player</th>
-                <th scope="col">Role</th>
-              </tr>
-            </thead>
-            <tbody>
-              {squad.members.map((member) => (
-                <tr key={member.playerId}>
-                  <td>
-                    <Link href={`/players/${member.playerId}`}>{member.player}</Link>
-                  </td>
-                  <td className={styles.role}>
-                    {playingRoleLabel(member.playingRole)}
-                  </td>
+        <div className={styles.frame}>
+          <div className={styles.scroll} tabIndex={0} role="region" aria-label="Squad">
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th scope="col">Player</th>
+                  <th scope="col">Role</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {squad.members.map((member) => (
+                  <tr key={member.playerId}>
+                    <td>
+                      <Link href={`/players/${member.playerId}`}>{member.player}</Link>
+                    </td>
+                    <td className={styles.role}>
+                      {playingRoleLabel(member.playingRole)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       ) : (
         <p className={styles.empty}>

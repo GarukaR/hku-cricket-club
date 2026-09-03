@@ -230,8 +230,10 @@ function TableSection({
       <h3 id={`${id}-heading`} className={styles.subheading}>
         {heading}
       </h3>
-      <div className={styles.scroll} tabIndex={0} role="region" aria-label={heading}>
-        {children}
+      <div className={styles.frame}>
+        <div className={styles.scroll} tabIndex={0} role="region" aria-label={heading}>
+          {children}
+        </div>
       </div>
     </section>
   );

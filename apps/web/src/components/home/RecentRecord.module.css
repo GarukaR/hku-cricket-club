@@ -8,22 +8,38 @@
 
 /* Ground names do not wrap, so on a narrow screen the table scrolls inside its
    own frame rather than widening the page. Focusable, or a keyboard user could
-   not reach the columns the scroll hides. The edge fade is the only hint that
-   Result sits off the initial screen on a phone — without it the cut-off
-   column reads as a bug rather than an invitation to scroll. It disappears on
-   its own at either end, because the two cover gradients scroll with the
-   content while the tint gradients stay pinned to the frame. */
+   not reach the columns the scroll hides. */
+.frame {
+  position: relative;
+}
+
+/* The edge fade is the only hint on a phone that Result sits off the initial
+   screen — without it the cut-off column reads as a bug rather than an
+   invitation to scroll. A `background-attachment: local` version of this was
+   tried first and broke touch scrolling outright on iOS Safari (a known
+   WebKit bug), so the fade is a `pointer-events: none` overlay on `.frame`
+   instead, outside `.scroll` entirely — nothing about it can touch the
+   scrolling element's own event handling. The trade-off: it cannot tell when
+   scrolling has reached the true end, so it stays lit rather than
+   disappearing there. */
+.frame::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 1.75rem;
+  pointer-events: none;
+  background: linear-gradient(
+    to left,
+    color-mix(in srgb, var(--color-ink) 20%, transparent),
+    transparent
+  );
+}
+
 .scroll {
   overflow-x: auto;
-  background:
-    linear-gradient(to right, var(--color-bg) 50%, transparent) left,
-    linear-gradient(to left, var(--color-bg) 50%, transparent) right,
-    linear-gradient(to right, color-mix(in srgb, var(--color-ink) 20%, transparent), transparent) left,
-    linear-gradient(to left, color-mix(in srgb, var(--color-ink) 20%, transparent), transparent) right;
-  background-repeat: no-repeat;
-  background-color: var(--color-bg);
-  background-size: 2rem 100%, 2rem 100%, 0.9rem 100%, 0.9rem 100%;
-  background-attachment: local, local, scroll, scroll;
+  -webkit-overflow-scrolling: touch;
 }
 
 .table {

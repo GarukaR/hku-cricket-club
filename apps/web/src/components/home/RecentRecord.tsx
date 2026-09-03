@@ -42,42 +42,44 @@ export function RecentRecord({
       <SectionHeading id={id}>
         {title ?? `Recent record${season ? ` — ${season}` : ""}`}
       </SectionHeading>
-      <div
-        className={styles.scroll}
-        tabIndex={0}
-        role="region"
-        aria-labelledby={id}
-      >
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th scope="col">Date</th>
-              <th scope="col">Side</th>
-              <th scope="col">Opponent</th>
-              <th scope="col">Ground</th>
-              <th scope="col">Result</th>
-            </tr>
-          </thead>
-          <tbody>
-            {played.map((match) => (
-              <tr key={match.id}>
-                <td>
-                  <Link className={styles.rowLink} href={`/matches/${match.id}`}>
-                    {shortDate(match.date)}
-                  </Link>
-                </td>
-                <td className={styles.side}>{match.team}</td>
-                <td className={styles.opponent}>{match.opponent}</td>
-                <td>{match.ground}</td>
-                <td
-                  className={`${styles.outcome} ${styles[tone(match.result.outcome)]}`}
-                >
-                  {resultSummary(match.result)}
-                </td>
+      <div className={styles.frame}>
+        <div
+          className={styles.scroll}
+          tabIndex={0}
+          role="region"
+          aria-labelledby={id}
+        >
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Side</th>
+                <th scope="col">Opponent</th>
+                <th scope="col">Ground</th>
+                <th scope="col">Result</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {played.map((match) => (
+                <tr key={match.id}>
+                  <td>
+                    <Link className={styles.rowLink} href={`/matches/${match.id}`}>
+                      {shortDate(match.date)}
+                    </Link>
+                  </td>
+                  <td className={styles.side}>{match.team}</td>
+                  <td className={styles.opponent}>{match.opponent}</td>
+                  <td>{match.ground}</td>
+                  <td
+                    className={`${styles.outcome} ${styles[tone(match.result.outcome)]}`}
+                  >
+                    {resultSummary(match.result)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </section>
   );

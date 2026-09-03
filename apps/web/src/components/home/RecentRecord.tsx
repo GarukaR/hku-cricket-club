@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { SectionHeading } from "@/components/SectionHeading";
 import { shortDate } from "@/lib/dates";
-import { isPlayed, resultSummary, tone, type Match } from "@/lib/match";
+import { isPlayed, resultBadge, tone, type Match } from "@/lib/match";
 import styles from "./RecentRecord.module.css";
 
 /** The season so far, newest first.
@@ -13,7 +13,17 @@ import styles from "./RecentRecord.module.css";
  *  Club-wide, and every row names its side. Four sides play under one crest, and
  *  a table that ran them together without saying so would read as one team's
  *  season while being four — the same failure as a career total that silently
- *  omits a season (docs/PLAN.md). */
+ *  omits a season (docs/PLAN.md).
+ *
+ *  Set as one dense typographic line per match — date, opponent, result badge —
+ *  rather than a table, after a `?variant=` prototype compared against a table
+ *  with dropped columns and a card stack (issue #68). A table here always needs
+ *  a column a phone doesn't have room for; a line never does, because there is
+ *  no column to run out of — side and ground demote to a smaller line
+ *  underneath instead. The choice also sidesteps what sent the table looking
+ *  for a replacement in the first place: the scrollable table it replaces relied
+ *  on horizontal touch scroll, which turned out to be unreliable on iOS Safari
+ *  for this markup. */
 export function RecentRecord({
   matches,
   season,
@@ -42,45 +52,26 @@ export function RecentRecord({
       <SectionHeading id={id}>
         {title ?? `Recent record${season ? ` — ${season}` : ""}`}
       </SectionHeading>
-      <div className={styles.frame}>
-        <div
-          className={styles.scroll}
-          tabIndex={0}
-          role="region"
-          aria-labelledby={id}
-        >
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th scope="col">Date</th>
-                <th scope="col">Side</th>
-                <th scope="col">Opponent</th>
-                <th scope="col">Ground</th>
-                <th scope="col">Result</th>
-              </tr>
-            </thead>
-            <tbody>
-              {played.map((match) => (
-                <tr key={match.id}>
-                  <td>
-                    <Link className={styles.rowLink} href={`/matches/${match.id}`}>
-                      {shortDate(match.date)}
-                    </Link>
-                  </td>
-                  <td className={styles.side}>{match.team}</td>
-                  <td className={styles.opponent}>{match.opponent}</td>
-                  <td>{match.ground}</td>
-                  <td
-                    className={`${styles.outcome} ${styles[tone(match.result.outcome)]}`}
-                  >
-                    {resultSummary(match.result)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <ul className={styles.list}>
+        {played.map((match) => (
+          <li key={match.id} className={styles.row}>
+            <Link className={styles.rowLink} href={`/matches/${match.id}`}>
+              <span className={styles.line}>
+                <span className={styles.date}>{shortDate(match.date)}</span>
+                <span className={styles.opponent}>{match.opponent}</span>
+                <span
+                  className={`${styles.badge} ${styles[tone(match.result.outcome)]}`}
+                >
+                  {resultBadge(match.result)}
+                </span>
+              </span>
+              <span className={styles.meta}>
+                {match.team} · {match.ground}
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }

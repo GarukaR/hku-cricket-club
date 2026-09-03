@@ -1,6 +1,6 @@
 import styles from "./PageTitle.module.css";
 
-/** A standalone page's own heading — Archive, Fixtures, Teams, and so on.
+/** A standalone page's own heading — Archive, Fixtures, The sides, and so on.
  *
  *  `SectionHeading` is deliberately quiet: a label over content that has its
  *  own display voice, sized so nothing competes with a scoreline. That is

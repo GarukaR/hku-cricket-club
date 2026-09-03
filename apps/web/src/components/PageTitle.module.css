@@ -9,9 +9,6 @@
   font-weight: 400;
   font-size: clamp(1.5rem, 4.4vw, 2rem);
   color: var(--color-ink);
-  /* The nav's own rule sits directly above this on every page it heads, and a
-     zero top margin left the italic butting straight up against it — cramped
-     rather than composed. */
-  margin: clamp(1.8rem, 4.5vw, 2.6rem) 0 1.4rem;
+  margin: 0 0 1.4rem;
   text-wrap: balance;
 }

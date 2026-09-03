@@ -7,6 +7,8 @@
 // statement is a standfirst inside the Masthead rather than a lede of its own —
 // it leaves the scoreline as the only hero on the page.
 
+import { Suspense } from "react";
+
 import { Container } from "@/components/Container";
 import { Masthead } from "@/components/Masthead";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -18,8 +20,18 @@ import { RecentRecord } from "@/components/home/RecentRecord";
 import { TheClub } from "@/components/home/TheClub";
 import { isPlayed } from "@/lib/match";
 import { latestResult, nextFixture, seasonRecord } from "@/lib/matches";
+// PROTOTYPE — throwaway, issue #68 follow-up. Delete this block, the
+// prototype/ directory and the `searchParams` prop once a layout is chosen —
+// see components/prototype/RecordVariants.tsx.
+import { PrototypeSwitcher } from "@/components/prototype/PrototypeSwitcher";
+import { VariantA, VariantB, VariantC } from "@/components/prototype/RecordVariants";
+import { sampleMatches } from "@/components/prototype/sample-matches";
 
-export default async function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ variant?: string }>;
+}) {
   // Three independent questions to the record, so they go to the CMS together
   // rather than one after another. Each is separately cached and separately
   // tagged; awaiting them in sequence would add a cold start to a cold start.
@@ -28,6 +40,7 @@ export default async function Home() {
     nextFixture(),
     seasonRecord(),
   ]);
+  const isProduction = process.env.VERCEL_ENV === "production";
 
   return (
     <>
@@ -56,12 +69,26 @@ export default async function Home() {
             latest={latest && isPlayed(latest) ? latest : undefined}
             next={next}
           />
-          <RecentRecord matches={record.matches} season={record.season} />
+          {isProduction ? (
+            <RecentRecord matches={record.matches} season={record.season} />
+          ) : (
+            <Suspense
+              fallback={<RecentRecord matches={record.matches} season={record.season} />}
+            >
+              <PrototypeVariantSlot searchParams={searchParams} record={record} />
+            </Suspense>
+          )}
           <TheClub />
           <Plates />
         </Container>
         <Admission />
       </main>
+
+      {!isProduction && (
+        <Suspense fallback={null}>
+          <PrototypeSwitcher variants={["A", "B", "C"]} />
+        </Suspense>
+      )}
 
       <SiteFooter
         note={
@@ -75,4 +102,21 @@ export default async function Home() {
       />
     </>
   );
+}
+
+// PROTOTYPE — throwaway. The only part of the page that reads `searchParams`,
+// so it's the only part that has to stream rather than prerender — everything
+// else above stays static. Delete alongside the rest of this block.
+async function PrototypeVariantSlot({
+  searchParams,
+  record,
+}: {
+  searchParams: Promise<{ variant?: string }>;
+  record: Awaited<ReturnType<typeof seasonRecord>>;
+}) {
+  const variant = (await searchParams).variant;
+  if (variant === "A") return <VariantA matches={sampleMatches} />;
+  if (variant === "B") return <VariantB matches={sampleMatches} />;
+  if (variant === "C") return <VariantC matches={sampleMatches} />;
+  return <RecentRecord matches={record.matches} season={record.season} />;
 }

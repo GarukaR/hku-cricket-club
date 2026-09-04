@@ -1,26 +1,16 @@
+/* padding-top tightened from 1.4rem to 0.5rem (issue #71 follow-up) — the
+   full gap read as its own pause rather than the rule sitting directly over
+   the list it heads. Confirmed against a `?spacing=` prototype
+   (prototype/71-teams-list-spacing). */
 .teams {
   border-top: 2px solid var(--color-ink);
-  padding-top: 1.4rem;
+  padding-top: 0.5rem;
   margin-top: 1.4rem;
   list-style: none;
   margin-inline: 0;
   padding-inline: 0;
   display: flex;
   flex-direction: column;
-}
-
-/* PROTOTYPE — throwaway. Three tighter readings of the gap between the rule
-   and the first team, for comparison against the 1.4rem live value above. */
-.spacingA {
-  padding-top: 0.5rem;
-}
-
-.spacingB {
-  padding-top: 0.8rem;
-}
-
-.spacingC {
-  padding-top: 1.1rem;
 }
 
 .teams li + li {

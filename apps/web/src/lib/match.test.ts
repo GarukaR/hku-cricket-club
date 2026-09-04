@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   inningsSpoken,
   isPlayed,
-  resultSummary,
+  resultBadge,
   tone,
   verdict,
   type Match,
@@ -44,19 +44,38 @@ describe("verdict", () => {
   });
 });
 
-describe("resultSummary", () => {
-  it("separates with the table's own middot", () => {
-    expect(resultSummary({ outcome: "won", margin: "33 runs" })).toBe(
-      "Won · 33 runs",
-    );
+describe("resultBadge", () => {
+  it("signs a win's margin and shortens the unit", () => {
+    expect(resultBadge({ outcome: "won", margin: "33 runs" })).toBe("Won +33");
+    expect(resultBadge({ outcome: "won", margin: "6 wickets" })).toBe("Won +6w");
+  });
+
+  it("signs a loss's margin the other way", () => {
+    expect(resultBadge({ outcome: "lost", margin: "33 runs" })).toBe("Lost -33");
+    expect(resultBadge({ outcome: "lost", margin: "6 wickets" })).toBe("Lost -6w");
+  });
+
+  it("gives an outcome with no winning margin no sign at all", () => {
+    // Tied, drawn, abandoned and conceded have nothing for a sign to attach to.
+    expect(resultBadge({ outcome: "tied" })).toBe("Tied");
+    expect(resultBadge({ outcome: "drawn" })).toBe("Drawn");
+    expect(resultBadge({ outcome: "abandoned" })).toBe("Abandoned");
+    expect(resultBadge({ outcome: "conceded" })).toBe("Conceded");
+  });
+
+  it("falls back to the outcome word when the margin doesn't parse", () => {
+    // A guess that turns out wrong reads as a bug; saying less is safer than
+    // saying something the record never actually stated.
+    expect(resultBadge({ outcome: "won", margin: "by a mile" })).toBe("Won");
+    expect(resultBadge({ outcome: "won" })).toBe("Won");
   });
 
   it("says the same thing as the verdict about the outcome itself", () => {
-    // Two renderings of one fact. If they ever disagree about who won, the page
-    // contradicts itself between the scoreline and the table two sections below.
+    // Two renderings of one fact. If they ever disagree about who won, the
+    // page contradicts itself between the scoreline and the record below it.
     for (const outcome of OUTCOMES) {
       const result: Result = { outcome, margin: "33 runs" };
-      const label = resultSummary(result).split(" · ")[0];
+      const label = resultBadge(result).split(" ")[0];
       expect(verdict(result).startsWith(label)).toBe(true);
     }
   });

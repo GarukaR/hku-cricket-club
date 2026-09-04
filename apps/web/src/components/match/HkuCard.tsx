@@ -40,33 +40,35 @@ export function HkuCard({
       <SectionHeading id="hku-card">{team}</SectionHeading>
 
       {batted.length > 0 && (
-        <div className={styles.scroll} tabIndex={0} role="region" aria-label="Batting">
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th scope="col">Batter</th>
-                <th scope="col">R</th>
-                <th scope="col">B</th>
-                <th scope="col">4s</th>
-                <th scope="col">6s</th>
-                <th scope="col">SR</th>
-                <th scope="col">How out</th>
-              </tr>
-            </thead>
-            <tbody>
-              {batted.map((a) => (
-                <tr key={a.player}>
-                  <td>{a.player}</td>
-                  <td>{a.batting?.runs ?? "–"}</td>
-                  <td>{a.batting?.balls ?? "–"}</td>
-                  <td>{a.batting?.fours ?? "–"}</td>
-                  <td>{a.batting?.sixes ?? "–"}</td>
-                  <td>{strikeRate(a.batting)}</td>
-                  <td className={styles.howOut}>{dismissal(a.batting)}</td>
+        <div className={styles.frame}>
+          <div className={styles.scroll} tabIndex={0} role="region" aria-label="Batting">
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th scope="col">Batter</th>
+                  <th scope="col">R</th>
+                  <th scope="col">B</th>
+                  <th scope="col">4s</th>
+                  <th scope="col">6s</th>
+                  <th scope="col">SR</th>
+                  <th scope="col">How out</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {batted.map((a) => (
+                  <tr key={a.player}>
+                    <td>{a.player}</td>
+                    <td>{a.batting?.runs ?? "–"}</td>
+                    <td>{a.batting?.balls ?? "–"}</td>
+                    <td>{a.batting?.fours ?? "–"}</td>
+                    <td>{a.batting?.sixes ?? "–"}</td>
+                    <td>{strikeRate(a.batting)}</td>
+                    <td className={styles.howOut}>{dismissal(a.batting)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
@@ -77,31 +79,33 @@ export function HkuCard({
       )}
 
       {bowled.length > 0 && (
-        <div className={styles.scroll} tabIndex={0} role="region" aria-label="Bowling">
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th scope="col">Bowler</th>
-                <th scope="col">O</th>
-                <th scope="col">M</th>
-                <th scope="col">R</th>
-                <th scope="col">W</th>
-                <th scope="col">Econ</th>
-              </tr>
-            </thead>
-            <tbody>
-              {bowled.map((a) => (
-                <tr key={a.player}>
-                  <td>{a.player}</td>
-                  <td>{a.bowling?.overs ?? "–"}</td>
-                  <td>{a.bowling?.maidens ?? "–"}</td>
-                  <td>{a.bowling?.runs ?? "–"}</td>
-                  <td>{a.bowling?.wickets ?? "–"}</td>
-                  <td>{economyRate(a.bowling)}</td>
+        <div className={styles.frame}>
+          <div className={styles.scroll} tabIndex={0} role="region" aria-label="Bowling">
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th scope="col">Bowler</th>
+                  <th scope="col">O</th>
+                  <th scope="col">M</th>
+                  <th scope="col">R</th>
+                  <th scope="col">W</th>
+                  <th scope="col">Econ</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {bowled.map((a) => (
+                  <tr key={a.player}>
+                    <td>{a.player}</td>
+                    <td>{a.bowling?.overs ?? "–"}</td>
+                    <td>{a.bowling?.maidens ?? "–"}</td>
+                    <td>{a.bowling?.runs ?? "–"}</td>
+                    <td>{a.bowling?.wickets ?? "–"}</td>
+                    <td>{economyRate(a.bowling)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 

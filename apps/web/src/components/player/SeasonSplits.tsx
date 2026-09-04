@@ -33,35 +33,37 @@ export function SeasonSplits({
   const showCallUps = splits.some((split) => callUpsFor(split) !== undefined);
 
   return (
-    <div className={styles.scroll} tabIndex={0} role="region" aria-label="By side and season">
-      <table className={styles.table}>
-        <thead>
-          <tr>
-            <th scope="col">Side</th>
-            <th scope="col">Season</th>
-            <th scope="col">M</th>
-            <th scope="col">Runs</th>
-            <th scope="col">Bat avg</th>
-            <th scope="col">Wkts</th>
-            <th scope="col">Bowl avg</th>
-            {showCallUps && <th scope="col">Call-ups</th>}
-          </tr>
-        </thead>
-        <tbody>
-          {splits.map((split) => (
-            <tr key={seasonSplitKey(split.team, split.season)}>
-              <td className={styles.side}>{split.team}</td>
-              <td>{split.season}</td>
-              <td>{split.matches}</td>
-              <td>{split.batting.runs}</td>
-              <td>{split.batting.average}</td>
-              <td>{split.bowling.wickets}</td>
-              <td>{split.bowling.average}</td>
-              {showCallUps && <td className={styles.side}>{callUpsFor(split) ?? ""}</td>}
+    <div className={styles.frame}>
+      <div className={styles.scroll} tabIndex={0} role="region" aria-label="By side and season">
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th scope="col">Side</th>
+              <th scope="col">Season</th>
+              <th scope="col">M</th>
+              <th scope="col">Runs</th>
+              <th scope="col">Bat avg</th>
+              <th scope="col">Wkts</th>
+              <th scope="col">Bowl avg</th>
+              {showCallUps && <th scope="col">Call-ups</th>}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {splits.map((split) => (
+              <tr key={seasonSplitKey(split.team, split.season)}>
+                <td className={styles.side}>{split.team}</td>
+                <td>{split.season}</td>
+                <td>{split.matches}</td>
+                <td>{split.batting.runs}</td>
+                <td>{split.batting.average}</td>
+                <td>{split.bowling.wickets}</td>
+                <td>{split.bowling.average}</td>
+                {showCallUps && <td className={styles.side}>{callUpsFor(split) ?? ""}</td>}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

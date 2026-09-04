@@ -110,9 +110,29 @@ export function verdict(result: Result): string {
   return stated(result, " by ");
 }
 
-/** The same fact at table width, where the column header already says Result. */
-export function resultSummary(result: Result): string {
-  return stated(result, " · ");
+const RUNS_MARGIN = /^(\d+)\s*run/i;
+const WICKETS_MARGIN = /^(\d+)\s*wicket/i;
+
+/** Cricket's own shorthand for a margin — "W +42", "L -6w" — for a line too
+ *  dense to carry "Won by". Only a win or a loss gets a sign: a draw, a tie,
+ *  an abandonment and a concession have no winning margin to attach one to,
+ *  so they print the outcome word alone, exactly as `verdict` does. Falls
+ *  back the same way when the margin is free text `verdict`'s parser recorded
+ *  but this one doesn't recognise (docs/PLAN.md — Result type and margin are
+ *  recorded explicitly, not computed) — a badge that guesses wrong reads as a
+ *  bug, so it says less rather than something possibly false. */
+export function resultBadge(result: Result): string {
+  if (result.outcome !== "won" && result.outcome !== "lost") {
+    return OUTCOME[result.outcome];
+  }
+
+  const runs = result.margin?.match(RUNS_MARGIN);
+  const wickets = result.margin?.match(WICKETS_MARGIN);
+  const figure = runs ? runs[1] : wickets ? `${wickets[1]}w` : undefined;
+  if (!figure) return OUTCOME[result.outcome];
+
+  const sign = result.outcome === "won" ? "+" : "-";
+  return `${OUTCOME[result.outcome]} ${sign}${figure}`;
 }
 
 /** Joins the standing facts printed beside a Match — its date, its ground, the

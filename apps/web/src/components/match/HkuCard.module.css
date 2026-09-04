@@ -10,13 +10,37 @@
   margin-top: clamp(2.2rem, 5vw, 3rem);
 }
 
-.scroll {
-  overflow-x: auto;
+.frame {
+  position: relative;
   margin-top: 1rem;
 }
 
-.scroll + .scroll {
+.frame + .frame {
   margin-top: 1.8rem;
+}
+
+/* Edge fade as on the homepage's Recent record (components/home/RecentRecord.module.css)
+   — the only hint on a phone that the row keeps going past what fits. Lives
+   on `.frame`, outside `.scroll`, so it cannot interfere with the scrolling
+   element's own touch handling — see that file's comment for why. */
+.frame::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 1.75rem;
+  pointer-events: none;
+  background: linear-gradient(
+    to left,
+    color-mix(in srgb, var(--color-ink) 20%, transparent),
+    transparent
+  );
+}
+
+.scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .table {

@@ -36,33 +36,22 @@ export default async function FixturesPage() {
         <Container>
           <PageTitle id="fixtures-heading">Fixtures</PageTitle>
           {fixtures.length > 0 ? (
-            <div className={styles.scroll} tabIndex={0} role="region" aria-labelledby="fixtures-heading">
-              <table className={styles.table}>
-                <thead>
-                  <tr>
-                    <th scope="col">Date</th>
-                    <th scope="col">Side</th>
-                    <th scope="col">Opponent</th>
-                    <th scope="col">Ground</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {fixtures.map((fixture) => (
-                    <tr key={fixture.id}>
-                      <td>
-                        <Link className={styles.rowLink} href={`/matches/${fixture.id}`}>
-                          {longDate(fixture.date)}
-                          {fixture.time ? `, ${fixture.time}` : ""}
-                        </Link>
-                      </td>
-                      <td className={styles.side}>{fixture.team}</td>
-                      <td className={styles.opponent}>{fixture.opponent}</td>
-                      <td>{facts(fixture.ground, fixture.venue)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <ul className={styles.list}>
+              {fixtures.map((fixture) => (
+                <li key={fixture.id} className={styles.row}>
+                  <Link className={styles.rowLink} href={`/matches/${fixture.id}`}>
+                    <span className={styles.line}>
+                      <span className={styles.date}>{longDate(fixture.date)}</span>
+                      <span className={styles.opponent}>{fixture.opponent}</span>
+                      {fixture.time && <span className={styles.time}>{fixture.time}</span>}
+                    </span>
+                    <span className={styles.meta}>
+                      {facts(fixture.team, fixture.ground, fixture.venue)}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
           ) : (
             <p className={styles.empty}>No fixtures are scheduled yet.</p>
           )}

@@ -31,7 +31,7 @@ export default async function TeamsPage() {
 
       <main id="teams">
         <Container>
-          <PageTitle id="teams-heading">The sides</PageTitle>
+          <PageTitle id="teams-heading">Teams</PageTitle>
           {teams.length > 0 ? (
             <ul className={styles.teams}>
               {teams.map((team) => (

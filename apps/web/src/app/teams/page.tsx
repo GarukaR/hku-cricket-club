@@ -38,6 +38,7 @@ export default async function TeamsPage() {
                 <li key={team.id}>
                   <Link className={styles.team} href={`/teams/${team.slug}`}>
                     {team.name}
+                    <span className={styles.arrow}>→</span>
                   </Link>
                 </li>
               ))}

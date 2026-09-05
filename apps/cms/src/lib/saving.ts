@@ -339,7 +339,7 @@ export type RoleCandidate = {
    *  function the Player's own sidebar uses, rather than by reading that
    *  sidebar's sentence back. A sentence parsed for a value would be a second
    *  definition of the rule, waiting to disagree with the first. */
-  suggested?: { role: PlayingRole; summary: string };
+  suggested?: { role: PlayingRole; summary: string; provisional: boolean };
   /** Nobody in this Season's scorecards has kept, and this one has not bowled.
    *  The only narrowing an export can offer when it cannot answer outright. */
   couldBeKeeper: boolean;
@@ -514,7 +514,13 @@ export async function proposalFor({
         name: player.name,
         current: player.playingRole,
         ...(suggestion
-          ? { suggested: { role: suggestion.role, summary: suggestion.summary } }
+          ? {
+            suggested: {
+              role: suggestion.role,
+              summary: suggestion.summary,
+              provisional: suggestion.provisional,
+            },
+          }
           : {}),
         couldBeKeeper: couldKeep.has(String(player.id)),
       });

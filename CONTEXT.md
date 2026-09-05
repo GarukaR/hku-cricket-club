@@ -151,10 +151,17 @@ anyone writing it down.
 
 The panel does *suggest* one from a Player's Appearances, and the distinction is
 the whole point: the suggestion is a sentence beside the field, never a value in
-it, and a role somebody set by hand is never overwritten. The club's bars, after
-three Appearances: three overs a match and a batting average of fifteen make an
-all-rounder, either alone makes a bowler or a batter, and neither suggests
-whichever they are nearer.
+it, and a role somebody set by hand is never overwritten. The club's bars: three overs a
+match and a batting average of fifteen make an all-rounder, either alone makes a
+bowler or a batter, and neither suggests whichever they are nearer.
+
+Three Appearances is the line between a **provisional** reading and a settled
+one, not between silence and speech. Below it the same bars are applied and the
+answer is marked as a first guess, so an import can be finished with the column
+filled in rather than blank; above it the same figures are held as a reading of
+how the Player is normally selected. What makes the guess safe is that it
+corrects itself — nothing is written without somebody clicking, and a stored
+role the figures later disagree with is raised again beside the new reading.
 
 **Wicketkeeper is the exception, and the reason is worth keeping.** The three
 Appearances exist because an average and an overs-per-match are read off a

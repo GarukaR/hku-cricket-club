@@ -264,10 +264,13 @@ export function RegisterPlayers({
           <p style={{ ...quiet, marginTop: 0, fontSize: 12 }}>
             Everybody who played, whether or not they are being registered here
             — this is the moment the record first meets most of them, and going
-            back later means one Player page at a time. Where the record has
-            enough to say, the box is already filled in with what it reads and
-            why; where it has not, say so yourself or leave it blank. A role
-            already set is left exactly as it is unless you change it here.
+            back later means one Player page at a time. The box is filled in
+            with whatever the record can read, so a first import finishes in one
+            press; on one or two matches that is a first guess rather than a
+            habit, and it says so. Nothing is stuck: a role the figures later
+            disagree with comes back here beside the new reading. Correct
+            anything that is wrong, and a role already set is left exactly as it
+            is unless you change it.
           </p>
 
           {found.roles.map((one) => {
@@ -297,13 +300,34 @@ export function RegisterPlayers({
                 </label>
 
                 <div style={{ marginLeft: 24, fontSize: 12, opacity: 0.8 }}>
-                  {one.suggested && <>{one.suggested.summary}. </>}
+                  {one.suggested && (
+                    <>
+                      {one.suggested.provisional && <em>A first guess: </em>}
+                      {one.suggested.summary}.{" "}
+                      {one.suggested.provisional && (
+                        <>
+                          Too few matches to call it a habit yet, so it comes
+                          back to be looked at again once the record can
+                          disagree.{" "}
+                        </>
+                      )}
+                    </>
+                  )}
                   {one.couldBeKeeper && (
                     <>
                       Has not bowled this season, and nothing in {season}
                       &apos;s scorecards says who kept — a keeper only appears in
                       an export by taking a stumping or a catch standing up.{" "}
                     </>
+                  )}
+                  {/* Name the role the record reads, not only the figures it
+                      read it from: "5.3 overs per match" is the reason, and a
+                      row that gives the reason without the conclusion asks the
+                      reader to re-derive the rule in their head. */}
+                  {one.suggested && one.suggested.role !== one.current && (
+                    <strong>
+                      The record reads {label(one.suggested.role)}.{" "}
+                    </strong>
                   )}
                   {one.current !== null && changed && (
                     <>

@@ -9,6 +9,7 @@ import {
   registrationProblem,
   type TeamRole,
 } from "@/lib/eligibility";
+import { announceOnChange, announceOnDelete } from "@/lib/publish";
 
 import { publiclyReadable } from "./access";
 
@@ -156,6 +157,9 @@ export const Registrations = {
     group: "Selection",
   },
   access: publiclyReadable,
+  // Registering or unregistering a Player is what makes them appear on or
+  // disappear from a Team's squad page — see lib/publish.
+  hooks: { afterChange: [announceOnChange], afterDelete: [announceOnDelete] },
   fields: [
     {
       name: "player",

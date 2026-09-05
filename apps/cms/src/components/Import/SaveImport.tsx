@@ -186,6 +186,7 @@ export function SaveImport({
           seasonId={saved.seasonId}
           side={side}
           season={match.season}
+          published={saved.published}
         />
       )}
 

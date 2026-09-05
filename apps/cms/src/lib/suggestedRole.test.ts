@@ -22,6 +22,26 @@ describe("suggestedRole", () => {
     expect(suggestedRole([])).toBeUndefined();
   });
 
+  it("suggests a keeper on one appearance, because keeping is not a sample", () => {
+    // The bat-and-ball bars are read off a sample, so they wait for three.
+    // A catch taken standing up is not a sample of anything — it is evidence
+    // that this person kept in that match, and holding it back left the one
+    // player the record could identify as the one it said nothing about.
+    const once: RoleEvidence[] = [{ batted: true, runs: 20, caughtBehind: 1 }];
+
+    const suggestion = suggestedRole(once);
+    expect(suggestion?.role).toBe("wicketkeeper");
+    // And says how thin the evidence is, rather than hiding it.
+    expect(suggestion?.summary).toMatch(/in 1 appearance —/);
+  });
+
+  it("counts the appearances it saw, singular and plural", () => {
+    expect(suggestedRole([{ stumpings: 1 }])?.summary).toMatch(/in 1 appearance —/);
+    expect(
+      suggestedRole([{ stumpings: 1 }, { batted: true }])?.summary,
+    ).toMatch(/in 2 appearances —/);
+  });
+
   it("calls a player who clears both bars an all-rounder", () => {
     // 4 overs a match and 40 runs a dismissal — clear of both.
     const both = repeat({ overs: "4", batted: true, runs: 40 }, 5);

@@ -17,8 +17,12 @@
 import { ballsBowled } from "./overs";
 import type { PlayingRole } from "./playingRole";
 
-/** Nothing is suggested for a Player with fewer than this many Appearances. A
- *  player with one game has a scorecard, not a habit. */
+/** Below this many Appearances, nothing is suggested **from the bat and the
+ *  ball**: an average and an overs-per-match are read off a sample, and a
+ *  player with one game has a scorecard rather than a habit.
+ *
+ *  Keeping is exempt, because it is observed rather than inferred — see
+ *  `suggestedRole`. */
 export const MINIMUM_APPEARANCES = 3;
 
 /** Overs per Appearance at or above which a Player is bowling properly.
@@ -116,13 +120,37 @@ function rounded(value: number): string {
 /**
  * What these Appearances suggest, or undefined when they suggest nothing.
  *
- * Undefined for a Player under the minimum, and for one who has neither batted
- * nor bowled in any of them — a record of pure fielding is a scorer's silence
- * rather than a playing role.
+ * Undefined for a Player under the minimum *who has not kept*, and for one who
+ * has neither batted nor bowled — a record of pure fielding is a scorer's
+ * silence rather than a playing role.
  */
 export function suggestedRole(
   evidence: readonly RoleEvidence[],
 ): RoleSuggestion | undefined {
+  if (evidence.length === 0) return undefined;
+
+  const appearances = `${evidence.length} ${evidence.length === 1 ? "appearance" : "appearances"}`;
+
+  // Keeping is **observed, not inferred**, so the minimum does not apply to it.
+  //
+  // The minimum exists because a batting average and an overs-per-match are
+  // read off a sample, and a player with one game has a scorecard rather than a
+  // habit. A catch taken standing up is not a sample of anything: it is direct
+  // evidence that this person kept wicket in that match. Holding it back for
+  // three appearances applied a sampling rule to something that is not sampled,
+  // and left the one player the record could actually identify as the one it
+  // said nothing about.
+  //
+  // It stays a suggestion, so a stand-in who kept once is a sentence next to
+  // the field rather than a role written into it — the count is stated so that
+  // the difference between one match and twenty is the reader's to weigh.
+  if (kept(evidence)) {
+    return {
+      role: "wicketkeeper",
+      summary: `Kept wicket in ${appearances} — a stumping, or a catch taken standing up`,
+    };
+  }
+
   if (evidence.length < MINIMUM_APPEARANCES) return undefined;
 
   const overs = oversPerMatch(evidence);
@@ -135,17 +163,7 @@ export function suggestedRole(
       : `batting average ${rounded(average)}`,
   ].join(", ");
 
-  const from = `from ${evidence.length} appearances`;
-
-  // Keeping outranks the two bars rather than competing with them: a keeper who
-  // also opens the batting is still the side's keeper, and it is the fact the
-  // rest of the record cannot show.
-  if (kept(evidence)) {
-    return {
-      role: "wicketkeeper",
-      summary: `Took wickets standing up ${from} — stumpings or catches behind`,
-    };
-  }
+  const from = `from ${appearances}`;
 
   const bowls = overs >= OVERS_PER_MATCH;
   const bats = average !== undefined && average >= BATTING_AVERAGE;

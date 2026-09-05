@@ -40,12 +40,16 @@ export function RegisterPlayers({
   seasonId,
   side,
   season,
+  published,
 }: {
   api: string;
   matchId: number | string;
   seasonId: number | string;
   side: OurSide & { name: string };
   season: string;
+  /** Whether the Match this came from went live or is being held. A held match
+   *  is invisible to the public site, and its Appearances go with it. */
+  published: boolean;
 }) {
   const [loading, setLoading] = useState(true);
   const [found, setFound] = useState<ImportProposal>();
@@ -199,6 +203,28 @@ export function RegisterPlayers({
   return (
     <section style={{ marginTop: 32 }}>
       <h3 style={{ marginBottom: 4 }}>Registering them for {season}</h3>
+
+      {/* A registration is public the moment it is written; a held Match is
+          not, and neither are its Appearances — the site drops an Appearance
+          whose Match it cannot see. Registering off a held import therefore
+          fills the squad page with players whose figures are empty, which
+          reads as a broken profile rather than an unpublished match. Said
+          here, where the decision is, rather than left to be discovered on
+          the live site. */}
+      {!published && (
+        <div style={panel}>
+          <strong>This match is held, and these players are not.</strong>
+          <p style={{ ...quiet, marginTop: 4, marginBottom: 0, fontSize: 12 }}>
+            A registration goes live as soon as it is written, so anybody
+            registered here appears on the {side.name} page straight away — but
+            a held match is invisible to the site, and the appearances in it go
+            with it. Until this match is published, these players will be listed
+            with no figures against them, which looks like an empty profile
+            rather than a match still waiting. Registering now is fine if that
+            is understood; publishing the match is what fills the figures in.
+          </p>
+        </div>
+      )}
       <p style={{ ...quiet, marginTop: 0 }}>
         A registration is what the eligibility rule and the {side.name} page are
         both built on, so it stays a record somebody enters on purpose. Everybody

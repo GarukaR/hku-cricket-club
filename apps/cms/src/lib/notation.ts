@@ -47,11 +47,11 @@ export function seasonProblem(value: string | undefined): string | undefined {
  * (CONTEXT.md), so the year a match was played in does not name it: 3 January
  * 2026 is 2025/26, not 2026/27.
  *
- * This exists because a CricClubs export cannot be trusted to say. Two of the
- * three files in docs/samples carry `2025-26` in the header and the third
- * carries nothing at all — and the third is 2024/25, so a season read off the
- * header would be missing exactly where it was needed. The date is on every
- * export, so the date is what decides.
+ * This exists because a CricClubs export cannot be trusted to say. Most files
+ * in docs/samples carry a season in the header and one carries nothing at all —
+ * and that one is 2024/25, so a season read off the header would be missing
+ * exactly where it was needed. The date is on every export, so the date is what
+ * decides.
  *
  * June is the boundary rather than September: the off-season months belong to
  * the season about to start, so a July friendly files forwards rather than into

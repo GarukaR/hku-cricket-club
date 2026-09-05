@@ -350,7 +350,7 @@ export function parseExport(source: string): ParsedMatch {
       } else if (/^bowling$/i.test(kind)) {
         // The bowling table belongs to the innings it was bowled in, which is
         // the one immediately above it. Nothing in the file says so beyond the
-        // order, and the order is the same in all three samples.
+        // order, and the order is the same in every sample.
         if (current) current.bowlingTeam = team.trim();
         mode = "bowling";
       } else {

@@ -90,6 +90,9 @@ export async function ImportView({
           id: team.id,
           name: team.name,
           cricclubsNames: team.cricclubsNames ?? [],
+          // What the side is *for*, which is what the eligibility rule turns
+          // on when the screen offers to register the players who appeared.
+          role: team.role,
         }))}
         players={players.docs.map((player) => ({
           id: player.id,

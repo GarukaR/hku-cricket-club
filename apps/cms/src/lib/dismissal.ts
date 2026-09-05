@@ -6,12 +6,18 @@
 // all. Getting this wrong is not a display bug — it is a bowling average that
 // is quietly wrong for a season.
 //
-// **The list is open, and that is the point.** These six are every code in the
-// three exports in docs/samples/, and CricClubs is free to write a seventh
-// tomorrow. Nothing here guesses at one: an unrecognised code is reported, and
-// the importer holds the match rather than filing a wicket against a bowler on
-// the strength of two characters nobody has seen before. A hit wicket read as a
-// catch would credit a fielder who was standing still.
+// **The list is open, and that is the point.** These are every code the club's
+// exports have shown, and CricClubs is free to write another tomorrow. Nothing
+// here guesses at one: an unrecognised code is reported, and the importer holds
+// the match rather than filing a wicket against a bowler on the strength of two
+// characters nobody has seen before. A hit wicket read as a catch would credit a
+// fielder who was standing still.
+//
+// **Not every entry in the How out column is a dismissal.** A retirement is
+// written there like any other code, and ends the batter's innings — but no
+// wicket fell and the batter was never out. Reading it as a dismissal costs two
+// things at once: a wicket count that disagrees with the scorecard, and, far
+// worse, an extra divisor in that batter's career average. See `retirement`.
 
 import type { ParsedMatch } from "./cricclubs";
 
@@ -44,6 +50,21 @@ export type Dismissal = {
    * to go on.
    */
   behindTheStumps?: true;
+  /**
+   * Whether this ends the innings *without* a dismissal.
+   *
+   * A retired batter was not out: no wicket fell, nobody is credited, and the
+   * innings must be left out of the divisor when their average is taken, exactly
+   * as an unbeaten one is. The club confirmed that its scorers write `rt` for
+   * the not-out kind — the batter left hurt or by choice and was never
+   * dismissed — which is also what their scorecards show, one of them stating
+   * four wickets against five filled How out cells.
+   *
+   * Cricket does also have *retired out*, which is a dismissal. If the club ever
+   * starts writing one, it is a new code here with `retirement` absent, not a
+   * second meaning for this one.
+   */
+  retirement?: true;
 };
 
 /** Every code the club's own exports have used. */
@@ -81,6 +102,14 @@ export const DISMISSALS: readonly Dismissal[] = [
     creditsBowler: false,
     creditsFielder: "runOut",
   },
+  // The one entry here that is not a dismissal. Credits nobody, because nobody
+  // did anything: the batter walked off.
+  {
+    code: "rt",
+    label: "retired not out",
+    creditsBowler: false,
+    retirement: true,
+  },
 ];
 
 const BY_CODE = new Map(DISMISSALS.map((one) => [one.code, one]));
@@ -89,6 +118,20 @@ const BY_CODE = new Map(DISMISSALS.map((one) => [one.code, one]));
 export function dismissalOf(code: string | undefined): Dismissal | undefined {
   const written = code?.trim().toLowerCase();
   return written ? BY_CODE.get(written) : undefined;
+}
+
+/**
+ * Whether a How out cell says the batter retired rather than got out.
+ *
+ * The question two different readers of a scorecard both have to ask — the
+ * parser deciding whether this innings was not out, and the reconciliation
+ * counting wickets against the stated figure — so it is answered once, here.
+ *
+ * An unrecognised code is not a retirement. Nothing is assumed about a code
+ * nobody has taught; the importer holds the match on it instead.
+ */
+export function isRetirement(code: string | undefined): boolean {
+  return dismissalOf(code)?.retirement === true;
 }
 
 /**

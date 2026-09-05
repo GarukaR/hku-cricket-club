@@ -15,6 +15,14 @@ describe("dismissal", () => {
     expect(dismissal({ notOut: true, howOut: "b" })).toBe("not out");
   });
 
+  // A retirement is a not-out innings the card still has to name: "not out"
+  // alone would say the batter was there at the end, when in fact they walked
+  // off. The one code that has to be read before the not-out line above.
+  it("names a retirement rather than absorbing it into not out", () => {
+    expect(dismissal({ notOut: true, howOut: "rt" })).toBe("retired not out");
+    expect(dismissal({ notOut: true, howOut: " RT " })).toBe("retired not out");
+  });
+
   it("states bowled and lbw against the bowler", () => {
     expect(dismissal({ howOut: "b", bowler: "Smith" })).toBe("b Smith");
     expect(dismissal({ howOut: "lbw", bowler: "Smith" })).toBe("lbw b Smith");

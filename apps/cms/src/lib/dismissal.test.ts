@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
 import { parseExport } from "./cricclubs";
-import { dismissalOf, unknownDismissals } from "./dismissal";
+import { dismissalOf, isRetirement, unknownDismissals } from "./dismissal";
 
 const sample = (name: string): string =>
   readFileSync(
@@ -100,5 +100,38 @@ describe("caught and bowled", () => {
     // Nothing here treats it specially: the code credits a catch, full stop.
     expect(dismissalOf(caught[0].howOut)?.creditsFielder).toBe("catch");
     expect(dismissalOf(caught[0].howOut)?.creditsBowler).toBe(true);
+  });
+});
+
+describe("a retirement, which is not a dismissal", () => {
+  it("credits nobody, because nobody did anything", () => {
+    expect(dismissalOf("rt")?.creditsBowler).toBe(false);
+    expect(dismissalOf("rt")?.creditsFielder).toBeUndefined();
+  });
+
+  it("is the only code that says the batter was never out", () => {
+    expect(isRetirement("rt")).toBe(true);
+
+    for (const code of ["b", "lbw", "ct", "ctw", "st", "ro"]) {
+      expect(isRetirement(code)).toBe(false);
+    }
+  });
+
+  it("reads the code however the scorer cased or spaced it", () => {
+    expect(isRetirement(" RT ")).toBe(true);
+  });
+
+  it("assumes nothing about a code nobody has taught", () => {
+    // An unknown code holds the match instead. Guessing that it might be a
+    // retirement would quietly withhold a wicket that really fell.
+    expect(isRetirement("hw")).toBe(false);
+    expect(isRetirement(undefined)).toBe(false);
+  });
+
+  it("no longer holds a match for being unrecognised", () => {
+    const retired = structuredClone(CHARLIE_BEARS);
+    retired.innings[0].batting[0].howOut = "rt";
+
+    expect(unknownDismissals(retired)).toEqual([]);
   });
 });

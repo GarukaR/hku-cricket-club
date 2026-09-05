@@ -93,9 +93,15 @@ export const Appearances = {
           name: "howOut",
           type: "text",
           admin: {
-            condition: (_data, sibling) => !sibling?.notOut,
+            // A recorded code stays visible even once the innings reads as not
+            // out, the same way a Match keeps a margin already entered. `rt` is
+            // exactly that case — a retirement is a not-out innings that the
+            // card still has to name — and hiding it would leave an editor
+            // unable to see, let alone correct, the one code that decides
+            // whether a wicket fell.
+            condition: (_data, sibling) => !sibling?.notOut || Boolean(sibling?.howOut),
             description:
-              "The scorer's code — b, lbw, ct, ctw (caught behind), st, ro (run out). Free text on purpose: the list is open, and an unrecognised code is a question for a human rather than a value to guess at.",
+              "The scorer's code — b, lbw, ct, ctw (caught behind), st, ro (run out), rt (retired). Free text on purpose: the list is open, and an unrecognised code is a question for a human rather than a value to guess at. A retirement is the one code here that is not a dismissal: no wicket fell, and the innings is not out.",
           },
         },
         {

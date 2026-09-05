@@ -92,7 +92,8 @@ export function strikeRate(batting: Batting | undefined): string {
 
 /**
  * How a batting innings ended, in the shape a printed scorecard states it —
- * "c Fielder b Bowler", "lbw b Bowler", "run out (Fielder)", "not out".
+ * "c Fielder b Bowler", "lbw b Bowler", "run out (Fielder)", "not out",
+ * "retired not out".
  *
  * An unrecognised code prints as itself rather than guessing at what it means:
  * the list of codes is open (CONTEXT.md — Dismissal), and a card that invented
@@ -101,9 +102,15 @@ export function strikeRate(batting: Batting | undefined): string {
  */
 export function dismissal(batting: Batting | undefined): string {
   if (!batting) return "";
-  if (batting.notOut) return "not out";
 
   const code = batting.howOut?.trim().toLowerCase();
+
+  // A retirement is a not-out innings that a card still names, because "not
+  // out" alone would say the batter was there at the end when they had walked
+  // off. Read before the not-out line below, which it would otherwise absorb.
+  if (code === "rt") return "retired not out";
+
+  if (batting.notOut) return "not out";
   if (!code) return "";
 
   const { fielder, bowler } = batting;

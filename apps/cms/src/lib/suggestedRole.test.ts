@@ -15,11 +15,29 @@ const repeat = (one: RoleEvidence, times: number): RoleEvidence[] =>
   Array.from({ length: times }, () => ({ ...one }));
 
 describe("suggestedRole", () => {
-  it("suggests nothing below the minimum, however plain the record", () => {
-    const obvious: RoleEvidence = { overs: "10", batted: true, runs: 80 };
-
-    expect(suggestedRole(repeat(obvious, MINIMUM_APPEARANCES - 1))).toBeUndefined();
+  it("says nothing at all only when there is nothing to read", () => {
     expect(suggestedRole([])).toBeUndefined();
+    // Played, but neither batted, bowled nor kept: a scorer's silence rather
+    // than a playing role.
+    expect(suggestedRole(repeat({ batted: false }, 5))).toBeUndefined();
+  });
+
+  it("answers below the minimum, and marks the answer provisional", () => {
+    // The bars do not move — a blank column is not the cautious choice, it is
+    // the one that leaves somebody opening a Player page for every name later.
+    const obvious: RoleEvidence = { overs: "10", batted: true, runs: 80 };
+    const thin = suggestedRole(repeat(obvious, MINIMUM_APPEARANCES - 1));
+
+    expect(thin?.role).toBe("all-rounder");
+    expect(thin?.provisional).toBe(true);
+  });
+
+  it("holds the same reading firmly once the minimum is met", () => {
+    const obvious: RoleEvidence = { overs: "10", batted: true, runs: 80 };
+    const settled = suggestedRole(repeat(obvious, MINIMUM_APPEARANCES));
+
+    expect(settled?.role).toBe("all-rounder");
+    expect(settled?.provisional).toBe(false);
   });
 
   it("suggests a keeper on one appearance, because keeping is not a sample", () => {

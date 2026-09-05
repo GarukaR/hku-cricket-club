@@ -10,6 +10,13 @@
 // here. They are stated once, in this file, so that changing the club's mind is
 // editing three constants rather than hunting through the panel.
 //
+// **Thin evidence is answered, not withheld.** Under three Appearances the same
+// bars are applied and the answer is marked provisional, because a blank column
+// is not the cautious choice — it is the one that leaves somebody opening a
+// Player page for every name a season later. What makes that safe is that it
+// corrects itself: nothing is written without a click, and a stored role the
+// figures later disagree with comes back to be looked at again.
+//
 // Kept away from Payload so the rule can be tested as a rule, the way
 // lib/eligibility is. The caller supplies the Appearances; this decides what
 // they mean.
@@ -17,12 +24,17 @@
 import { ballsBowled } from "./overs";
 import type { PlayingRole } from "./playingRole";
 
-/** Below this many Appearances, nothing is suggested **from the bat and the
- *  ball**: an average and an overs-per-match are read off a sample, and a
- *  player with one game has a scorecard rather than a habit.
+/** The line between a *provisional* reading and a settled one.
  *
- *  Keeping is exempt, because it is observed rather than inferred — see
- *  `suggestedRole`. */
+ *  Below it, an average and an overs-per-match are read off too small a sample
+ *  to describe a habit — a player with one game has a scorecard. The bars are
+ *  applied anyway and the answer is marked `provisional`, because the
+ *  alternative to a corrigible guess is not a better answer: it is a blank
+ *  column, and somebody opening eleven Player pages a season later.
+ *
+ *  Above it the same figures are held as a reading of how this player is
+ *  normally selected. Nothing about the bars changes at the boundary; only how
+ *  loudly the answer is held. */
 export const MINIMUM_APPEARANCES = 3;
 
 /** Overs per Appearance at or above which a Player is bowling properly.
@@ -64,6 +76,18 @@ export type RoleSuggestion = {
   role: PlayingRole;
   /** How the record reads, in the panel's own words. */
   summary: string;
+  /**
+   * Read off fewer than `MINIMUM_APPEARANCES` — a starting point to be
+   * corrected rather than a reading of a habit.
+   *
+   * The bars do not move: the club's figures are applied to whatever evidence
+   * there is, and what changes is how loudly the answer is held. A provisional
+   * role is worth offering because the alternative is not a better answer, it
+   * is a blank column and somebody opening eleven Player pages later. It
+   * corrects itself: once the record has enough to disagree, the row comes
+   * back with the new reading beside what was set.
+   */
+  provisional: boolean;
 };
 
 /**
@@ -120,9 +144,14 @@ function rounded(value: number): string {
 /**
  * What these Appearances suggest, or undefined when they suggest nothing.
  *
- * Undefined for a Player under the minimum *who has not kept*, and for one who
- * has neither batted nor bowled — a record of pure fielding is a scorer's
+ * Undefined only for a Player with no Appearances, and for one who has neither
+ * batted, bowled nor kept in them — a record of pure fielding is a scorer's
  * silence rather than a playing role.
+ *
+ * Everything else gets an answer, marked `provisional` below the minimum. A
+ * first import can then be finished in one press with the column filled in,
+ * and the reading corrects itself as the record learns more: a stored role the
+ * figures later disagree with is raised again, next to what it now reads.
  */
 export function suggestedRole(
   evidence: readonly RoleEvidence[],
@@ -144,14 +173,15 @@ export function suggestedRole(
   // It stays a suggestion, so a stand-in who kept once is a sentence next to
   // the field rather than a role written into it — the count is stated so that
   // the difference between one match and twenty is the reader's to weigh.
+  const provisional = evidence.length < MINIMUM_APPEARANCES;
+
   if (kept(evidence)) {
     return {
       role: "wicketkeeper",
       summary: `Kept wicket in ${appearances} — a stumping, or a catch taken standing up`,
+      provisional,
     };
   }
-
-  if (evidence.length < MINIMUM_APPEARANCES) return undefined;
 
   const overs = oversPerMatch(evidence);
   const average = battingAverage(evidence);
@@ -168,9 +198,10 @@ export function suggestedRole(
   const bowls = overs >= OVERS_PER_MATCH;
   const bats = average !== undefined && average >= BATTING_AVERAGE;
 
-  if (bowls && bats) return { role: "all-rounder", summary: `${said} ${from}` };
-  if (bowls) return { role: "bowler", summary: `${said} ${from}` };
-  if (bats) return { role: "batter", summary: `${said} ${from}` };
+  if (bowls && bats)
+    return { role: "all-rounder", summary: `${said} ${from}`, provisional };
+  if (bowls) return { role: "bowler", summary: `${said} ${from}`, provisional };
+  if (bats) return { role: "batter", summary: `${said} ${from}`, provisional };
 
   // Neither bar cleared, so the honest answer is whichever they are nearer to,
   // measured as a share of each bar so that overs and runs can be compared at
@@ -184,5 +215,6 @@ export function suggestedRole(
   return {
     role: towardsBowling > towardsBatting ? "bowler" : "batter",
     summary: `${said} ${from} — closer to one than the other, neither clearly`,
+    provisional,
   };
 }

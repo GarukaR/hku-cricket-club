@@ -35,12 +35,37 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* Tighter than the page's usual rhythm on purpose, and only on a phone.
+   Measured against the content column a handset leaves once the Container's own
+   20px gutters are off — 350px on a 390pt phone, 335px on a 375pt one:
+
+     table               0.6rem   0.4rem
+     By side              380px    348px
+     By side and season   460px    422px
+     Matches              438px    412px
+
+   **This does not make them fit, and is not trying to.** By side clears a 390pt
+   phone by two pixels on today's data alone — one longer side name and it is
+   back over — so nothing here should be read as a guarantee that the table has
+   stopped scrolling. What it does buy is real on every handset: about 30px less
+   to drag on each table, and the narrowest one close enough to the edge that it
+   often will not scroll at all.
+
+   The scrolling itself is fine — confirmed by hand on a real phone — so this is
+   a matter of how far, not whether. Desktop keeps the roomier figure below. */
 .table th,
 .table td {
   text-align: left;
-  padding: 0.6rem 0.6rem;
+  padding: 0.6rem 0.4rem;
   border-bottom: 1px solid var(--color-rule);
   white-space: nowrap;
+}
+
+@media (min-width: 780px) {
+  .table th,
+  .table td {
+    padding: 0.6rem 0.6rem;
+  }
 }
 
 .table th:first-child,

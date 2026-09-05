@@ -17,22 +17,32 @@
 
 import type { Hold } from "./confidence";
 import type { ParsedMatch } from "./cricclubs";
+import type { TeamRole } from "./eligibility";
 import {
   documentsFor,
   sameFixture,
   type ImportedAppearance,
 } from "./importing";
 import { isOurSide, type Resolution } from "./names";
+import type { PlayingRole } from "./playingRole";
+import { proposeRegistrations, type Appeared, type Proposal } from "./registering";
+import { suggestedRole } from "./suggestedRole";
 
 /** The club's side that played this match, as the screen identified it. */
 export type OurSide = {
   id: number | string;
   cricclubsNames: string[];
+  /** What the side is *for*, which is what the eligibility rule turns on. */
+  role?: TeamRole;
 };
 
 export type SaveOutcome = {
   /** The Match that was written. */
   matchId: number | string;
+  /** The Season it was filed under, found or made. Carried out so the screen
+   *  can ask who is registered to this side for it without working it out a
+   *  second time. */
+  seasonId: number | string;
   /** Whether it went live or is being held. */
   published: boolean;
   /** Whether it was already in the record before this. */
@@ -265,8 +275,266 @@ export async function saveImport({
 
   return {
     matchId,
+    seasonId: season,
     published: confident,
     updated: Boolean(already),
     appearances: appearances.length,
   };
+}
+
+// --- Registering the players who appeared ------------------------------------
+//
+// A Registration is what makes the eligibility rule enforceable before somebody
+// takes the field, and what keeps a squad member who neither batted nor bowled
+// in the list at all — so it stays a record of its own, entered on purpose.
+// What follows only removes the typing: it reads back who played, works out
+// what may be offered (lib/registering), and writes exactly what a person
+// ticked.
+
+const idOf = (value: unknown): number | string | undefined => {
+  if (value == null) return undefined;
+  if (typeof value === "object") return (value as { id?: number | string }).id;
+  return value as number | string;
+};
+
+/** Every Appearance in this Season for these Players, which is where the
+ *  keeping and bowling evidence lives. One query rather than one per player:
+ *  this runs on a screen somebody is watching. */
+async function seasonEvidence(
+  api: string,
+  seasonId: number | string,
+  playerIds: (number | string)[],
+): Promise<Json[]> {
+  if (playerIds.length === 0) return [];
+
+  const players = playerIds.map((id) => encodeURIComponent(String(id))).join(",");
+
+  return findAll(
+    `${api}/appearances?depth=0&limit=500` +
+      `&where[player][in]=${players}` +
+      `&where[match.season][equals]=${encodeURIComponent(String(seasonId))}`,
+  );
+}
+
+/** A role the record suggests for one Player, and what they are set to now.
+ *
+ *  Worked out here with the same function the Player's own sidebar uses, rather
+ *  than by reading that sidebar's sentence back: the panel has to write a value,
+ *  and a sentence parsed for one would be a second definition of the rule
+ *  waiting to disagree with the first. */
+export type Suggested = {
+  /** The Player's own id, in the type the record uses it in. Carried rather
+   *  than rebuilt from the string this map is keyed by: a relationship field
+   *  refuses a numeric id handed to it as a string. */
+  playerId: number | string;
+  role: PlayingRole;
+  summary: string;
+  /** What the Player is set to today. `null` for the ordinary case of nobody
+   *  having said, which is the only case where accepting is uncontroversial. */
+  current: PlayingRole | null;
+};
+
+export type ImportProposal = {
+  proposal: Proposal;
+  /** Keyed by player id, and absent for anybody the rule will not guess at —
+   *  under three appearances, or neither batting nor bowling in them. */
+  suggestions: Record<string, Suggested>;
+};
+
+/**
+ * What this import can offer to register, read back from the record itself.
+ *
+ * Read back rather than carried over from the parse, because the parse says who
+ * appeared and the *record* says who is already registered — and the second is
+ * the half that decides. It also means a re-import proposes nothing the first
+ * one already settled.
+ */
+export async function proposalFor({
+  api,
+  matchId,
+  seasonId,
+  side,
+}: {
+  api: string;
+  matchId: number | string;
+  seasonId: number | string;
+  side: OurSide;
+}): Promise<ImportProposal> {
+  const appearances = await findAll(
+    `${api}/appearances?depth=1&limit=200&where[match][equals]=${encodeURIComponent(String(matchId))}`,
+  );
+
+  // One entry per Player, named. An Appearance without a resolvable player is
+  // not a person this can offer to register.
+  const players = new Map<
+    string,
+    { id: number | string; name: string; playingRole: PlayingRole | null }
+  >();
+  for (const appearance of appearances) {
+    const player = appearance.player as {
+      id?: number | string;
+      name?: string;
+      playingRole?: PlayingRole | null;
+    } | null;
+    if (!player?.id) continue;
+    players.set(String(player.id), {
+      id: player.id,
+      name: player.name ?? String(player.id),
+      playingRole: player.playingRole ?? null,
+    });
+  }
+
+  const ids = [...players.values()].map((one) => one.id);
+  if (ids.length === 0) {
+    return {
+      proposal: { register: [], blocked: [], already: [], keeperCandidates: [] },
+      suggestions: {},
+    };
+  }
+
+  const list = ids.map((id) => encodeURIComponent(String(id))).join(",");
+
+  const [registrations, teams, evidence, career] = await Promise.all([
+    findAll(
+      `${api}/registrations?depth=0&limit=200` +
+        `&where[player][in]=${list}` +
+        `&where[season][equals]=${encodeURIComponent(String(seasonId))}`,
+    ),
+    findAll(`${api}/teams?depth=0&limit=100`),
+    seasonEvidence(api, seasonId, ids),
+    // Every Appearance these Players have ever made, which is the scope the
+    // role rule works over — a season with few wickets does not make somebody
+    // stop being a bowler, which is the whole reason it reads a career.
+    findAll(
+      `${api}/appearances?depth=0&limit=1000&where[player][in]=${list}`,
+    ),
+  ]);
+
+  const roleOfTeam = new Map(
+    teams.map((team) => [String(team.id), team.role as TeamRole]),
+  );
+
+  const appeared: Appeared[] = [...players.values()].map((player) => {
+    const mine = registrations.filter(
+      (one) => String(idOf(one.player)) === String(player.id),
+    );
+
+    const here = mine.some(
+      (one) => String(idOf(one.team)) === String(side.id),
+    );
+
+    // Their *other* registrations this Season, as roles. A registration to a
+    // team the record cannot name a role for is dropped rather than guessed:
+    // the rule is about what a side is for, and an unknown role is not an
+    // answer.
+    const elsewhere = mine
+      .filter((one) => String(idOf(one.team)) !== String(side.id))
+      .map((one) => roleOfTeam.get(String(idOf(one.team))))
+      .filter((role): role is TeamRole => Boolean(role));
+
+    const theirs = evidence.filter(
+      (one) => String(idOf(one.player)) === String(player.id),
+    );
+
+    const fieldingOf = (one: Json) =>
+      (one.fielding ?? {}) as { stumpings?: number; caughtBehind?: number };
+
+    return {
+      playerId: player.id,
+      name: player.name,
+      registeredHere: here,
+      registeredElsewhere: elsewhere,
+      // Positive evidence only, and never its absence (CONTEXT.md —
+      // Caught behind).
+      kept: theirs.some(
+        (one) =>
+          (fieldingOf(one).stumpings ?? 0) > 0 ||
+          (fieldingOf(one).caughtBehind ?? 0) > 0,
+      ),
+      bowled: theirs.some((one) => one.bowled === true),
+    };
+  });
+
+  // The same rule the Player's own sidebar states, over the same career
+  // Appearances, so the panel and the record can never offer different answers.
+  const suggestions: Record<string, Suggested> = {};
+  for (const player of players.values()) {
+    const theirs = career.filter(
+      (one) => String(idOf(one.player)) === String(player.id),
+    );
+
+    const suggestion = suggestedRole(
+      theirs.map((one) => {
+        const batting = (one.batting ?? {}) as {
+          runs?: number;
+          notOut?: boolean;
+        };
+        const bowling = (one.bowling ?? {}) as { overs?: string };
+        const fielding = (one.fielding ?? {}) as {
+          stumpings?: number;
+          caughtBehind?: number;
+        };
+
+        return {
+          overs: bowling.overs ?? undefined,
+          batted: one.batted === true,
+          runs: batting.runs ?? undefined,
+          notOut: batting.notOut ?? undefined,
+          stumpings: fielding.stumpings ?? undefined,
+          caughtBehind: fielding.caughtBehind ?? undefined,
+        };
+      }),
+    );
+
+    if (suggestion) {
+      suggestions[String(player.id)] = {
+        playerId: player.id,
+        role: suggestion.role,
+        summary: suggestion.summary,
+        current: player.playingRole,
+      };
+    }
+  }
+
+  return {
+    proposal: proposeRegistrations(appeared, side.role ?? "league"),
+    suggestions,
+  };
+}
+
+/** Register one Player to this Team for this Season, through the collection's
+ *  own validation — the eligibility rule included, so a proposal that has gone
+ *  stale between reading and clicking is refused here rather than written. */
+export async function registerPlayer({
+  api,
+  playerId,
+  teamId,
+  seasonId,
+}: {
+  api: string;
+  playerId: number | string;
+  teamId: number | string;
+  seasonId: number | string;
+}): Promise<void> {
+  await send(`${api}/registrations`, {
+    method: "POST",
+    body: { player: playerId, team: teamId, season: seasonId },
+  });
+}
+
+/** Accept a suggested Playing role, which is the only thing that ever writes
+ *  one from a suggestion. Nothing here decides it — a person clicked. */
+export async function setPlayingRole({
+  api,
+  playerId,
+  role,
+}: {
+  api: string;
+  playerId: number | string;
+  role: PlayingRole;
+}): Promise<void> {
+  await send(`${api}/players/${playerId}`, {
+    method: "PATCH",
+    body: { playingRole: role },
+  });
 }

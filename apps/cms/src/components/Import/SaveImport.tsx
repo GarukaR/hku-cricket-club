@@ -7,6 +7,7 @@ import type { ParsedMatch } from "@/lib/cricclubs";
 import type { Resolution } from "@/lib/names";
 
 import type { Side } from "./ImportPreview";
+import { RegisterPlayers } from "./RegisterPlayers";
 import { saveImport, type SaveOutcome } from "@/lib/saving";
 import { panel, quiet } from "./styles";
 
@@ -170,6 +171,22 @@ export function SaveImport({
           </a>
           .
         </div>
+      )}
+
+      {/* Only once the match is written: a registration is a Player's binding
+          to a Team for a Season, and until the Season exists there is nothing
+          to bind them to. Offered after rather than before for the same reason
+          the match is saved first — the record is what says who is already
+          registered, and a proposal made from the file alone would offer people
+          the record settled last week. */}
+      {saved && side && (
+        <RegisterPlayers
+          api={api}
+          matchId={saved.matchId}
+          seasonId={saved.seasonId}
+          side={side}
+          season={match.season}
+        />
       )}
 
       {failure && (

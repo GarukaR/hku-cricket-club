@@ -371,7 +371,7 @@ export interface Appearance {
      */
     notOut?: boolean | null;
     /**
-     * The scorer's code — b, lbw, ct, ctw (caught behind), st, ro (run out). Free text on purpose: the list is open, and an unrecognised code is a question for a human rather than a value to guess at.
+     * The scorer's code — b, lbw, ct, ctw (caught behind), st, ro (run out), rt (retired). Free text on purpose: the list is open, and an unrecognised code is a question for a human rather than a value to guess at. A retirement is the one code here that is not a dismissal: no wicket fell, and the innings is not out.
      */
     howOut?: string | null;
     fielder?: string | null;

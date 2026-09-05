@@ -9,6 +9,7 @@ import {
   type ParsedInnings,
   type ParsedMatch,
 } from "@/lib/cricclubs";
+import type { TeamRole } from "@/lib/eligibility";
 import { sameEntity } from "@/lib/mapping";
 import { competitionLabel } from "@/lib/notation";
 import { ballsBowled, economyRate, oversSpoken } from "@/lib/overs";
@@ -41,7 +42,12 @@ import {
 /** One of the club's sides and the CricClubs entries it has claimed. Nothing in
  *  an export says which of our four sides it belongs to, so this is the only
  *  thing that knows (CONTEXT.md, lib/mapping). */
-export type Side = { id: number | string; name: string; cricclubsNames: string[] };
+export type Side = {
+  id: number | string;
+  name: string;
+  cricclubsNames: string[];
+  role?: TeamRole;
+};
 
 /** Which of the club's sides played this match, if any of them has said so. */
 export function ourSide(match: ParsedMatch, sides: Side[]): Side | undefined {

@@ -2,6 +2,7 @@
 // the homepage names its side on every row applies here too (see
 // lib/career's byTeam).
 
+import { ScrollFade } from "@/components/ScrollFade";
 import type { TeamSplit } from "@/lib/career";
 import styles from "./Splits.module.css";
 
@@ -9,7 +10,7 @@ export function TeamSplits({ splits }: { splits: TeamSplit[] }) {
   if (splits.length === 0) return null;
 
   return (
-    <div className={styles.frame}>
+    <ScrollFade className={styles.frame}>
       <div className={styles.scroll} tabIndex={0} role="region" aria-label="By side">
         <table className={styles.table}>
           <thead>
@@ -36,6 +37,6 @@ export function TeamSplits({ splits }: { splits: TeamSplit[] }) {
           </tbody>
         </table>
       </div>
-    </div>
+    </ScrollFade>
   );
 }

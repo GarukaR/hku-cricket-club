@@ -36,11 +36,12 @@
   margin-top: 1.4rem;
 }
 
-/* Edge fade as on the homepage's Recent record (components/home/RecentRecord.module.css)
-   — the only hint on a phone that the row keeps going past what fits. Lives
-   on `.frame`, outside `.scroll`, so it cannot interfere with the scrolling
-   element's own touch handling — see that file's comment for why. */
-.frame::after {
+/* Edge fade, shown only while there is more to scroll to — `data-overflow` is
+   set by components/ScrollFade, which measures `.scroll` on mount and on
+   resize. Lives on `.frame`, outside `.scroll`, so it cannot interfere with
+   the scrolling element's own touch handling (see git history on this file
+   for why that distinction matters). */
+.frame[data-overflow]::after {
   content: "";
   position: absolute;
   top: 0;

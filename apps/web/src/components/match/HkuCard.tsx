@@ -1,3 +1,4 @@
+import { ScrollFade } from "@/components/ScrollFade";
 import { SectionHeading } from "@/components/SectionHeading";
 import {
   dismissal,
@@ -40,7 +41,7 @@ export function HkuCard({
       <SectionHeading id="hku-card">{team}</SectionHeading>
 
       {batted.length > 0 && (
-        <div className={styles.frame}>
+        <ScrollFade className={styles.frame}>
           <div className={styles.scroll} tabIndex={0} role="region" aria-label="Batting">
             <table className={styles.table}>
               <thead>
@@ -69,7 +70,7 @@ export function HkuCard({
               </tbody>
             </table>
           </div>
-        </div>
+        </ScrollFade>
       )}
 
       {didNotBat.length > 0 && (
@@ -79,7 +80,7 @@ export function HkuCard({
       )}
 
       {bowled.length > 0 && (
-        <div className={styles.frame}>
+        <ScrollFade className={styles.frame}>
           <div className={styles.scroll} tabIndex={0} role="region" aria-label="Bowling">
             <table className={styles.table}>
               <thead>
@@ -106,7 +107,7 @@ export function HkuCard({
               </tbody>
             </table>
           </div>
-        </div>
+        </ScrollFade>
       )}
 
       {fielded.length > 0 && (

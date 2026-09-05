@@ -154,8 +154,16 @@ the whole point: the suggestion is a sentence beside the field, never a value in
 it, and a role somebody set by hand is never overwritten. The club's bars, after
 three Appearances: three overs a match and a batting average of fifteen make an
 all-rounder, either alone makes a bowler or a batter, and neither suggests
-whichever they are nearer. A keeper is suggested only on positive evidence —
-a stumping, or a catch taken standing up.
+whichever they are nearer.
+
+**Wicketkeeper is the exception, and the reason is worth keeping.** The three
+Appearances exist because an average and an overs-per-match are read off a
+*sample* — one game is a scorecard, not a habit. Keeping is not sampled: a
+stumping or a catch taken standing up is direct evidence that this person kept
+in that match, so it is suggested from the first one, with the number of
+Appearances stated so a stand-in who kept once can be told from a regular
+keeper. Its *absence* still concludes nothing, because a keeper only appears in
+an export when the opposition happens to get out that way.
 
 **Caught behind**:
 A catch taken by the wicketkeeper, which a scorer writes `ctw` rather than `ct`.

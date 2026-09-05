@@ -1,6 +1,7 @@
 import type { CollectionConfig } from "payload";
 
 import { oversProblem } from "@/lib/notation";
+import { announceOnChange, announceOnDelete } from "@/lib/publish";
 
 import { publiclyReadable } from "./access";
 import { validated } from "./validate";
@@ -37,6 +38,9 @@ export const Appearances = {
     group: "The record",
   },
   access: publiclyReadable,
+  // Every career and season figure the site prints is derived from these on
+  // read — see lib/publish.
+  hooks: { afterChange: [announceOnChange], afterDelete: [announceOnDelete] },
   fields: [
     {
       name: "match",

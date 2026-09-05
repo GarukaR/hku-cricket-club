@@ -2,6 +2,7 @@ import type { CollectionConfig, TextFieldManyValidation } from "payload";
 
 import { aliasProblem } from "@/lib/names";
 import { PLAYING_ROLES } from "@/lib/playingRole";
+import { announceOnChange, announceOnDelete } from "@/lib/publish";
 
 import { publiclyReadable } from "./access";
 
@@ -68,6 +69,8 @@ export const Players = {
     group: "The record",
   },
   access: publiclyReadable,
+  // A Player's name is what a squad or scorecard prints — see lib/publish.
+  hooks: { afterChange: [announceOnChange], afterDelete: [announceOnDelete] },
   fields: [
     {
       name: "name",

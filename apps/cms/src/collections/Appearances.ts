@@ -183,6 +183,16 @@ export const Appearances = {
             { name: "stumpings", type: "number", min: 0 },
           ],
         },
+        {
+          name: "caughtBehind",
+          label: "Caught behind",
+          type: "number",
+          min: 0,
+          admin: {
+            description:
+              "Part of the catches above, counted again on its own — the ones taken standing up, which a scorer writes ctw rather than ct. Recorded because it is the only thing an export says about who kept wicket, and a keeper's catches are otherwise indistinguishable from an outfielder's. Empty on matches imported before this was kept, which means nobody wrote it down rather than that nobody kept.",
+          },
+        },
       ],
     },
   ],

@@ -74,7 +74,13 @@ export type ImportedAppearance = {
     wides?: number;
     noBalls?: number;
   };
-  fielding?: { catches?: number; runOuts?: number; stumpings?: number };
+  fielding?: {
+    catches?: number;
+    runOuts?: number;
+    stumpings?: number;
+    /** Of those catches, the ones taken standing up. */
+    caughtBehind?: number;
+  };
 };
 
 export type Imported = {
@@ -243,6 +249,15 @@ export function documentsFor({
             ? "stumpings"
             : "runOuts";
       fielding[field] = (fielding[field] ?? 0) + 1;
+
+      // Counted again on its own, inside the catch it already is — the same
+      // shape as byes inside extras on a Match. The total stays right for a
+      // fielding figure, and lib/suggestedRole gets the one signal an export
+      // carries about who kept. A stumping needs no such marker: nobody but
+      // the keeper makes one.
+      if (dismissal.behindTheStumps && credit === "catch") {
+        fielding.caughtBehind = (fielding.caughtBehind ?? 0) + 1;
+      }
     }
   }
 

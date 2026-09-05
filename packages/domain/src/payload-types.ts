@@ -316,9 +316,13 @@ export interface Player {
    */
   aliases?: string[] | null;
   /**
-   * How this player is normally selected to contribute. Not a Team's role (that says what a side is for) — this says what the person does on it. Left empty for most of the record, which predates anyone writing it down.
+   * How this player is normally selected to contribute. Not a Team's role (that says what a side is for) — this says what the person does on it. Left empty for most of the record, which predates anyone writing it down. The sidebar says what their appearances suggest; it never fills this in.
    */
   playingRole?: ('batter' | 'bowler' | 'wicketkeeper' | 'all-rounder') | null;
+  /**
+   * Read from this player's appearances, and never written to the role beside it: a quiet season with the ball does not stop somebody being a bowler, so the decision stays a person's. Blank until they have three appearances, and blank for a player whose scorecards show neither batting nor bowling.
+   */
+  suggestedRole?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -401,6 +405,10 @@ export interface Appearance {
     catches?: number | null;
     runOuts?: number | null;
     stumpings?: number | null;
+    /**
+     * Part of the catches above, counted again on its own — the ones taken standing up, which a scorer writes ctw rather than ct. Recorded because it is the only thing an export says about who kept wicket, and a keeper's catches are otherwise indistinguishable from an outfielder's. Empty on matches imported before this was kept, which means nobody wrote it down rather than that nobody kept.
+     */
+    caughtBehind?: number | null;
   };
   updatedAt: string;
   createdAt: string;
@@ -671,6 +679,7 @@ export interface PlayersSelect<T extends boolean = true> {
   name?: T;
   aliases?: T;
   playingRole?: T;
+  suggestedRole?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -723,6 +732,7 @@ export interface AppearancesSelect<T extends boolean = true> {
         catches?: T;
         runOuts?: T;
         stumpings?: T;
+        caughtBehind?: T;
       };
   updatedAt?: T;
   createdAt?: T;

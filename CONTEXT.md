@@ -131,6 +131,22 @@ or all-rounder. Recorded on the Player, not derived: unlike a career figure, it
 cannot be worked out from Appearances, since a season with few wickets does not
 mean a bowler stopped being one. Optional, since most of the record predates
 anyone writing it down.
+
+The panel does *suggest* one from a Player's Appearances, and the distinction is
+the whole point: the suggestion is a sentence beside the field, never a value in
+it, and a role somebody set by hand is never overwritten. The club's bars, after
+three Appearances: three overs a match and a batting average of fifteen make an
+all-rounder, either alone makes a bowler or a batter, and neither suggests
+whichever they are nearer. A keeper is suggested only on positive evidence —
+a stumping, or a catch taken standing up.
+
+**Caught behind**:
+A catch taken by the wicketkeeper, which a scorer writes `ctw` rather than `ct`.
+Counted inside the fielder's catches and again on its own, the way byes sit
+inside extras — because it is the only thing a Scorecard says about who kept,
+and a keeper's catches are otherwise indistinguishable from an outfielder's. Its
+absence across a run of matches means nobody was dismissed that way, never that
+nobody kept.
 _Avoid_: Role on its own — the codebase's `TeamRole` (which side a Team is,
 for the eligibility rule) is a different thing that happens to share the word,
 and the two must never be conflated.

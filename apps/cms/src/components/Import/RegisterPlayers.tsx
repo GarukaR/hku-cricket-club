@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-import { PLAYING_ROLES } from "@/lib/playingRole";
+import { PLAYING_ROLES, type PlayingRole } from "@/lib/playingRole";
 import type { Appeared } from "@/lib/registering";
 import { needsAttention } from "@/lib/registering";
 import {
@@ -59,8 +59,10 @@ export function RegisterPlayers({
   // which is the best evidence a registration will ever have. Unticking is how
   // an editor says a guest or a ringer is not a squad member.
   const [chosen, setChosen] = useState<Record<string, boolean>>({});
-  const [roles, setRoles] = useState<Record<string, boolean>>({});
-  const [keeper, setKeeper] = useState<string>("");
+  /** The role picked for each Player, by id. Starts at what the record already
+   *  holds, or the suggestion where there is one and nobody has said otherwise —
+   *  a role set by hand is never pre-filled with something else. */
+  const [pick, setPick] = useState<Record<string, string>>({});
 
   const [saving, setSaving] = useState(false);
   const [done, setDone] = useState<{ registered: number; roles: number }>();
@@ -79,13 +81,13 @@ export function RegisterPlayers({
             result.proposal.register.map((one) => [String(one.playerId), true]),
           ),
         );
-        // A suggestion is ticked only where nobody has said otherwise. A role
-        // somebody set by hand is never queued for overwriting by a default.
-        setRoles(
+        // Pre-filled only where nobody has said otherwise. A role set by hand
+        // is never queued for overwriting by a default.
+        setPick(
           Object.fromEntries(
-            Object.entries(result.suggestions).map(([id, suggested]) => [
-              id,
-              suggested.current === null,
+            result.roles.map((one) => [
+              String(one.playerId),
+              one.current ?? one.suggested?.role ?? "",
             ]),
           ),
         );
@@ -119,16 +121,20 @@ export function RegisterPlayers({
     );
   }
 
-  if (!found || !needsAttention(found.proposal)) {
+  // Roles count as much as registrations here: by the third match everybody who
+  // played is already registered, which is exactly when a suggestion first
+  // exists — a panel that measured only registrations would fall silent at the
+  // moment it had most to offer.
+  if (!found || (!needsAttention(found.proposal) && found.roles.length === 0)) {
     return (
       <p style={{ ...quiet, marginTop: 16 }}>
         Everybody who played is already registered to the {side.name} for{" "}
-        {season}. Nothing to do.
+        {season}, and every role is set. Nothing to do.
       </p>
     );
   }
 
-  const { register, blocked, keeperCandidates } = found.proposal;
+  const { register, blocked } = found.proposal;
 
   // The Players themselves rather than the string keys they are ticked by: a
   // relationship field refuses a numeric id handed to it as a string, and the
@@ -138,13 +144,13 @@ export function RegisterPlayers({
     (one) => chosen[String(one.playerId)],
   );
 
-  const roleChoices = Object.entries(roles)
-    .filter(([id, ticked]) => ticked && found.suggestions[id])
-    .map(([id]) => found.suggestions[id]);
-
-  const keeperPick = keeperCandidates.find(
-    (one) => String(one.playerId) === keeper,
-  );
+  // Only where the pick actually differs from what the record holds. Pressing
+  // the button must never rewrite a value with itself, or the count would
+  // report work that did not happen.
+  const roleWrites = found.roles.filter((one) => {
+    const value = pick[String(one.playerId)] ?? "";
+    return value !== "" && value !== (one.current ?? "");
+  });
 
   async function apply() {
     setSaving(true);
@@ -167,20 +173,11 @@ export function RegisterPlayers({
         registered += 1;
       }
 
-      for (const suggested of roleChoices) {
+      for (const one of roleWrites) {
         await setPlayingRole({
           api,
-          playerId: suggested.playerId,
-          role: suggested.role,
-        });
-        written += 1;
-      }
-
-      if (keeperPick) {
-        await setPlayingRole({
-          api,
-          playerId: keeperPick.playerId,
-          role: "wicketkeeper",
+          playerId: one.playerId,
+          role: pick[String(one.playerId)] as PlayingRole,
         });
         written += 1;
       }
@@ -220,7 +217,6 @@ export function RegisterPlayers({
 
           {register.map((player) => {
             const id = String(player.playerId);
-            const suggested = found.suggestions[id];
 
             return (
               <div key={id} style={{ marginTop: 8 }}>
@@ -234,30 +230,6 @@ export function RegisterPlayers({
                   />{" "}
                   {nameOf(player)}
                 </label>
-
-                {suggested && (
-                  <div style={{ marginLeft: 24, fontSize: 12, opacity: 0.8 }}>
-                    <label>
-                      <input
-                        type="checkbox"
-                        checked={Boolean(roles[id])}
-                        onChange={(event) =>
-                          setRoles((was) => ({ ...was, [id]: event.target.checked }))
-                        }
-                      />{" "}
-                      Set role to <strong>{label(suggested.role)}</strong> —{" "}
-                      {suggested.summary}
-                      {suggested.current !== null &&
-                        suggested.current !== suggested.role && (
-                          <>
-                            {" "}
-                            Currently {label(suggested.current)}; ticking this
-                            replaces it.
-                          </>
-                        )}
-                    </label>
-                  </div>
-                )}
               </div>
             );
           })}
@@ -283,41 +255,68 @@ export function RegisterPlayers({
         </div>
       )}
 
-      {keeperCandidates.length > 0 && (
+      {found.roles.length > 0 && (
         <fieldset
           style={{ ...panel, display: "block" }}
           disabled={saving || Boolean(done)}
         >
-          <legend style={{ padding: "0 6px" }}>Who kept wicket?</legend>
+          <legend style={{ padding: "0 6px" }}>Playing roles</legend>
           <p style={{ ...quiet, marginTop: 0, fontSize: 12 }}>
-            Nothing in {season}&apos;s scorecards says. A keeper only shows up in
-            an export by taking a stumping or a catch standing up, and a run of
-            matches with neither says nothing about who was behind the stumps.
-            These are the players who have not bowled this season, which is the
-            one thing the record can narrow it down with — leave it blank if you
-            would rather not say.
+            Everybody who played, whether or not they are being registered here
+            — this is the moment the record first meets most of them, and going
+            back later means one Player page at a time. Where the record has
+            enough to say, the box is already filled in with what it reads and
+            why; where it has not, say so yourself or leave it blank. A role
+            already set is left exactly as it is unless you change it here.
           </p>
 
-          {keeperCandidates.map((player) => (
-            <label key={String(player.playerId)} style={{ marginRight: 16 }}>
-              <input
-                type="radio"
-                name="keeper"
-                value={String(player.playerId)}
-                checked={keeper === String(player.playerId)}
-                onChange={() => setKeeper(String(player.playerId))}
-              />{" "}
-              {nameOf(player)}
-            </label>
-          ))}
+          {found.roles.map((one) => {
+            const id = String(one.playerId);
+            const value = pick[id] ?? "";
+            const changed = value !== (one.current ?? "");
 
-          {keeper !== "" && (
-            <p style={{ marginTop: 8, marginBottom: 0, fontSize: 12 }}>
-              <button type="button" onClick={() => setKeeper("")}>
-                Clear
-              </button>
-            </p>
-          )}
+            return (
+              <div key={id} style={{ marginTop: 10 }}>
+                <label>
+                  <span style={{ display: "inline-block", minWidth: "18ch" }}>
+                    {one.name}
+                  </span>{" "}
+                  <select
+                    value={value}
+                    onChange={(event) =>
+                      setPick((was) => ({ ...was, [id]: event.target.value }))
+                    }
+                  >
+                    <option value="">— not said —</option>
+                    {PLAYING_ROLES.map((role) => (
+                      <option key={role.value} value={role.value}>
+                        {role.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <div style={{ marginLeft: 24, fontSize: 12, opacity: 0.8 }}>
+                  {one.suggested && <>{one.suggested.summary}. </>}
+                  {one.couldBeKeeper && (
+                    <>
+                      Has not bowled this season, and nothing in {season}
+                      &apos;s scorecards says who kept — a keeper only appears in
+                      an export by taking a stumping or a catch standing up.{" "}
+                    </>
+                  )}
+                  {one.current !== null && changed && (
+                    <>
+                      Currently {label(one.current)}; this replaces it.{" "}
+                    </>
+                  )}
+                  {one.current !== null && !changed && (
+                    <>Set to {label(one.current)}, and left alone. </>
+                  )}
+                </div>
+              </div>
+            );
+          })}
         </fieldset>
       )}
 
@@ -327,10 +326,7 @@ export function RegisterPlayers({
             type="button"
             onClick={() => void apply()}
             disabled={
-              saving ||
-              (chosenPlayers.length === 0 &&
-                roleChoices.length === 0 &&
-                !keeperPick)
+              saving || (chosenPlayers.length === 0 && roleWrites.length === 0)
             }
           >
             {saving

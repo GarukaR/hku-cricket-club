@@ -7,7 +7,7 @@ import { ExportProblem, inningsToCheck, parseExport } from "./cricclubs";
 import { economyRate } from "./overs";
 import { reconcileInnings, wicketsToNoBowler } from "./reconciliation";
 
-// The three files in docs/samples are the regression suite, not a fixture
+// The files in docs/samples are the regression suite, not a fixture
 // directory: every rule in this module was derived from them, so they are read
 // off disk exactly as an editor would upload them. A transcription into a string
 // literal here would be a copy that could be quietly corrected until the tests
@@ -21,6 +21,7 @@ const sample = (name: string): string =>
 const CHARLIE_BEARS = sample("saturday-2026-03-21-v-irc-charlie-bears.csv");
 const LANCERS = sample("saturday-2026-01-03-v-scc-lancers.csv");
 const UCL = sample("ucl-2025-03-18-v-combined-unis.csv");
+const THUNDER = sample("saturday-2026-09-05-v-dlsw-thunder.csv");
 
 describe("the match, as the header states it", () => {
   it("reads the baseline Saturday fixture", () => {
@@ -41,8 +42,8 @@ describe("the match, as the header states it", () => {
     expect(match.margin).toEqual({ value: 79, unit: "runs" });
   });
 
-  // The word "League" is glued to the winner's name with no separator in all
-  // three files, so the name cannot be cut out of the line — it is recognised by
+  // The word "League" is glued to the winner's name with no separator in every
+  // sample, so the name cannot be cut out of the line — it is recognised by
   // matching the sides the second line already named.
   it("finds the winner through the format glued to the front of it", () => {
     expect(parseExport(LANCERS).resultLine).toMatch(/^LeagueHKU CC won by 2/);
@@ -226,38 +227,23 @@ describe("the bowling lines", () => {
   });
 });
 
-/**
- * The Lancers export with one batter retiring, and the innings' stated wickets
- * brought down by one to match.
- *
- * Both halves together are the shape of the real scorecard that sent us here: a
- * How out cell with something in it, against a stated wicket count one lower,
- * because the batter walked off rather than getting out. Derived from the real
- * file by two visible substitutions rather than transcribed, so it cannot
- * quietly drift away from what CricClubs actually writes.
- *
- * The row converted is a *run out* on purpose. A run out is credited to no
- * bowler, so removing it as a wicket leaves the bowling figures untouched and
- * the whole file still adds up — turning a caught dismissal into a retirement
- * would leave a bowler credited with a wicket that no longer fell, which the
- * reconciliation rightly refuses.
- */
-const LANCERS_WITH_A_RETIREMENT = LANCERS.replace(
-  "Mohammad Haroon,ro,",
-  "Mohammad Haroon,rt,",
-).replace("Wickets : 7", "Wickets : 6");
-
 describe("a batter who retired", () => {
   const retired = () =>
-    parseExport(LANCERS_WITH_A_RETIREMENT)
-      .innings[0].batting.find((batter) => batter.name === "Mohammad Haroon");
+    parseExport(THUNDER)
+      .innings[1].batting.find((batter) => batter.name === "Ashwin Dokania");
 
   it("is not out, however full the How out cell is", () => {
     // The whole point. Read as a dismissal this innings would join the divisor
     // of his career average, and nothing about the resulting figure would look
-    // wrong.
+    // wrong. He made 20 off 56 and walked off; nobody dismissed him.
     expect(retired()?.notOut).toBe(true);
     expect(retired()?.howOut).toBe("rt");
+    expect(retired()?.runs).toBe(20);
+  });
+
+  it("names neither a fielder nor a bowler, because nobody did anything", () => {
+    expect(retired()?.fielder).toBeUndefined();
+    expect(retired()?.bowler).toBeUndefined();
   });
 
   it("still batted — a retirement is not a did not bat", () => {
@@ -265,11 +251,15 @@ describe("a batter who retired", () => {
   });
 
   it("is not counted among the wickets that fell", () => {
-    const [innings] = parseExport(LANCERS_WITH_A_RETIREMENT).innings;
+    const [, hku] = parseExport(THUNDER).innings;
 
-    // Seven filled How out cells, six wickets: the retirement is the difference.
-    expect(innings.batting.filter((batter) => batter.howOut)).toHaveLength(7);
-    expect(inningsToCheck(innings).dismissals).toBe(6);
+    // Five filled How out cells against a stated four wickets — the exact
+    // disagreement an editor was shown, and the retirement is the whole of it.
+    // The scorer's own fall-of-wickets agrees: `Ashwin D, 3-107Retired` does
+    // not advance the wicket number, and William is still the fourth.
+    expect(hku.batting.filter((batter) => batter.howOut)).toHaveLength(5);
+    expect(hku.wickets).toBe(4);
+    expect(inningsToCheck(hku).dismissals).toBe(4);
   });
 });
 
@@ -281,10 +271,10 @@ describe("what the arithmetic says about each innings", () => {
     expect(findings(CHARLIE_BEARS)).toEqual([[], []]);
   });
 
-  it("stops reporting a wicket discrepancy once a retirement is read as one", () => {
-    // What an editor actually saw: "7 batters are recorded as out, but the
-    // scorecard says 6 wickets fell", on a scorecard where nothing was wrong.
-    expect(findings(LANCERS_WITH_A_RETIREMENT)).toEqual([[], []]);
+  // The file an editor was shown "5 batters are recorded as out, but the
+  // scorecard says 4 wickets fell" for, on a scorecard where nothing was wrong.
+  it("finds nothing wrong with the fixture containing a retirement", () => {
+    expect(findings(THUNDER)).toEqual([[], []]);
   });
 
   // The one the run-out rule exists for: SCC lost 7 wickets while HKU's bowlers

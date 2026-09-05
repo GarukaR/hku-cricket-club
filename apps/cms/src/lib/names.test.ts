@@ -15,7 +15,7 @@ import {
   type KnownPlayer,
 } from "./names";
 
-// The same three exports the parser is tested against, read off disk for the
+// The same exports the parser is tested against, read off disk for the
 // same reason: the alias problem is not a hypothetical shape, it is what these
 // particular scorers actually typed. A transcription here could be quietly
 // tidied until the tests passed.

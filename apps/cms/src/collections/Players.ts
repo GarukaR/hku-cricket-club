@@ -1,10 +1,73 @@
-import type { CollectionConfig, TextFieldManyValidation } from "payload";
+import type {
+  CollectionConfig,
+  FieldHook,
+  TextFieldManyValidation,
+} from "payload";
 
 import { aliasProblem } from "@/lib/names";
 import { PLAYING_ROLES } from "@/lib/playingRole";
 import { announceOnChange, announceOnDelete } from "@/lib/publish";
+import { suggestedRole, type RoleEvidence } from "@/lib/suggestedRole";
 
 import { publiclyReadable } from "./access";
+
+/** The label the panel prints for a stored or suggested role code. */
+function roleLabel(value: string): string {
+  return PLAYING_ROLES.find((role) => role.value === value)?.label ?? value;
+}
+
+/**
+ * What this Player's Appearances suggest their role is, worked out on read.
+ *
+ * **Only ever a sentence.** It never writes the role, and it is not the role —
+ * CONTEXT.md keeps Playing role a recorded fact because a season with few
+ * wickets does not mean a bowler stopped being one. What the record can honestly
+ * offer is what it looks like, next to the field where somebody decides.
+ *
+ * Computed on read for the same reason Matches.standing is: the answer changes
+ * when an Appearance is entered, a different record entirely, so there is no
+ * save on this one at which a stored suggestion could be kept right. A stale
+ * suggestion is worse than none, because it looks like a second opinion.
+ *
+ * The rule lives in lib/suggestedRole, tested without Payload anywhere near it.
+ * This only fetches what the rule needs.
+ */
+const deriveSuggestedRole: FieldHook = async ({ data, req }) => {
+  const id = (data as { id?: unknown })?.id;
+  if (id == null) return "";
+
+  const { docs } = await req.payload.find({
+    collection: "appearances",
+    depth: 0,
+    pagination: false,
+    req,
+    where: { player: { equals: id } },
+  });
+
+  const evidence: RoleEvidence[] = docs.map((doc) => ({
+    overs: doc.bowling?.overs ?? undefined,
+    batted: doc.batted ?? false,
+    runs: doc.batting?.runs ?? undefined,
+    notOut: doc.batting?.notOut ?? undefined,
+    stumpings: doc.fielding?.stumpings ?? undefined,
+    caughtBehind: doc.fielding?.caughtBehind ?? undefined,
+  }));
+
+  const suggestion = suggestedRole(evidence);
+  if (!suggestion) return "";
+
+  const stored = (data as { playingRole?: unknown })?.playingRole;
+
+  // Says so plainly when the record agrees with what is already recorded, so
+  // that the only sentence worth reading twice is the one proposing a change.
+  if (stored === suggestion.role) {
+    return `${roleLabel(suggestion.role)} — ${suggestion.summary}. Matches what is set.`;
+  }
+
+  return stored
+    ? `${roleLabel(suggestion.role)} — ${suggestion.summary}. Set to ${roleLabel(String(stored))}; change it only if you agree.`
+    : `${roleLabel(suggestion.role)} — ${suggestion.summary}.`;
+};
 
 /**
  * One spelling, one Player.
@@ -100,8 +163,22 @@ export const Players = {
       options: [...PLAYING_ROLES],
       admin: {
         description:
-          "How this player is normally selected to contribute. Not a Team's role (that says what a side is for) — this says what the person does on it. Left empty for most of the record, which predates anyone writing it down.",
+          "How this player is normally selected to contribute. Not a Team's role (that says what a side is for) — this says what the person does on it. Left empty for most of the record, which predates anyone writing it down. The sidebar says what their appearances suggest; it never fills this in.",
       },
+    },
+    {
+      name: "suggestedRole",
+      label: "What the record suggests",
+      type: "text",
+      // Worked out on read, held in no column. See deriveSuggestedRole.
+      virtual: true,
+      admin: {
+        readOnly: true,
+        position: "sidebar",
+        description:
+          "Read from this player's appearances, and never written to the role beside it: a quiet season with the ball does not stop somebody being a bowler, so the decision stays a person's. Blank until they have three appearances, and blank for a player whose scorecards show neither batting nor bowling.",
+      },
+      hooks: { afterRead: [deriveSuggestedRole] },
     },
   ],
 } satisfies CollectionConfig;

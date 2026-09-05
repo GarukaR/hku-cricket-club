@@ -182,6 +182,36 @@ describe("the Appearances an export becomes", () => {
     expect(ruthvik?.bowled).toBe(true);
   });
 
+  it("keeps a catch taken standing up apart from an ordinary one", () => {
+    // `Sagar Agarwal,ctw,Ashutosh B,Tiran R` — Ashutosh took it behind the
+    // stumps, so he was keeping. It is still a catch, and still counts as one:
+    // the caught-behind is the same catch said twice, the way byes sit inside
+    // extras on a Match. Without the second count a keeper's catches read
+    // exactly like an outfielder's, and lib/suggestedRole has nothing to go on.
+    const { appearances } = importedFrom(LANCERS, ["HKU CC"]);
+    const playerFor = knowing(LANCERS, ["HKU CC"]);
+
+    const ashutosh = appearances.find(
+      (one) => one.player === playerFor("Ashutosh Balasaria"),
+    );
+
+    expect(ashutosh?.fielding?.caughtBehind).toBe(1);
+    expect(ashutosh?.fielding?.catches).toBe(1);
+    // He also ran one out in the same innings, which is a fielding credit and
+    // not a keeping one — the two must not run together.
+    expect(ashutosh?.fielding?.runOuts).toBe(1);
+  });
+
+  it("does not make a keeper of the opposition's keeper", () => {
+    // The same file has `Abhishek Sharma,ctw,Tanmay Maruti B` in *our* innings
+    // — their keeper catching one of ours. Nobody on this side did anything.
+    const { appearances } = importedFrom(LANCERS, ["HKU CC"]);
+
+    expect(
+      appearances.some((one) => (one.fielding?.caughtBehind ?? 0) > 1),
+    ).toBe(false);
+  });
+
   it("gives a bowler his own return catch", () => {
     // `Usman Ayub,ct,Jaya Ramesh C,Jaya Ramesh C` — caught and bowled. He gets
     // the wicket and the catch, because taking a return catch is an ordinary

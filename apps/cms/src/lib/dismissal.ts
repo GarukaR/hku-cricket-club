@@ -34,6 +34,16 @@ export type Dismissal = {
   creditsBowler: boolean;
   /** What the fielder named gets, if anything. */
   creditsFielder?: FieldingCredit;
+  /**
+   * Whether the credit was taken standing up — the fielder named was keeping.
+   *
+   * Kept apart from the credit itself because it does not change what the
+   * fielder is owed (a catch is a catch) but is the only thing in an export
+   * that says who kept wicket. Without it a keeper's catches are
+   * indistinguishable from an outfielder's, and lib/suggestedRole has nothing
+   * to go on.
+   */
+  behindTheStumps?: true;
 };
 
 /** Every code the club's own exports have used. */
@@ -56,12 +66,14 @@ export const DISMISSALS: readonly Dismissal[] = [
     label: "caught by the wicketkeeper",
     creditsBowler: true,
     creditsFielder: "catch",
+    behindTheStumps: true,
   },
   {
     code: "st",
     label: "stumped",
     creditsBowler: true,
     creditsFielder: "stumping",
+    behindTheStumps: true,
   },
   {
     code: "ro",

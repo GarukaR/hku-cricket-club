@@ -9,6 +9,7 @@ import { notFound } from "next/navigation";
 import { Container } from "@/components/Container";
 import { Marginalia } from "@/components/Marginalia";
 import { Masthead } from "@/components/Masthead";
+import { ScrollFade } from "@/components/ScrollFade";
 import { SectionHeading } from "@/components/SectionHeading";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteNav } from "@/components/SiteNav";
@@ -66,7 +67,7 @@ export async function Squad({
       activeSlug={seasonSlug(squad.season ?? resolved)}
     >
       {squad.members.length > 0 ? (
-        <div className={styles.frame}>
+        <ScrollFade className={styles.frame}>
           <div className={styles.scroll} tabIndex={0} role="region" aria-label="Squad">
             <table className={styles.table}>
               <thead>
@@ -89,7 +90,7 @@ export async function Squad({
               </tbody>
             </table>
           </div>
-        </div>
+        </ScrollFade>
       ) : (
         <p className={styles.empty}>
           Nobody is registered to the {team.name} side for {squad.season ?? resolved}.

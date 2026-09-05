@@ -2,6 +2,7 @@
 // record slices it by, and the one a challenge-league Player's call-ups
 // belong to (CONTEXT.md - Call-up).
 
+import { ScrollFade } from "@/components/ScrollFade";
 import { seasonSplitKey, type SeasonSplit } from "@/lib/career";
 import styles from "./Splits.module.css";
 
@@ -33,7 +34,7 @@ export function SeasonSplits({
   const showCallUps = splits.some((split) => callUpsFor(split) !== undefined);
 
   return (
-    <div className={styles.frame}>
+    <ScrollFade className={styles.frame}>
       <div className={styles.scroll} tabIndex={0} role="region" aria-label="By side and season">
         <table className={styles.table}>
           <thead>
@@ -64,6 +65,6 @@ export function SeasonSplits({
           </tbody>
         </table>
       </div>
-    </div>
+    </ScrollFade>
   );
 }

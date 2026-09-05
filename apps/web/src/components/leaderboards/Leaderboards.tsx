@@ -9,6 +9,7 @@ import { notFound } from "next/navigation";
 import { Container } from "@/components/Container";
 import { Marginalia } from "@/components/Marginalia";
 import { Masthead } from "@/components/Masthead";
+import { ScrollFade } from "@/components/ScrollFade";
 import { SectionHeading } from "@/components/SectionHeading";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteNav } from "@/components/SiteNav";
@@ -230,11 +231,11 @@ function TableSection({
       <h3 id={`${id}-heading`} className={styles.subheading}>
         {heading}
       </h3>
-      <div className={styles.frame}>
+      <ScrollFade className={styles.frame}>
         <div className={styles.scroll} tabIndex={0} role="region" aria-label={heading}>
           {children}
         </div>
-      </div>
+      </ScrollFade>
     </section>
   );
 }

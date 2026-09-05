@@ -316,29 +316,38 @@ async function seasonEvidence(
   );
 }
 
-/** A role the record suggests for one Player, and what they are set to now.
+/**
+ * One Player who appeared, and everything the roles block needs to show a row
+ * for them.
  *
- *  Worked out here with the same function the Player's own sidebar uses, rather
- *  than by reading that sidebar's sentence back: the panel has to write a value,
- *  and a sentence parsed for one would be a second definition of the rule
- *  waiting to disagree with the first. */
-export type Suggested = {
-  /** The Player's own id, in the type the record uses it in. Carried rather
-   *  than rebuilt from the string this map is keyed by: a relationship field
-   *  refuses a numeric id handed to it as a string. */
+ * **Everybody who played gets one**, not only the ones being registered now and
+ * not only the ones the rule will guess at. Those two filters were the same
+ * mistake twice: a role can only be offered on the import that first meets a
+ * player, and by the third match — when a suggestion finally exists — they are
+ * already registered, so the panel had nothing to say and the only way to
+ * accept it was the Player's own page, one at a time.
+ */
+export type RoleCandidate = {
+  /** The Player's own id, in the type the record uses it in. A relationship
+   *  field refuses a numeric id handed to it as a string. */
   playerId: number | string;
-  role: PlayingRole;
-  summary: string;
-  /** What the Player is set to today. `null` for the ordinary case of nobody
-   *  having said, which is the only case where accepting is uncontroversial. */
+  name: string;
+  /** What they are set to today. `null` is the ordinary case of nobody having
+   *  said, and the only case a suggestion is allowed to pre-fill. */
   current: PlayingRole | null;
+  /** What the record suggests, where it will say — worked out with the same
+   *  function the Player's own sidebar uses, rather than by reading that
+   *  sidebar's sentence back. A sentence parsed for a value would be a second
+   *  definition of the rule, waiting to disagree with the first. */
+  suggested?: { role: PlayingRole; summary: string };
+  /** Nobody in this Season's scorecards has kept, and this one has not bowled.
+   *  The only narrowing an export can offer when it cannot answer outright. */
+  couldBeKeeper: boolean;
 };
 
 export type ImportProposal = {
   proposal: Proposal;
-  /** Keyed by player id, and absent for anybody the rule will not guess at —
-   *  under three appearances, or neither batting nor bowling in them. */
-  suggestions: Record<string, Suggested>;
+  roles: RoleCandidate[];
 };
 
 /**
@@ -388,7 +397,7 @@ export async function proposalFor({
   if (ids.length === 0) {
     return {
       proposal: { register: [], blocked: [], already: [], keeperCandidates: [] },
-      suggestions: {},
+      roles: [],
     };
   }
 
@@ -455,9 +464,14 @@ export async function proposalFor({
     };
   });
 
+  const proposal = proposeRegistrations(appeared, side.role ?? "league");
+  const couldKeep = new Set(
+    proposal.keeperCandidates.map((one) => String(one.playerId)),
+  );
+
   // The same rule the Player's own sidebar states, over the same career
   // Appearances, so the panel and the record can never offer different answers.
-  const suggestions: Record<string, Suggested> = {};
+  const roles: RoleCandidate[] = [];
   for (const player of players.values()) {
     const theirs = career.filter(
       (one) => String(idOf(one.player)) === String(player.id),
@@ -486,20 +500,31 @@ export async function proposalFor({
       }),
     );
 
-    if (suggestion) {
-      suggestions[String(player.id)] = {
+    // Only where there is something to offer: nobody has said yet, or the
+    // record reads differently from what somebody said. A player already set to
+    // what the record would suggest anyway is a row that asks nothing, and a
+    // block of those buries the ones that do.
+    const worthAsking =
+      player.playingRole === null ||
+      (suggestion !== undefined && suggestion.role !== player.playingRole);
+
+    if (worthAsking) {
+      roles.push({
         playerId: player.id,
-        role: suggestion.role,
-        summary: suggestion.summary,
+        name: player.name,
         current: player.playingRole,
-      };
+        ...(suggestion
+          ? { suggested: { role: suggestion.role, summary: suggestion.summary } }
+          : {}),
+        couldBeKeeper: couldKeep.has(String(player.id)),
+      });
     }
   }
 
-  return {
-    proposal: proposeRegistrations(appeared, side.role ?? "league"),
-    suggestions,
-  };
+  // Named, so the block reads like the scorecard it came from.
+  roles.sort((a, b) => a.name.localeCompare(b.name));
+
+  return { proposal, roles };
 }
 
 /** Register one Player to this Team for this Season, through the collection's

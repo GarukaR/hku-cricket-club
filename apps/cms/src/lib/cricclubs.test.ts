@@ -226,12 +226,65 @@ describe("the bowling lines", () => {
   });
 });
 
+/**
+ * The Lancers export with one batter retiring, and the innings' stated wickets
+ * brought down by one to match.
+ *
+ * Both halves together are the shape of the real scorecard that sent us here: a
+ * How out cell with something in it, against a stated wicket count one lower,
+ * because the batter walked off rather than getting out. Derived from the real
+ * file by two visible substitutions rather than transcribed, so it cannot
+ * quietly drift away from what CricClubs actually writes.
+ *
+ * The row converted is a *run out* on purpose. A run out is credited to no
+ * bowler, so removing it as a wicket leaves the bowling figures untouched and
+ * the whole file still adds up — turning a caught dismissal into a retirement
+ * would leave a bowler credited with a wicket that no longer fell, which the
+ * reconciliation rightly refuses.
+ */
+const LANCERS_WITH_A_RETIREMENT = LANCERS.replace(
+  "Mohammad Haroon,ro,",
+  "Mohammad Haroon,rt,",
+).replace("Wickets : 7", "Wickets : 6");
+
+describe("a batter who retired", () => {
+  const retired = () =>
+    parseExport(LANCERS_WITH_A_RETIREMENT)
+      .innings[0].batting.find((batter) => batter.name === "Mohammad Haroon");
+
+  it("is not out, however full the How out cell is", () => {
+    // The whole point. Read as a dismissal this innings would join the divisor
+    // of his career average, and nothing about the resulting figure would look
+    // wrong.
+    expect(retired()?.notOut).toBe(true);
+    expect(retired()?.howOut).toBe("rt");
+  });
+
+  it("still batted — a retirement is not a did not bat", () => {
+    expect(retired()?.didNotBat).toBe(false);
+  });
+
+  it("is not counted among the wickets that fell", () => {
+    const [innings] = parseExport(LANCERS_WITH_A_RETIREMENT).innings;
+
+    // Seven filled How out cells, six wickets: the retirement is the difference.
+    expect(innings.batting.filter((batter) => batter.howOut)).toHaveLength(7);
+    expect(inningsToCheck(innings).dismissals).toBe(6);
+  });
+});
+
 describe("what the arithmetic says about each innings", () => {
   const findings = (source: string) =>
     parseExport(source).innings.map((i) => reconcileInnings(inningsToCheck(i)));
 
   it("finds nothing wrong with the baseline fixture", () => {
     expect(findings(CHARLIE_BEARS)).toEqual([[], []]);
+  });
+
+  it("stops reporting a wicket discrepancy once a retirement is read as one", () => {
+    // What an editor actually saw: "7 batters are recorded as out, but the
+    // scorecard says 6 wickets fell", on a scorecard where nothing was wrong.
+    expect(findings(LANCERS_WITH_A_RETIREMENT)).toEqual([[], []]);
   });
 
   // The one the run-out rule exists for: SCC lost 7 wickets while HKU's bowlers

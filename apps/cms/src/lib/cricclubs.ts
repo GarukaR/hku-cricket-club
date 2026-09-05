@@ -18,6 +18,7 @@
 // three ways inside a single file, and that is its own problem with its own
 // ticket; this module hands back the names exactly as the scorer typed them.
 
+import { isRetirement } from "./dismissal";
 import { seasonOf } from "./notation";
 import type { Extras, InningsToCheck } from "./reconciliation";
 
@@ -190,7 +191,13 @@ function readBatter(row: string[]): ParsedBatter {
     balls,
     fours: number(row[6]),
     sixes: number(row[7]),
-    notOut: !howOut && faced,
+    // A retirement fills this cell and still leaves the batter not out — they
+    // walked off, nobody dismissed them. Counting it as a dismissal would put
+    // an extra divisor in their career average, which is the kind of wrong
+    // nothing about the figure would show (lib/dismissal).
+    notOut: isRetirement(howOut) || (!howOut && faced),
+    // Still false for a retirement: they came out and batted, which is what
+    // this asks. A *did not bat* Appearance is the batter never needed.
     didNotBat: !howOut && !faced,
   };
 }
@@ -435,7 +442,12 @@ export function inningsToCheck(innings: ParsedInnings): InningsToCheck {
     extras: innings.extras,
     statedTotal: innings.total,
     statedWickets: innings.wickets,
-    dismissals: innings.batting.filter((batter) => batter.howOut).length,
+    // A filled How out cell is not by itself a wicket: a retirement fills it
+    // and nobody was dismissed, which is why a real scorecard of the club's
+    // stated four wickets against five filled cells.
+    dismissals: innings.batting.filter(
+      (batter) => batter.howOut && !isRetirement(batter.howOut),
+    ).length,
     bowlerRuns: innings.bowling.map((bowler) => bowler.runs),
     bowlerWickets: innings.bowling.map((bowler) => bowler.wickets),
   };

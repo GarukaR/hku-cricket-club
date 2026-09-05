@@ -104,6 +104,8 @@ How a batting innings ended. Scorers record it as a short code — `b`, `lbw`,
 `ct`, `ctw` (caught by the wicketkeeper), `st`, `ro` (run out) — and the list is
 open, so an
 unrecognised code is a question for a human rather than a value to guess at.
+The same column also carries `rt`, which is a Retirement and not a dismissal at
+all.
 Three rules follow from it and none is optional:
 
 - A **run out is credited to no bowler**, so wickets fallen is routinely greater
@@ -115,11 +117,26 @@ Three rules follow from it and none is optional:
 - The bowler named alongside a run out is merely who was bowling at the time.
   They did not take the wicket, and may not appear in the bowling figures at
   all.
+- **Not every code in the column is a dismissal.** `rt` is a Retirement, below.
+
+**Retirement**:
+A batting innings that ended because the Player walked off — hurt, or by choice
+— rather than because they were dismissed. Scorers write it in the same column
+as a Dismissal, as `rt`, and it is none of the things a Dismissal is: **no wicket
+fell**, no bowler and no fielder is credited, and the innings is Not out, so it
+stays out of the divisor when an average is taken. A scorecard showing five
+filled cells against four wickets is that difference, not an error.
+
+_Avoid_: reading it as *retired out*, which is a real and different thing —
+a dismissal, with a wicket credited to nobody. The club's scorers do not
+currently write one; if they start, it is a new code rather than a second
+meaning for `rt`.
 
 **Not out**:
-A batting innings that ended without the Player being dismissed. Excluded from
-the divisor when a batting average is worked out, which is why it is recorded
-rather than inferred from the score.
+A batting innings that ended without the Player being dismissed — either still
+there at the end, or a Retirement. Excluded from the divisor when a batting
+average is worked out, which is why it is recorded rather than inferred from the
+score.
 
 **Player**:
 A person who has been registered to at least one Team in at least one Season.

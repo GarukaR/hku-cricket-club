@@ -35,7 +35,6 @@
    right edge — 151 lines up under 184, not under the "/6". An innings shown
    without a suffix was bowled out, as a scorecard reads. */
 .runs {
-  position: relative;
   display: inline-block;
   padding-right: 0.52em;
   font-family: var(--font-display);
@@ -45,10 +44,29 @@
   font-variant-numeric: tabular-nums lining-nums;
 }
 
+/* Raised from the BASELINE, not hung from the top of the line box.
+   
+   It used to be `position: absolute; top: 0.04em`, which anchored the suffix to
+   the top of .runs — and .runs sets line-height 0.92, so its box is shorter
+   than the glyphs inside it and the mark floated clear above the digits' cap
+   height. On the second innings, which carries the rule between the two lines,
+   it floated far enough to land on the rule.
+
+   The baseline is the one stable reference here, so the suffix sits on it and
+   is raised from it: `position: relative` + `bottom`, in the suffix's own em.
+   0.98em of a 0.42em mark is ~0.41em of the figure, which puts the suffix's cap
+   just under the numerals' own — a superscript inside the number's height
+   rather than a mark hovering over it. Nothing above the cap height can reach
+   the rule, whatever the line-height becomes later.
+
+   Zero width so it still takes no room on the line: the gutter is .runs's
+   padding-right, which every innings reserves whether or not it has a suffix,
+   so 151 lines up under 184 and not under the "/6". */
 .wickets {
-  position: absolute;
-  right: 0;
-  top: 0.04em;
+  position: relative;
+  bottom: 0.98em;
+  display: inline-block;
+  width: 0;
   margin: 0;
   font-size: 0.42em;
   letter-spacing: 0;

@@ -1,0 +1,152 @@
+/* "The Endpaper" — the end of the sheet.
+
+   The plate is --color-ink carrying paper. That is the inverse of a pair
+   tokens.css already verifies, and a contrast ratio is symmetric, so the
+   plate's own text is AA by the same arithmetic that let the token be emitted:
+   15.04:1 measured.
+
+   Four values here are mixes and so are outside what design/derive.js can see,
+   because they are solved by the browser rather than by the generator. Both
+   were measured by hand against #1A1514 and must be re-measured if --color-bg
+   or --color-ink ever move:
+
+     .gloss                78% paper -> #BCB5AD, 8.91:1  (AA text)
+     .index a              78% paper -> #BCB5AD, 8.91:1  (AA text)
+     .channels a underline 45% paper -> #726B66, 3.45:1  (AA non-text, 1.4.11)
+     .index    top rule    22% paper -> #423D3A, 1.69:1  (decorative)
+
+   The channel underline is a rule beneath a link whose text is already at
+   15:1, so 3:1 is the bar it has to clear rather than 4.5:1. The rule above
+   the index carries no meaning that its absence would lose — it separates two
+   groups that are already separated by space — so it answers to neither. */
+
+.footer {
+  margin-top: clamp(3rem, 8vw, 5.5rem);
+  font-family: var(--font-body);
+}
+
+/* PROTOTYPE: bled to the viewport edges. */
+.plate {
+  background: var(--color-ink);
+  color: var(--color-bg);
+  text-align: center;
+  padding-block: clamp(2.4rem, 6vw, 3.6rem);
+}
+
+.crest {
+  width: 40px;
+  height: auto;
+  margin: 0 auto 1.4rem;
+  display: block;
+}
+
+.motto {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 4.2vw, 2.2rem);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  margin: 0;
+  text-wrap: balance;
+}
+
+/* The translation, in the same letterspaced small caps every section of the
+   record is headed with — so the motto reads as a heading with its gloss under
+   it rather than as two competing lines. */
+.gloss {
+  font-size: 0.64rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--color-bg) 78%, var(--color-ink));
+  margin: 0.9rem 0 0;
+}
+
+.channels {
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.8rem 2.2rem;
+  margin: 2.1rem 0 0;
+  padding: 0;
+}
+
+.channels a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.66rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-bg);
+  text-decoration: none;
+  /* One rule under the mark and the word together. Underlining only the word
+     leaves the mark clear of a line that starts halfway through the link,
+     which reads as a rendering fault rather than as a choice. */
+  border-bottom: 1px solid color-mix(in oklab, var(--color-bg) 45%, var(--color-ink));
+  padding-bottom: 0.35rem;
+  transition: border-color 0.15s ease-out;
+}
+
+.channels a:hover {
+  border-bottom-color: var(--color-bg);
+}
+
+/* The index, on the plate under the channels. Separated by a rule rather than
+   by space alone: the channels leave the site and these do not, and at this
+   size and tracking the two rows would otherwise read as one list of nine. */
+.index {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem 1.4rem;
+  margin-top: 1.9rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid color-mix(in oklab, var(--color-bg) 22%, var(--color-ink));
+}
+
+.index a {
+  font-size: 0.64rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--color-bg) 78%, var(--color-ink));
+  text-decoration: none;
+  transition: color 0.15s ease-out;
+}
+
+.index a:hover {
+  color: var(--color-bg);
+}
+
+/* Back on paper, and the last thing on the sheet. One centred line — there is
+   nothing else down here to set it against, which is the whole point: the band
+   that used to be here was justified to the two edges of the measure while
+   everything above it was centred, and space-between only reads as deliberate
+   when both ends carry weight. */
+.imprint {
+  font-size: 0.64rem;
+  letter-spacing: 0.04em;
+  color: var(--color-ink2);
+  text-align: center;
+  margin: 2rem 0 0;
+  padding-top: 1.4rem;
+  color: color-mix(in oklab, var(--color-bg) 62%, var(--color-ink));
+  border-top: 1px solid color-mix(in oklab, var(--color-bg) 22%, var(--color-ink));
+}
+
+/* The standing disclosure about sample content. Under a rule and set to the
+   reading measure, because it is an editorial note about the page rather than
+   part of the club's own imprint. */
+/* No page passes a note as things stand (#100). Kept, with its setting, because
+   the disclosure will be wanted back and this is what it should look like when
+   it is: centred as a block to sit under the imprint, but set left, because it
+   is a paragraph to read rather than a line to look at. */
+.note {
+  border-top: 1px solid var(--color-rule);
+  max-width: 62ch;
+  margin: 1.4rem auto 0;
+  padding-top: 1.1rem;
+  font-size: 0.68rem;
+  line-height: 1.75;
+  color: var(--color-ink2);
+}
+

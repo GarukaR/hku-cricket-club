@@ -34,6 +34,30 @@ export const standingFacts: { term: string; detail: string }[] = [
   { term: "Motto", detail: "In Ludo Sapientia — wisdom in play" },
 ];
 
+/** Where the club already is, and where most of the people looking for it will
+ *  look first. The footer prints these in the order given.
+ *
+ *  A footer link is wrong on every page of the site at once, so nothing goes in
+ *  here that the club has not confirmed itself — and an empty list is a footer
+ *  with no channels section rather than a footer with dead links in it. These
+ *  three were given by the club on 2026-09-08 and each was fetched once to
+ *  confirm it resolves.
+ *
+ *  Instagram leads because it is the account the club actually posts to — the
+ *  enquire page is written around its bio. There is no X: the account exists
+ *  and the club does not use it. */
+export const channels: {
+  name: "Instagram" | "Facebook" | "YouTube";
+  href: string;
+}[] = [
+  { name: "Instagram", href: "https://www.instagram.com/crickethku/" },
+  { name: "Facebook", href: "https://www.facebook.com/crickethku/" },
+  {
+    name: "YouTube",
+    href: "https://www.youtube.com/@HongKongUniversityCricketClub",
+  },
+];
+
 /** PLACEHOLDER — captions for plates the club has not sent yet. The frames are
  *  drawn from the crest hues so the page is honest about what is missing rather
  *  than filling the space with stock photography. */

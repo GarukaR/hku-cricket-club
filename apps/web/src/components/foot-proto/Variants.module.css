@@ -1,0 +1,198 @@
+/* "The Endpaper" — the end of the sheet.
+
+   The plate is --color-ink carrying paper. That is the inverse of a pair
+   tokens.css already verifies, and a contrast ratio is symmetric, so the
+   plate's own text is AA by the same arithmetic that let the token be emitted:
+   15.04:1 measured.
+
+   Two values here are mixes and so are outside what design/derive.js can see,
+   because they are solved by the browser rather than by the generator. Both
+   were measured by hand against #1A1514 and must be re-measured if --color-bg
+   or --color-ink ever move:
+
+     .gloss                78% paper -> #BCB5AD, 8.91:1  (AA text)
+     .channels a underline 45% paper -> #726B66, 3.45:1  (AA non-text, 1.4.11)
+
+   The underline is a rule under a link whose text is already at 15:1, so 3:1
+   is the bar it has to clear rather than 4.5:1. */
+
+.footer {
+  margin-top: clamp(3rem, 8vw, 5.5rem);
+  padding-bottom: clamp(1.6rem, 4vw, 2.4rem);
+  font-family: var(--font-body);
+}
+
+/* Set on the paper rather than bled to the viewport edges. A full-bleed ink
+   band reads as a second site starting; a plate inside the measure reads as
+   something bound onto the last page, which is the intention — and on the
+   homepage it has to follow the Admission band, which *is* full-bleed, without
+   competing with it. */
+.plate {
+  background: var(--color-ink);
+  color: var(--color-bg);
+  text-align: center;
+  padding: clamp(2.4rem, 6vw, 3.6rem) clamp(1.5rem, 5vw, 3rem);
+}
+
+.crest {
+  width: 40px;
+  height: auto;
+  margin: 0 auto 1.4rem;
+  display: block;
+}
+
+.motto {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 4.2vw, 2.2rem);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  margin: 0;
+  text-wrap: balance;
+}
+
+/* The translation, in the same letterspaced small caps every section of the
+   record is headed with — so the motto reads as a heading with its gloss under
+   it rather than as two competing lines. */
+.gloss {
+  font-size: 0.64rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--color-bg) 78%, var(--color-ink));
+  margin: 0.9rem 0 0;
+}
+
+.channels {
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.8rem 2.2rem;
+  margin: 2.1rem 0 0;
+  padding: 0;
+}
+
+.channels a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.66rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-bg);
+  text-decoration: none;
+  /* One rule under the mark and the word together. Underlining only the word
+     leaves the mark clear of a line that starts halfway through the link,
+     which reads as a rendering fault rather than as a choice. */
+  border-bottom: 1px solid color-mix(in oklab, var(--color-bg) 45%, var(--color-ink));
+  padding-bottom: 0.35rem;
+  transition: border-color 0.15s ease-out;
+}
+
+.channels a:hover {
+  border-bottom-color: var(--color-bg);
+}
+
+/* Back on paper. Everything expressive happened above, so the addresses and the
+   index are one quiet band and nothing more. */
+.foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.8rem 2rem;
+  padding-top: 1.2rem;
+}
+
+.index {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.4rem;
+}
+
+.index a {
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-ink2);
+  text-decoration: none;
+  transition: color 0.15s ease-out;
+}
+
+.index a:hover {
+  color: var(--color-accent);
+}
+
+.imprint {
+  font-size: 0.64rem;
+  letter-spacing: 0.04em;
+  color: var(--color-ink2);
+  margin: 0;
+}
+
+/* The standing disclosure about sample content. Under a rule and set to the
+   reading measure, because it is an editorial note about the page rather than
+   part of the club's own imprint. */
+.note {
+  border-top: 1px solid var(--color-rule);
+  max-width: 62ch;
+  margin: 1.4rem 0 0;
+  padding-top: 1.1rem;
+  font-size: 0.68rem;
+  line-height: 1.75;
+  color: var(--color-ink2);
+}
+
+@media (max-width: 720px) {
+  .foot {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+
+/* ---- PROTOTYPE ONLY, /proto/foot ------------------------------------------ */
+
+/* The band is centred on the plate's own axis rather than pushed to the two
+   edges of the measure. At 980px the space-between version left six little
+   caps at one end and a long grey line at the other, with a wide hole between
+   them — a row of two things justified across a measure only reads as
+   deliberate when both ends are heavy, and here neither is. */
+.centred {
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.75rem;
+}
+
+.centred .index {
+  justify-content: center;
+}
+
+/* F sets the imprint first, so the index is the last line on the sheet. */
+.swapped {
+  flex-direction: column;
+}
+
+/* E carries the index inside the plate instead, under the channels. */
+.plateIndex {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem 1.4rem;
+  margin-top: 1.9rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid color-mix(in oklab, var(--color-bg) 22%, var(--color-ink));
+}
+
+.plateIndex a {
+  font-size: 0.64rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--color-bg) 78%, var(--color-ink));
+  text-decoration: none;
+  transition: color 0.15s ease-out;
+}
+
+.plateIndex a:hover {
+  color: var(--color-bg);
+}

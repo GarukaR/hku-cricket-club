@@ -5,37 +5,56 @@
    plate's own text is AA by the same arithmetic that let the token be emitted:
    15.04:1 measured.
 
-   Four values here are mixes and so are outside what design/derive.js can see,
-   because they are solved by the browser rather than by the generator. Both
-   were measured by hand against #1A1514 and must be re-measured if --color-bg
+   Five values here are mixes and so are outside what design/derive.js can see,
+   because they are solved by the browser rather than by the generator. Each
+   was measured by hand against #1A1514 and must be re-measured if --color-bg
    or --color-ink ever move:
 
      .gloss                78% paper -> #BCB5AD, 8.91:1  (AA text)
      .index a              78% paper -> #BCB5AD, 8.91:1  (AA text)
+     .imprint / .note      62% paper -> #97908A, 5.75:1  (AA text)
      .channels a underline 45% paper -> #726B66, 3.45:1  (AA non-text, 1.4.11)
-     .index    top rule    22% paper -> #423D3A, 1.69:1  (decorative)
+     rules above .index,
+     .imprint and .note    22% paper -> #423D3A, 1.69:1  (decorative)
 
    The channel underline is a rule beneath a link whose text is already at
-   15:1, so 3:1 is the bar it has to clear rather than 4.5:1. The rule above
-   the index carries no meaning that its absence would lose — it separates two
-   groups that are already separated by space — so it answers to neither. */
+   15:1, so 3:1 is the bar it has to clear rather than 4.5:1. The hairlines
+   carry no meaning their absence would lose — they separate groups that space
+   already separates — so they answer to neither. */
 
+/* The margin is the gap between the last of a page's *paper* and the footer.
+   Twelve of the thirteen pages end in prose and need it. */
 .footer {
   margin-top: clamp(3rem, 8vw, 5.5rem);
-  padding-bottom: clamp(1.6rem, 4vw, 2.4rem);
   font-family: var(--font-body);
 }
 
-/* Set on the paper rather than bled to the viewport edges. A full-bleed ink
-   band reads as a second site starting; a plate inside the measure reads as
-   something bound onto the last page, which is the intention — and on the
-   homepage it has to follow the Admission band, which *is* full-bleed, without
-   competing with it. */
+/* The thirteenth is the homepage, which ends on the Admission band. Where the
+   footer follows something already bled, the two meet: a strip of paper
+   trapped between two saturated fields is neither space nor seam — too thin to
+   read as breathing room, too wide to read as a join — and it left the plate
+   looking like it had stopped mid-air.
+
+   Stated as a rule about what precedes the footer rather than as a prop the
+   homepage passes, because it is a fact about the composition and not a
+   decision that page gets to make. `[data-bleed]` is how a band declares that
+   it runs to the viewport edges. */
+:global(main):has(> :global([data-bleed]):last-child) + .footer {
+  margin-top: 0;
+}
+
+/* Bled to all four edges. An earlier version stopped at the page measure, on
+   the theory that a full-width ink band would read as a second site starting.
+   Set under the Admission band it read as the opposite — a dark rectangle
+   stopping mid-air with nothing to its left or right to justify the margin,
+   and an L of paper beneath it on every short page. A footer is the edge of
+   the sheet; this is it saying so. The setting inside still sits in the page
+   measure: the colour bleeds, the type does not. */
 .plate {
   background: var(--color-ink);
   color: var(--color-bg);
   text-align: center;
-  padding: clamp(2.4rem, 6vw, 3.6rem) clamp(1.5rem, 5vw, 3rem);
+  padding-block: clamp(2.6rem, 6vw, 3.8rem);
 }
 
 .crest {
@@ -105,6 +124,7 @@
   justify-content: center;
   gap: 0.4rem 1.4rem;
   margin-top: 1.9rem;
+  margin-bottom: 1.9rem;
   padding-top: 1.4rem;
   border-top: 1px solid color-mix(in oklab, var(--color-bg) 22%, var(--color-ink));
 }
@@ -127,13 +147,18 @@
    that used to be here was justified to the two edges of the measure while
    everything above it was centred, and space-between only reads as deliberate
    when both ends carry weight. */
+/* On the ink now, under its own rule, so the plate ends on the club's name
+   rather than on a row of links. Paper at reduced strength rather than
+   --color-ink2, which is solved against the light background and would sit
+   almost black here. */
 .imprint {
   font-size: 0.64rem;
   letter-spacing: 0.04em;
-  color: var(--color-ink2);
+  color: color-mix(in oklab, var(--color-bg) 62%, var(--color-ink));
   text-align: center;
   margin: 0;
-  padding-top: 1.2rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid color-mix(in oklab, var(--color-bg) 22%, var(--color-ink));
 }
 
 /* The standing disclosure about sample content. Under a rule and set to the
@@ -144,12 +169,12 @@
    it is: centred as a block to sit under the imprint, but set left, because it
    is a paragraph to read rather than a line to look at. */
 .note {
-  border-top: 1px solid var(--color-rule);
+  border-top: 1px solid color-mix(in oklab, var(--color-bg) 22%, var(--color-ink));
   max-width: 62ch;
   margin: 1.4rem auto 0;
   padding-top: 1.1rem;
   font-size: 0.68rem;
   line-height: 1.75;
-  color: var(--color-ink2);
+  color: color-mix(in oklab, var(--color-bg) 62%, var(--color-ink));
 }
 

@@ -9,15 +9,14 @@ const marks = { Instagram, Facebook, YouTube } as const;
 
 /** The end of the sheet — "The Endpaper".
  *
- *  A printed record closes on its back board, so the page does too: an ink
- *  plate carrying the crest, the motto at a size it has nowhere else on the
- *  site, and the club's own channels. Underneath it, back on paper, the index
- *  and the imprint in one quiet band.
+ *  A printed record closes on its back board, so the page does too: ink to all
+ *  four edges, carrying the crest, the motto at a size it has nowhere else on
+ *  the site, the club's channels, the index and the imprint.
  *
- *  **Deliberately not the crest green.** `home/Admission.module.css` records
- *  that band as the one place the accent is used as a ground — the club asking
- *  to be joined — and on the homepage it sits directly above this. Two green
- *  bands stacked would spend the site's one loud moment twice.
+ *  **Deliberately not the crest green.** `home/Admission.module.css` uses the
+ *  accent as a ground for the club's invitation, and on the homepage that band
+ *  sits directly above this one. Two greens stacked would spend the site's one
+ *  loud moment twice.
  *
  *  `note` still works and no page passes one (#100). The foot of every page was
  *  the wrong place to keep repeating that the handbook quotation and the plate
@@ -28,8 +27,8 @@ const marks = { Instagram, Facebook, YouTube } as const;
 export function SiteFooter({ note }: { note?: React.ReactNode }) {
   return (
     <footer className={styles.footer}>
-      <Container>
-        <div className={styles.plate}>
+      <div className={styles.plate}>
+        <Container>
           {/* Decorative: the club is named in full immediately below, on the
               imprint line, and a screen reader gains nothing from a third
               announcement of it. Same mark as the masthead's (#25), outlined
@@ -122,17 +121,18 @@ export function SiteFooter({ note }: { note?: React.ReactNode }) {
               </Link>
             ))}
           </nav>
-        </div>
 
-        {/* One line, centred: with the index gone there is nothing left down
-            here to align it against. */}
-        <p className={styles.imprint}>
-          The Hong Kong University Cricket Club · Sandy Bay, Pok Fu Lam, Hong
-          Kong · Founded MCMXIII
-        </p>
+          {/* One line, centred, and on the ink with everything else: the
+              sheet ends in ink rather than on a strip of paper under a band
+              of it. */}
+          <p className={styles.imprint}>
+            The Hong Kong University Cricket Club · Sandy Bay, Pok Fu Lam, Hong
+            Kong · Founded MCMXIII
+          </p>
 
-        {note && <p className={styles.note}>{note}</p>}
-      </Container>
+          {note && <p className={styles.note}>{note}</p>}
+        </Container>
+      </div>
     </footer>
   );
 }

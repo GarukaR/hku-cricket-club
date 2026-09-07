@@ -1,6 +1,12 @@
-/* The one full-bleed band on the page, and the only place the crest green is used
-   as a ground: the club asking to be joined. Its text is still inside the page
-   measure — the colour bleeds, the setting does not. */
+/* The one place the crest green is used as a ground: the club asking to be
+   joined. Its text is still inside the page measure — the colour bleeds, the
+   setting does not.
+
+   It is no longer the only thing on the page that bleeds; the footer does too
+   (#102). The two are not doing the same job. This band bleeds a *colour, mid
+   page*, and is loud on purpose. The footer bleeds because it is the *edge of
+   the sheet*. `data-bleed` on the section is how it tells the footer they are
+   adjacent, so the two meet with no strip of paper caught between them. */
 .admission {
   background: var(--color-accent);
   color: var(--color-on-accent);

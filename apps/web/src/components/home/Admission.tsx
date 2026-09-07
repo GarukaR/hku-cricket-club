@@ -9,6 +9,7 @@ export function Admission() {
   return (
     <section
       id="admission"
+      data-bleed
       className={styles.admission}
       aria-labelledby="admission-heading"
     >

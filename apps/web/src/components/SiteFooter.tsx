@@ -1,19 +1,128 @@
+import Link from "next/link";
+
+import { Facebook, Instagram, X } from "@/components/ChannelMarks";
 import { Container } from "@/components/Container";
+import { channels, navItems } from "@/content/club";
 import styles from "./SiteFooter.module.css";
 
-/** The club's address line, and — while the record is still sample data — a note
- *  saying so.
+const marks = { Instagram, Facebook, X } as const;
+
+/** The end of the sheet — "The Endpaper".
  *
- *  `note` is a prop so that deleting the disclosure is a one-line change at the
- *  page, on the day the importer supplies real Matches. */
+ *  A printed record closes on its back board, so the page does too: an ink
+ *  plate carrying the crest, the motto at a size it has nowhere else on the
+ *  site, and the club's own channels. Underneath it, back on paper, the index
+ *  and the imprint in one quiet band.
+ *
+ *  **Deliberately not the crest green.** `home/Admission.module.css` records
+ *  that band as the one place the accent is used as a ground — the club asking
+ *  to be joined — and on the homepage it sits directly above this. Two green
+ *  bands stacked would spend the site's one loud moment twice.
+ *
+ *  `note` is a prop so that deleting the sample-content disclosure is a
+ *  one-line change at the page, on the day the importer supplies real Matches.
+ *  It sits below everything: it is an editorial note about the page, not part
+ *  of the club's own imprint. */
 export function SiteFooter({ note }: { note?: React.ReactNode }) {
   return (
     <footer className={styles.footer}>
       <Container>
-        <p>
-          The Hong Kong University Cricket Club · Sandy Bay, Pok Fu Lam, Hong
-          Kong
-        </p>
+        <div className={styles.plate}>
+          {/* Decorative: the club is named in full immediately below, on the
+              imprint line, and a screen reader gains nothing from a third
+              announcement of it. Same mark as the masthead's (#25), outlined
+              in paper rather than ink because it sits on ink here. */}
+          <svg
+            className={styles.crest}
+            viewBox="0 0 100 112"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M8,34 L50,34 L50,104 C22,90 8,74 8,52 L8,34 Z"
+              fill="var(--color-accent)"
+            />
+            <path
+              d="M92,34 L50,34 L50,104 C78,90 92,74 92,52 L92,34 Z"
+              fill="var(--color-blue)"
+            />
+            <path d="M8,6 L92,6 L92,34 L8,34 Z" fill="var(--color-red)" />
+            <line
+              x1="30"
+              y1="98"
+              x2="72"
+              y2="46"
+              stroke="var(--color-brass)"
+              strokeWidth="9"
+              strokeLinecap="round"
+            />
+            <line
+              x1="70"
+              y1="98"
+              x2="28"
+              y2="46"
+              stroke="var(--color-brass)"
+              strokeWidth="9"
+              strokeLinecap="round"
+            />
+            <circle
+              cx="50"
+              cy="74"
+              r="7"
+              fill="var(--color-red)"
+              stroke="var(--color-bg)"
+              strokeWidth="1.5"
+            />
+            <path
+              d="M8,6 L92,6 L92,52 C92,74 78,90 50,104 C22,90 8,74 8,52 Z"
+              fill="none"
+              stroke="var(--color-bg)"
+              strokeWidth="3"
+            />
+          </svg>
+
+          <p className={styles.motto} lang="la">
+            In Ludo Sapientia
+          </p>
+          <p className={styles.gloss}>Wisdom in play</p>
+
+          {/* No channels confirmed yet is a plate with no channels row, not a
+              row of dead links: content/club.ts owns that list. */}
+          {channels.length > 0 && (
+            <ul className={styles.channels}>
+              {channels.map((channel) => {
+                const Mark = marks[channel.name];
+                return (
+                  <li key={channel.name}>
+                    <a
+                      href={channel.href}
+                      rel="me noopener noreferrer"
+                      target="_blank"
+                    >
+                      <Mark size={15} />
+                      {channel.name}
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
+
+        <div className={styles.foot}>
+          <nav className={styles.index} aria-label="Footer">
+            {navItems.map((item) => (
+              <Link key={item.href} href={item.href}>
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+          <p className={styles.imprint}>
+            The Hong Kong University Cricket Club · Sandy Bay, Pok Fu Lam, Hong
+            Kong · Founded MCMXIII
+          </p>
+        </div>
+
         {note && <p className={styles.note}>{note}</p>}
       </Container>
     </footer>

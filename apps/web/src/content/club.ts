@@ -34,6 +34,15 @@ export const standingFacts: { term: string; detail: string }[] = [
   { term: "Motto", detail: "In Ludo Sapientia — wisdom in play" },
 ];
 
+/** Where the club already is, and where most of the people looking for it will
+ *  look first. The footer prints these in the order given.
+ *
+ *  A footer link is wrong on every page of the site at once, so nothing goes in
+ *  here that the club has not confirmed itself — and an empty list is a footer
+ *  with no channels section rather than a footer with dead links in it. */
+export const channels: { name: "Instagram" | "Facebook" | "X"; href: string }[] =
+  [];
+
 /** PLACEHOLDER — captions for plates the club has not sent yet. The frames are
  *  drawn from the crest hues so the page is honest about what is missing rather
  *  than filling the space with stock photography. */

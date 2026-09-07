@@ -1,0 +1,25 @@
+/* PROTOTYPE ROUTE — throwaway. */
+.bar {
+  background: var(--color-ink);
+  color: var(--color-bg);
+  padding-block: 1rem;
+  margin-bottom: 2rem;
+}
+.barTitle {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  margin: 0;
+}
+.case {
+  padding-bottom: 3.5rem;
+  margin-bottom: 3.5rem;
+  border-bottom: 1px dashed var(--color-rule);
+}
+.label {
+  font-family: var(--font-data);
+  font-size: 0.66rem;
+  color: var(--color-ink2);
+  margin: 0 0 1.4rem;
+}

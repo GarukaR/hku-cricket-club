@@ -1,0 +1,167 @@
+/* PROTOTYPE B — "The Masthead, Reversed". */
+
+.footer {
+  margin-top: clamp(3rem, 8vw, 5.5rem);
+  padding-bottom: clamp(2.2rem, 5vw, 3rem);
+  font-family: var(--font-body);
+}
+
+/* The masthead's rule, arriving at the other end of the sheet — same 2px ink,
+   so the page is bracketed rather than merely stopped. */
+.rule {
+  border-top: 2px solid var(--color-ink);
+  margin-bottom: clamp(1.8rem, 4vw, 2.6rem);
+}
+
+.columns {
+  display: grid;
+  /* The club's column is widest because it carries two-line setting; the other
+     two are lists of single words and take what they need. Not thirds: equal
+     columns would leave the follow column two-thirds empty. */
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: clamp(1.6rem, 4vw, 3rem);
+}
+
+.heading {
+  font-family: var(--font-body);
+  font-size: 0.66rem;
+  font-weight: 400;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--color-ink2);
+  margin: 0 0 1rem;
+}
+
+/* Under the heading, not above it: with the crest first, this column's heading
+   sat 26px below the other two and the three of them stopped being one line
+   across the foot of the sheet. */
+.club svg {
+  display: block;
+  margin-bottom: 0.85rem;
+}
+
+.name {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.address {
+  font-size: 0.72rem;
+  line-height: 1.7;
+  color: var(--color-ink2);
+  margin: 0.7rem 0 0;
+}
+
+.index ul,
+.follow ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.index a,
+.follow a {
+  font-size: 0.76rem;
+  color: var(--color-ink);
+  text-decoration: none;
+  transition: color 0.15s ease-out;
+}
+
+.index a:hover,
+.follow a:hover {
+  color: var(--color-accent);
+}
+
+/* Glyph and label on one baseline. The gap is wide enough that the mark reads
+   as a printer's mark set beside the word rather than as a bullet stuck to it. */
+.follow a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--color-ink2);
+}
+
+.follow a:hover {
+  color: var(--color-accent);
+}
+
+.enquire {
+  display: inline-block;
+  margin-top: 1.3rem;
+  font-size: 0.66rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--color-ink);
+  padding-bottom: 0.25rem;
+  transition: color 0.15s ease-out, border-color 0.15s ease-out;
+}
+
+.enquire:hover {
+  color: var(--color-accent);
+  border-bottom-color: var(--color-accent);
+}
+
+/* The fine line under the columns: motto left, imprint right, the way a title
+   page sets its publisher against its year. */
+.colophon {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.5rem;
+  border-top: 1px solid var(--color-rule);
+  margin-top: clamp(2rem, 5vw, 3rem);
+  padding-top: 1.1rem;
+}
+
+.motto {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 0.85rem;
+  color: var(--color-ink2);
+  margin: 0;
+}
+
+.imprint {
+  font-family: var(--font-data);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  color: var(--color-ink2);
+  margin: 0;
+}
+
+.note {
+  max-width: 62ch;
+  margin: 1.6rem 0 0;
+  font-size: 0.68rem;
+  line-height: 1.75;
+  color: var(--color-ink2);
+}
+
+/* One breakpoint, at the width where three columns stop holding their lists on
+   one line each. The club's imprint stays full width above the two lists so the
+   name is never the narrowest thing on the sheet. */
+@media (max-width: 640px) {
+  .columns {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .club {
+    grid-column: 1 / -1;
+    margin-bottom: 0.6rem;
+  }
+
+  /* At 390px the tracking pushed this onto two lines, and an inline-block's
+     border then draws one rule under the whole box rather than under the
+     words — it read as a broken underline. Tighter tracking keeps it on one. */
+  .enquire {
+    letter-spacing: 0.12em;
+  }
+}

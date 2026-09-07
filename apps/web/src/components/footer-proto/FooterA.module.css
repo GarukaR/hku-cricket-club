@@ -1,0 +1,93 @@
+/* PROTOTYPE A — "The Colophon". */
+
+.footer {
+  border-top: 1px solid var(--color-rule);
+  margin-top: clamp(3rem, 8vw, 5.5rem);
+  padding-block: clamp(2.6rem, 6vw, 3.6rem);
+  text-align: center;
+  font-family: var(--font-body);
+}
+
+.mark {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.1rem;
+  /* The crest is the club's third appearance on the page by now. Held back a
+     little so it closes the sheet rather than re-announcing it. */
+  opacity: 0.85;
+}
+
+/* The imprint line, set in the display face at caption size: it is the club's
+   own name, so it keeps the name's voice even this small. */
+.name {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  margin: 0;
+  text-wrap: balance;
+}
+
+.place {
+  font-size: 0.66rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--color-ink2);
+  margin: 0.65rem 0 0;
+}
+
+.channels {
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  /* The separator is the gap, not a middot: three words evenly spaced under a
+     centred name read as a colophon's line of credits. */
+  gap: 0.5rem 1.9rem;
+  margin: 1.8rem 0 0;
+  padding: 0;
+}
+
+.channels a {
+  font-size: 0.66rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-ink);
+  text-decoration: none;
+  padding-bottom: 0.3rem;
+  /* Underline drawn as a border so it sits clear of the letterspacing rather
+     than crowding the descenders, and so it can move on hover. */
+  border-bottom: 1px solid var(--color-rule);
+  transition: border-color 0.15s ease-out, color 0.15s ease-out;
+}
+
+.channels a:hover {
+  border-bottom-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.motto {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 0.95rem;
+  color: var(--color-ink2);
+  margin: 2.2rem 0 0;
+}
+
+.imprint {
+  font-family: var(--font-data);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  color: var(--color-ink2);
+  margin: 0.5rem 0 0;
+}
+
+.note {
+  border-top: 1px solid var(--color-rule);
+  max-width: 62ch;
+  margin: 2rem auto 0;
+  padding-top: 1.2rem;
+  text-align: left;
+  font-size: 0.68rem;
+  line-height: 1.75;
+  color: var(--color-ink2);
+}

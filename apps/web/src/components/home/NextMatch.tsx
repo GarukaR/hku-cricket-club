@@ -1,7 +1,7 @@
 import { Marginalia } from "@/components/Marginalia";
 import { SectionHeading } from "@/components/SectionHeading";
 import { longDate } from "@/lib/dates";
-import { facts, type Match } from "@/lib/match";
+import type { Match } from "@/lib/match";
 import styles from "./NextMatch.module.css";
 
 /** The next Match, in the margin.
@@ -24,8 +24,12 @@ export function NextMatch({ match }: { match: Match }) {
           {longDate(match.date)}
           {match.time ? `, ${match.time}` : ""}
         </dd>
-        <dt>Ground</dt>
-        <dd>{facts(match.ground, match.venue)}</dd>
+        {match.ground && (
+          <>
+            <dt>Ground</dt>
+            <dd>{match.ground}</dd>
+          </>
+        )}
         {match.format && (
           <>
             <dt>Format</dt>

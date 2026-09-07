@@ -1,7 +1,9 @@
 # HKU Cricket Club
 
 The official website of the Hong Kong University Cricket Club — founded 1913,
-home ground Sandy Bay, motto *IN LUDO SAPIENTIA*.
+of Sandy Bay, motto *IN LUDO SAPIENTIA*. The club has no ground of its own: it
+plays wherever Hong Kong allocates it, which is why the record keeps a ground
+and no home-or-away.
 
 **Read [docs/PLAN.md](docs/PLAN.md) before starting work.** It records the
 settled decisions, the reasoning behind them, and — importantly — the repo's

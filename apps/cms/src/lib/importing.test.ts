@@ -51,7 +51,7 @@ const importedFrom = (match: ParsedMatch, claimed: string[]) =>
     match,
     ours: isOurSide(claimed),
     playerFor: knowing(match, claimed),
-    venue: "home",
+    ground: "Sandy Bay",
   });
 
 describe("the Match an export becomes", () => {
@@ -118,11 +118,24 @@ describe("the Match an export becomes", () => {
       match: unreadable,
       ours: isOurSide(["HKU CC"]),
       playerFor: () => undefined,
-      venue: "away",
+      ground: "Mission Road",
     });
 
     expect(match.result.outcome).toBeUndefined();
-    expect(match.venue).toBe("away");
+    expect(match.ground).toBe("Mission Road");
+  });
+
+  it("leaves the ground off entirely when the import screen was not told one", () => {
+    const { match } = documentsFor({
+      match: CHARLIE_BEARS,
+      ours: isOurSide(["HKU CC"]),
+      playerFor: () => undefined,
+      ground: "   ",
+    });
+
+    // The club has no home ground, so a blank is the answer often enough that
+    // it must survive as a blank rather than become an empty string on a page.
+    expect("ground" in match).toBe(false);
   });
 });
 
@@ -240,7 +253,6 @@ describe("the Appearances an export becomes", () => {
       match: CHARLIE_BEARS,
       ours: isOurSide(["HKU CC"]),
       playerFor: () => undefined,
-      venue: "home",
     });
 
     // A draft with a partial record is the point; a guessed Player is not.

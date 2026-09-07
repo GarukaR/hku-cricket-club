@@ -133,7 +133,6 @@ describe("isPlayed", () => {
     team: "league",
     opponent: "HKUST",
     ground: "Sandy Bay",
-    venue: "Home",
     format: "40 overs",
   };
   const played: Match = { ...scheduled, result: { outcome: "won" } };

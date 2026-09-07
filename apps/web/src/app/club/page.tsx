@@ -4,7 +4,8 @@
 // with genuine running prose to open.
 //
 // The prose below the drop cap is the club's own, the same vetted facts
-// TheClub's homepage teaser carries — founded 1913, Sandy Bay, open membership.
+// TheClub's homepage teaser carries — founded 1913, no ground of its own, open
+// membership.
 // The club's own account of its history — how it got there, what happened along
 // the way — has not been supplied yet, and nothing here invents it. That gap is
 // named on the page, not papered over.
@@ -46,9 +47,10 @@ export default function ClubPage() {
                 <p>
                   The Club was formed in 1913, two years after the University
                   itself, and has fielded a side in almost every season since.
-                  Play is at Sandy Bay, the University&rsquo;s ground on the
-                  western shore: league fixtures on Saturdays, and University
-                  Cricket League fixtures through the student season.
+                  It has no ground of its own &mdash; few clubs in Hong Kong do
+                  &mdash; and plays wherever the season allocates it: league
+                  fixtures on Saturdays, and University Cricket League fixtures
+                  through the student season.
                 </p>
                 <p>
                   Membership is open to current students, staff and alumni of
@@ -65,8 +67,8 @@ export default function ClubPage() {
                 <p>
                   What the Club has not yet supplied in its own words &mdash;
                   its founding, the seasons that mattered, the people who
-                  built it across a hundred and thirteen years at Sandy Bay
-                  &mdash; belongs here, and only here, once it arrives.
+                  built it across a hundred and thirteen years &mdash; belongs
+                  here, and only here, once it arrives.
                   Nothing on this page stands in for it as invented fact.
                 </p>
               </div>

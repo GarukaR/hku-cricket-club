@@ -86,14 +86,7 @@ export default function ClubPage() {
         </Container>
       </main>
 
-      <SiteFooter
-        note={
-          <>
-            The Club&rsquo;s history is placeholder text, marked as such above,
-            until the club supplies its own account.
-          </>
-        }
-      />
+      <SiteFooter />
     </>
   );
 }

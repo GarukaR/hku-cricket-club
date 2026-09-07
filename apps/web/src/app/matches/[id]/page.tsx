@@ -159,8 +159,12 @@ export default async function MatchPage({
                   {longDate(match.date)}
                   {match.time ? `, ${match.time}` : ""}
                 </dd>
-                <dt>Ground</dt>
-                <dd>{facts(match.ground, match.venue)}</dd>
+                {match.ground && (
+                  <>
+                    <dt>Ground</dt>
+                    <dd>{match.ground}</dd>
+                  </>
+                )}
                 {match.format && (
                   <>
                     <dt>Format</dt>

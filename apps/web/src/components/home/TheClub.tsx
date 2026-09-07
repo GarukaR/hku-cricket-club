@@ -20,9 +20,10 @@ export function TheClub() {
         <div className={styles.prose}>
           <p>
             The Club was formed in 1913, a mere two years after the University
-            itself, and has fielded a side in almost every season since. Play is
-            at Sandy Bay, the University&rsquo;s ground on the western shore,
-            with league fixtures on Saturdays.
+            itself, and has fielded a side in almost every season since. It has
+            no ground of its own &mdash; few clubs in Hong Kong do &mdash; and
+            plays wherever the season allocates it, with league fixtures on
+            Saturdays.
           </p>
           <blockquote className={styles.quote}>
             A university club is only ever eleven people wide and a hundred years

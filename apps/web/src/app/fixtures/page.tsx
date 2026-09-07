@@ -46,7 +46,7 @@ export default async function FixturesPage() {
                       {fixture.time && <span className={styles.time}>{fixture.time}</span>}
                     </span>
                     <span className={styles.meta}>
-                      {facts(fixture.team, fixture.ground, fixture.venue)}
+                      {facts(fixture.team, fixture.ground)}
                     </span>
                   </Link>
                 </li>

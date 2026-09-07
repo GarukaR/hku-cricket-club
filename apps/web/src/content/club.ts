@@ -24,7 +24,7 @@ export const navItems: NavItem[] = [
 
 export const standingFacts: { term: string; detail: string }[] = [
   { term: "Founded", detail: "1913" },
-  { term: "Ground", detail: "Sandy Bay, Pok Fu Lam" },
+  { term: "Based", detail: "Sandy Bay, Pok Fu Lam" },
   {
     term: "Competitions",
     detail: "Saturday Championship · University Cricket League",
@@ -38,7 +38,7 @@ export const standingFacts: { term: string; detail: string }[] = [
  *  drawn from the crest hues so the page is honest about what is missing rather
  *  than filling the space with stock photography. */
 export const plates: string[] = [
-  "First XI, Sandy Bay",
+  "First XI",
   "v PolyU, April",
   "Nets, Wednesday",
 ];

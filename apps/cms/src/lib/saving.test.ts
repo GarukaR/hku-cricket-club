@@ -115,7 +115,7 @@ describe("a confident import", () => {
         SIDE.cricclubsNames,
         knowingEverybody(CHARLIE_BEARS, SIDE.cricclubsNames),
       ),
-      venue: "home",
+      ground: "Sandy Bay",
       confident: true,
     });
 
@@ -127,7 +127,7 @@ describe("a confident import", () => {
     );
     expect(written?.body?._status).toBe("published");
     expect(written?.body?.team).toBe(SIDE.id);
-    expect(written?.body?.venue).toBe("home");
+    expect(written?.body?.ground).toBe("Sandy Bay");
   });
 
   it("records an Appearance for every player it resolved", async () => {
@@ -143,7 +143,7 @@ describe("a confident import", () => {
         SIDE.cricclubsNames,
         knowingEverybody(CHARLIE_BEARS, SIDE.cricclubsNames),
       ),
-      venue: "home",
+      ground: "Sandy Bay",
       confident: true,
     });
 
@@ -164,7 +164,7 @@ describe("a confident import", () => {
       match: CHARLIE_BEARS,
       side: SIDE,
       resolutions: [],
-      venue: "away",
+      ground: "Mission Road",
       confident: true,
     });
 
@@ -190,7 +190,7 @@ describe("an import that is not confident", () => {
         STUDENTS.cricclubsNames,
         knowingEverybody(UCL, STUDENTS.cricclubsNames),
       ),
-      venue: "away",
+      ground: "Mission Road",
       confident: false,
     });
 
@@ -220,7 +220,7 @@ describe("an import that is not confident", () => {
         STUDENTS.cricclubsNames,
         knowingEverybody(UCL, STUDENTS.cricclubsNames),
       ),
-      venue: "away",
+      ground: "Mission Road",
       confident: false,
       holds: [
         { about: "names", message: "Gohar A has not been matched to a player." },
@@ -250,7 +250,7 @@ describe("an import that is not confident", () => {
         SIDE.cricclubsNames,
         knowingEverybody(CHARLIE_BEARS, SIDE.cricclubsNames),
       ),
-      venue: "home",
+      ground: "Sandy Bay",
       confident: true,
     });
 
@@ -276,7 +276,7 @@ describe("the same file twice", () => {
       match: CHARLIE_BEARS,
       side: SIDE,
       resolutions: [],
-      venue: "home",
+      ground: "Sandy Bay",
       confident: true,
     });
 
@@ -310,7 +310,7 @@ describe("the same file twice", () => {
         SIDE.cricclubsNames,
         knowingEverybody(CHARLIE_BEARS, SIDE.cricclubsNames),
       ),
-      venue: "home",
+      ground: "Sandy Bay",
       confident: true,
     });
 
@@ -334,7 +334,7 @@ describe("the same file twice", () => {
       match: CHARLIE_BEARS,
       side: SIDE,
       resolutions: [],
-      venue: "home",
+      ground: "Sandy Bay",
       confident: true,
     });
 
@@ -365,7 +365,7 @@ describe("when the record refuses", () => {
         match: CHARLIE_BEARS,
         side: SIDE,
         resolutions: [],
-        venue: "home",
+        ground: "Sandy Bay",
         confident: true,
       }),
     ).rejects.toThrow("You are not allowed to perform this action.");

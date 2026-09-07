@@ -8,7 +8,9 @@ own record in [ADR-0001](adr/0001-match-data-enters-by-spreadsheet-import.md).
 ## What this is
 
 The official website of the Hong Kong University Cricket Club — founded 1913,
-home ground Sandy Bay, motto *IN LUDO SAPIENTIA*. It shows the club's record,
+of Sandy Bay, motto *IN LUDO SAPIENTIA*. The club has no ground of its own: it
+plays wherever Hong Kong allocates it, which is why the record keeps a ground
+and no home-or-away. It shows the club's record,
 its players' figures, its history, and how to join.
 
 It is built **portfolio-first**: the goal is a finished, deployed, genuinely

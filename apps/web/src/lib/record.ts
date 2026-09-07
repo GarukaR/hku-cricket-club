@@ -103,7 +103,6 @@ export function asMatch(stored: Stored): Match {
     date: isoDate(stored.date),
     team: named(stored.team) ?? "",
     opponent,
-    venue: stored.venue === "home" ? "Home" : "Away",
     ...(stored.ground ? { ground: stored.ground } : {}),
     ...(stored.format ? { format: stored.format } : {}),
     ...(competition ? { competition } : {}),

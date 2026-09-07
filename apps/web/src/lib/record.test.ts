@@ -12,7 +12,6 @@ function stored(overrides: Partial<Stored> = {}): Stored {
     season: { id: 1, name: "2025/26", updatedAt: "", createdAt: "" },
     date: "2026-04-25T00:00:00.000Z",
     opponent: "PolyU",
-    venue: "away",
     updatedAt: "",
     createdAt: "",
     ...overrides,
@@ -40,9 +39,13 @@ describe("asMatch", () => {
     expect(asMatch(stored()).team).toBe("league");
   });
 
-  it("prints the venue as the record does", () => {
-    expect(asMatch(stored({ venue: "home" })).venue).toBe("Home");
-    expect(asMatch(stored({ venue: "away" })).venue).toBe("Away");
+  it("carries the ground when one is entered, and nothing when it is not", () => {
+    // The club has no home ground and plays where it is allocated, so the
+    // ground is the only location the record holds — and it is often unknown.
+    expect(asMatch(stored()).ground).toBeUndefined();
+    expect(asMatch(stored({ ground: "Mission Road" })).ground).toBe(
+      "Mission Road",
+    );
   });
 
   describe("a fixture", () => {

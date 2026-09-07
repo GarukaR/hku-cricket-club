@@ -205,7 +205,7 @@ export async function saveImport({
   match,
   side,
   resolutions,
-  venue,
+  ground,
   confident,
   holds = [],
 }: {
@@ -213,7 +213,7 @@ export async function saveImport({
   match: ParsedMatch;
   side: OurSide;
   resolutions: Resolution[];
-  venue: "home" | "away";
+  ground?: string;
   confident: boolean;
   holds?: Hold[];
 }): Promise<SaveOutcome> {
@@ -227,7 +227,7 @@ export async function saveImport({
     match,
     ours: isOurSide(side.cricclubsNames),
     playerFor: (spelling) => bySpelling.get(spelling),
-    venue,
+    ground,
   });
 
   const [season, competition] = await Promise.all([

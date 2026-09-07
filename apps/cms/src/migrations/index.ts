@@ -7,6 +7,7 @@ import * as migration_20260829_174552_add_player_playing_role from './20260829_1
 import * as migration_20260831_132736_add_enquiries from './20260831_132736_add_enquiries';
 import * as migration_20260831_161839_add_held_reasons from './20260831_161839_add_held_reasons';
 import * as migration_20260905_172318_add_caught_behind from './20260905_172318_add_caught_behind';
+import * as migration_20260907_150212_drop_venue from './20260907_150212_drop_venue';
 
 export const migrations = [
   {
@@ -52,6 +53,11 @@ export const migrations = [
   {
     up: migration_20260905_172318_add_caught_behind.up,
     down: migration_20260905_172318_add_caught_behind.down,
-    name: '20260905_172318_add_caught_behind'
+    name: '20260905_172318_add_caught_behind',
+  },
+  {
+    up: migration_20260907_150212_drop_venue.up,
+    down: migration_20260907_150212_drop_venue.down,
+    name: '20260907_150212_drop_venue'
   },
 ];

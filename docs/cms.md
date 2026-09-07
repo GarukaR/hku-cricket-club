@@ -302,9 +302,13 @@ question stated. Drafts are Payload's, on Matches alone.
 **Two things the import asks for**, because the file does not carry them:
 
 - **Who a name belongs to** — see above, and each answer is kept.
-- **Home or away.** A CricClubs export has no ground and no venue in it at all.
-  One click, not a form, and not guessed: a wrong venue is visibly wrong on a
-  page the other club reads too.
+- **The ground.** A CricClubs export carries no location at all. The club has
+  no home ground — it plays wherever it is allocated — so there is no home or
+  away to record, and the ground is the whole of the answer. It is offered as a
+  box with the usual grounds suggested, and it does **not** block the save: a
+  scorecard often reaches an editor without anyone remembering where it was
+  played, and blank is honest where a guess is visibly wrong on a page the
+  other club reads too.
 
 **Importing the same file twice is safe**, and normal — scorers correct
 scorecards after the fact. A match is recognised by side, date and opponent

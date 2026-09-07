@@ -13,10 +13,11 @@
 // knowing it. A scorecard lists only the players the scorer entered, so this is
 // a floor and never the whole XI.
 //
-// One thing the file does not say, and this does not invent: **venue**. A
-// CricClubs export carries no ground and no home-or-away at all, so it is asked
-// for once on the import screen rather than guessed — a wrong venue is visibly
-// wrong on a page the opposition also read.
+// One thing the file does not say, and this does not invent: **the ground**. A
+// CricClubs export carries no location at all, so it is asked for once on the
+// import screen rather than guessed. It is optional — a scorecard often arrives
+// without anyone remembering where it was played, and a match with no ground on
+// it is honest where an invented one is not.
 //
 // The fielder named is credited whoever they turn out to be, **including when
 // they are the bowler**. That is caught and bowled, an ordinary dismissal, and
@@ -44,7 +45,7 @@ export type ImportedInnings = {
 export type ImportedMatch = {
   date: string;
   opponent: string;
-  venue: "home" | "away";
+  ground?: string;
   result: {
     outcome?: "won" | "lost" | "drawn" | "tied" | "abandoned" | "conceded";
     margin?: { value: number; unit: "runs" | "wickets" };
@@ -169,12 +170,12 @@ export function documentsFor({
   match,
   ours,
   playerFor,
-  venue,
+  ground,
 }: {
   match: ParsedMatch;
   ours: (entity: string) => boolean;
   playerFor: PlayerFor;
-  venue: "home" | "away";
+  ground?: string;
 }): Imported {
   const opponent =
     match.teams.find((team) => !ours(team)) ?? match.teams[1] ?? "";
@@ -265,7 +266,7 @@ export function documentsFor({
     match: {
       date: match.date,
       opponent,
-      venue,
+      ...(ground?.trim() ? { ground: ground.trim() } : {}),
       result: {
         outcome: outcomeFor(match, ours),
         margin: match.margin,

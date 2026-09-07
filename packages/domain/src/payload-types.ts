@@ -225,11 +225,7 @@ export interface Match {
    */
   opponent: string;
   /**
-   * Home is Sandy Bay. The record prints H or A beside every result.
-   */
-  venue: 'home' | 'away';
-  /**
-   * Where it was played — Sandy Bay, Mission Road, Yeung King Playground.
+   * Where it was played — Sandy Bay, Mission Road, Yeung King Playground. The club has no home ground and plays wherever it is given, so there is no home-or-away to record: the ground itself is the whole of the fact.
    */
   ground?: string | null;
   /**
@@ -637,7 +633,6 @@ export interface MatchesSelect<T extends boolean = true> {
   date?: T;
   startTime?: T;
   opponent?: T;
-  venue?: T;
   ground?: T;
   format?: T;
   scorecard?: T;

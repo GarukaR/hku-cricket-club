@@ -105,7 +105,7 @@ export const Matches = {
       },
     },
     useAsTitle: "summary",
-    defaultColumns: ["summary", "standing", "team", "competition", "venue", "season"],
+    defaultColumns: ["summary", "standing", "team", "competition", "ground", "season"],
     description:
       "Every fixture the club plays, before and after it is played. Enter it when the fixture is known; add the result afterwards, on the same record.",
     group: "The record",
@@ -197,24 +197,11 @@ export const Matches = {
       },
     },
     {
-      name: "venue",
-      type: "select",
-      required: true,
-      options: [
-        { value: "home", label: "Home" },
-        { value: "away", label: "Away" },
-      ],
-      admin: {
-        description:
-          "Home is Sandy Bay. The record prints H or A beside every result.",
-      },
-    },
-    {
       name: "ground",
       type: "text",
       admin: {
         description:
-          "Where it was played — Sandy Bay, Mission Road, Yeung King Playground.",
+          "Where it was played — Sandy Bay, Mission Road, Yeung King Playground. The club has no home ground and plays wherever it is given, so there is no home-or-away to record: the ground itself is the whole of the fact.",
       },
     },
     {

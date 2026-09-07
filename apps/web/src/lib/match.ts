@@ -65,7 +65,6 @@ export type Match = {
   team: string;
   opponent: string;
   ground?: string;
-  venue: "Home" | "Away";
   format?: string;
   competition?: string;
   /** 24-hour local start time, for a Match not yet played. */

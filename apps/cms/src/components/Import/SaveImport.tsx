@@ -23,6 +23,11 @@ import { panel, quiet } from "./styles";
  * match is a real record of a real game that somebody has a question about, so
  * an editor opening the draft finds the scorecard already there.
  */
+/** Suggestions only, offered as a datalist and never enforced — the club plays
+ *  wherever it is allocated, and the list of grounds is not the club's to fix.
+ *  Anything can be typed over them. */
+const GROUNDS = ["Sandy Bay", "Mission Road", "Yeung King Playground"];
+
 export function SaveImport({
   api,
   match,
@@ -36,10 +41,11 @@ export function SaveImport({
   resolutions: Resolution[];
   adminRoute: string;
 }) {
-  // Not defaulted. The export says nothing about where the match was played,
-  // and a default would be a guess wearing a form control's clothes — wrong
-  // half the time, on a page the opposition also read.
-  const [venue, setVenue] = useState<"home" | "away" | "">("");
+  // The export says nothing about where the match was played, so this is the
+  // one chance to record it without a second trip to the panel. It does not
+  // gate the save: the club plays wherever it is given, and a scorecard often
+  // reaches the editor without anyone remembering the ground. Blank is honest.
+  const [ground, setGround] = useState("");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState<SaveOutcome>();
   const [failure, setFailure] = useState<string>();
@@ -49,7 +55,7 @@ export function SaveImport({
   const verdict = confidenceIn(match, resolutions);
 
   async function save() {
-    if (!side || venue === "") return;
+    if (!side) return;
 
     setSaving(true);
     setFailure(undefined);
@@ -60,7 +66,7 @@ export function SaveImport({
           match,
           side,
           resolutions,
-          venue,
+          ground,
           confident: verdict.confident,
           holds: verdict.holds,
         }),
@@ -117,30 +123,43 @@ export function SaveImport({
         disabled={saving || Boolean(saved)}
       >
         <legend style={{ padding: "0 6px" }}>Where was it played?</legend>
+        {/* The permission to skip sits outside `quiet` rather than inside it
+            as a <strong>: opacity composites the whole subtree, so a child of
+            a 0.75 paragraph cannot be brighter than the paragraph. The one
+            line an editor must not miss is the one that says they may stop. */}
+        <p style={{ marginTop: 0, marginBottom: 4, fontSize: 12 }}>
+          <strong>Leave it blank if you do not know.</strong>
+        </p>
         <p style={{ ...quiet, marginTop: 0, fontSize: 12 }}>
           A CricClubs export does not say, and this is the one thing the file
-          cannot tell us. It is not guessed, because a wrong venue is visibly
-          wrong on a page the other club reads too.
+          cannot tell us. The club has no home ground and plays wherever it is
+          given, so the ground is the whole of the answer — and a blank can be
+          filled in later, where a guess is already on a page the other club
+          reads too.
         </p>
-        {(["home", "away"] as const).map((where) => (
-          <label key={where} style={{ marginRight: 16 }}>
-            <input
-              type="radio"
-              name="venue"
-              value={where}
-              checked={venue === where}
-              onChange={() => setVenue(where)}
-            />{" "}
-            {where === "home" ? "Home — Sandy Bay" : "Away"}
-          </label>
-        ))}
+        <label>
+          <input
+            type="text"
+            name="ground"
+            value={ground}
+            onChange={(event) => setGround(event.target.value)}
+            placeholder="Sandy Bay"
+            list="grounds"
+            style={{ width: 280 }}
+          />
+        </label>
+        <datalist id="grounds">
+          {GROUNDS.map((one) => (
+            <option key={one} value={one} />
+          ))}
+        </datalist>
       </fieldset>
 
       <p style={{ marginTop: 16 }}>
         <button
           type="button"
           onClick={() => void save()}
-          disabled={saving || venue === "" || Boolean(saved)}
+          disabled={saving || Boolean(saved)}
         >
           {saving
             ? "Saving…"
@@ -148,11 +167,6 @@ export function SaveImport({
               ? "Publish this match"
               : "Save as a draft"}
         </button>
-        {venue === "" && !saved && (
-          <span style={{ ...quiet, marginLeft: 12 }}>
-            Home or away first.
-          </span>
-        )}
       </p>
 
       {saved && (

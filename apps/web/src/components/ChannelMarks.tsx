@@ -4,7 +4,10 @@
  *  an icon set: every shipped icon family is a rounded, filled, contemporary
  *  UI voice, and D2 is a printed record. These are hairline strokes in
  *  `currentColor` at the same weight as a rule on the page, so they read as
- *  printer's marks beside letterspaced sans rather than as app furniture. */
+ *  printer's marks beside letterspaced sans rather than as app furniture.
+ *
+ *  All three are framed, because all three real marks are: a rounded square, a
+ *  disc, and a rounded rectangle. */
 const box = {
   viewBox: "0 0 16 16",
   fill: "none",
@@ -33,15 +36,18 @@ export function Facebook({ size = 14 }: { size?: number }) {
   );
 }
 
-/** No frame, unlike the other two. Instagram's mark really is a rounded square
- *  and Facebook's really is a disc, but X's is the bare letterform — and a
- *  cross inside a box is the universal close button, which is what the first
- *  draft of this drew. The strokes are set a shade heavier so an unframed mark
- *  holds the same weight on the line as two framed ones. */
-export function X({ size = 14 }: { size?: number }) {
+/** YouTube's badge is a rounded rectangle with a play triangle in it, so it
+ *  lands wider than it is tall. Drawn to the same 16-unit box as the other two
+ *  and inset vertically rather than scaled down, which keeps all three marks
+ *  optically the same size on the line instead of mathematically the same. */
+export function YouTube({ size = 14 }: { size?: number }) {
   return (
-    <svg {...box} width={size} height={size} strokeWidth={1.35}>
-      <path d="M2.6 2.4 13.4 13.6M13.4 2.4 2.6 13.6" />
+    <svg {...box} width={size} height={size}>
+      <rect x="0.9" y="3.2" width="14.2" height="9.6" rx="2.9" />
+      {/* Filled, because a 3px outlined triangle at 14px closes up into a
+          smudge. It is the one solid in the set and it is the right one — the
+          play button is a solid everywhere it is drawn. */}
+      <path d="M6.6 6.1 10.4 8 6.6 9.9Z" fill="currentColor" stroke="none" />
     </svg>
   );
 }

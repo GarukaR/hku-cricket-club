@@ -1,11 +1,11 @@
 import Link from "next/link";
 
-import { Facebook, Instagram, X } from "@/components/ChannelMarks";
+import { Facebook, Instagram, YouTube } from "@/components/ChannelMarks";
 import { Container } from "@/components/Container";
 import { channels, navItems } from "@/content/club";
 import styles from "./SiteFooter.module.css";
 
-const marks = { Instagram, Facebook, X } as const;
+const marks = { Instagram, Facebook, YouTube } as const;
 
 /** The end of the sheet — "The Endpaper".
  *

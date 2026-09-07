@@ -19,10 +19,12 @@ const marks = { Instagram, Facebook, YouTube } as const;
  *  to be joined — and on the homepage it sits directly above this. Two green
  *  bands stacked would spend the site's one loud moment twice.
  *
- *  `note` is a prop so that deleting the sample-content disclosure is a
- *  one-line change at the page, on the day the importer supplies real Matches.
- *  It sits below everything: it is an editorial note about the page, not part
- *  of the club's own imprint. */
+ *  `note` still works and no page passes one (#100). The foot of every page was
+ *  the wrong place to keep repeating that the handbook quotation and the plate
+ *  captions are invented, but the disclosure will be wanted again — so the prop
+ *  and the setting for it stay, and bringing it back is one line at the page
+ *  rather than a component to rebuild. It sits below everything: it is an
+ *  editorial note about the page, not part of the club's own imprint. */
 export function SiteFooter({ note }: { note?: React.ReactNode }) {
   return (
     <footer className={styles.footer}>
@@ -107,9 +109,12 @@ export function SiteFooter({ note }: { note?: React.ReactNode }) {
               })}
             </ul>
           )}
-        </div>
 
-        <div className={styles.foot}>
+          {/* On the plate rather than under it. The index is the one thing in
+              the footer somebody uses rather than reads, so it belongs with
+              the channels — and leaving it on paper meant two quiet rows of
+              similar weight sharing a band, which is what made that band look
+              misaligned however it was justified. */}
           <nav className={styles.index} aria-label="Footer">
             {navItems.map((item) => (
               <Link key={item.href} href={item.href}>
@@ -117,11 +122,14 @@ export function SiteFooter({ note }: { note?: React.ReactNode }) {
               </Link>
             ))}
           </nav>
-          <p className={styles.imprint}>
-            The Hong Kong University Cricket Club · Sandy Bay, Pok Fu Lam, Hong
-            Kong · Founded MCMXIII
-          </p>
         </div>
+
+        {/* One line, centred: with the index gone there is nothing left down
+            here to align it against. */}
+        <p className={styles.imprint}>
+          The Hong Kong University Cricket Club · Sandy Bay, Pok Fu Lam, Hong
+          Kong · Founded MCMXIII
+        </p>
 
         {note && <p className={styles.note}>{note}</p>}
       </Container>

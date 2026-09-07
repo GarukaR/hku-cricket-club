@@ -63,16 +63,7 @@ export default async function Home() {
         <Admission />
       </main>
 
-      <SiteFooter
-        note={
-          <>
-            The record is the club&rsquo;s own, entered in full. The 1988
-            handbook quotation and the plate captions are invented and stand in
-            until the club&rsquo;s history copy arrives; the club&rsquo;s
-            photographs and the crest mark are still to come.
-          </>
-        }
-      />
+      <SiteFooter />
     </>
   );
 }
